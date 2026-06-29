@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>操作日志 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html" class="active">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">系统设置 / <b>操作日志</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1"><div class="s-icon">📋</div><div><div class="s-num">2,860</div><div class="s-label">今日操作数</div></div></div>
+        <div class="s-card s2"><div class="s-icon">👤</div><div><div class="s-num">22</div><div class="s-label">活跃员工</div></div></div>
+        <div class="s-card s3"><div class="s-icon">⚠</div><div><div class="s-num">8</div><div class="s-label">异常操作</div></div></div>
+        <div class="s-card s4"><div class="s-icon">🗑</div><div><div class="s-num">36</div><div class="s-label">删除操作</div></div></div>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="操作人/工号">
+            <select class="a-select">
+              <option>全部模块</option>
+              <option>订单管理</option>
+              <option>商品管理</option>
+              <option>商品审核</option>
+              <option>供应商管理</option>
+              <option>商户管理</option>
+              <option>退款管理</option>
+              <option>系统设置</option>
+            </select>
+            <select class="a-select">
+              <option>全部操作类型</option>
+              <option>新增</option>
+              <option>编辑</option>
+              <option>删除</option>
+              <option>审核</option>
+              <option>登录</option>
+              <option>导出</option>
+            </select>
+            <input type="text" class="a-input" placeholder="开始日期" style="width:130px;">
+            <input type="text" class="a-input" placeholder="结束日期" style="width:130px;">
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-line">导出日志</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>日志ID</th>
+                <th>操作人</th>
+                <th>工号</th>
+                <th>模块</th>
+                <th>操作类型</th>
+                <th>操作内容</th>
+                <th>IP地址</th>
+                <th>操作时间</th>
+                <th>结果</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>L20260626001</td>
+                <td>张三</td>
+                <td>ST001</td>
+                <td>系统设置</td>
+                <td><span class="tag tag-blue">编辑</span></td>
+                <td>修改运营专员角色权限</td>
+                <td>192.168.1.10</td>
+                <td>2026-06-26 09:35:22</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+              <tr>
+                <td>L20260626002</td>
+                <td>李四</td>
+                <td>ST002</td>
+                <td>商品审核</td>
+                <td><span class="tag tag-orange">审核</span></td>
+                <td>通过商品「有机大白菜」审核</td>
+                <td>192.168.1.20</td>
+                <td>2026-06-26 09:20:11</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+              <tr>
+                <td>L20260626003</td>
+                <td>李四</td>
+                <td>ST002</td>
+                <td>商品审核</td>
+                <td><span class="tag tag-orange">审核</span></td>
+                <td>驳回商品「速冻饺子」审核（资质不全）</td>
+                <td>192.168.1.20</td>
+                <td>2026-06-26 09:15:08</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+              <tr>
+                <td>L20260626004</td>
+                <td>王五</td>
+                <td>ST003</td>
+                <td>订单管理</td>
+                <td><span class="tag tag-red">删除</span></td>
+                <td>删除异常订单 PO20260620099</td>
+                <td>192.168.1.30</td>
+                <td>2026-06-26 08:50:45</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+              <tr>
+                <td>L20260626005</td>
+                <td>赵六</td>
+                <td>ST004</td>
+                <td>退款管理</td>
+                <td><span class="tag tag-blue">编辑</span></td>
+                <td>处理退款单 RF20260625005，同意退款 ¥1,280</td>
+                <td>192.168.1.40</td>
+                <td>2026-06-26 08:30:12</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+              <tr>
+                <td>L20260626006</td>
+                <td>钱七</td>
+                <td>ST005</td>
+                <td>系统设置</td>
+                <td><span class="tag tag-purple">登录</span></td>
+                <td>登录失败（密码错误3次）</td>
+                <td>192.168.1.55</td>
+                <td>2026-06-26 08:10:33</td>
+                <td><span class="tag tag-red">失败</span></td>
+              </tr>
+              <tr>
+                <td>L20260626007</td>
+                <td>张三</td>
+                <td>ST001</td>
+                <td>供应商管理</td>
+                <td><span class="tag tag-green">新增</span></td>
+                <td>新增供应商「寿光蔬菜合作社」</td>
+                <td>192.168.1.10</td>
+                <td>2026-06-26 08:00:01</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+              <tr>
+                <td>L20260625088</td>
+                <td>李四</td>
+                <td>ST002</td>
+                <td>商品审核</td>
+                <td><span class="tag tag-blue">导出</span></td>
+                <td>导出6月待审核商品清单</td>
+                <td>192.168.1.20</td>
+                <td>2026-06-25 17:55:30</td>
+                <td><span class="tag tag-green">成功</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">...</a>
+            <a href="#">286</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

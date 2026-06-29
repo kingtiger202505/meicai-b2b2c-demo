@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>退款管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html" class="active">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">交易管理 / <b>退款管理</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1"><div class="s-icon">💰</div><div><div class="s-num">186</div><div class="s-label">退款单总数</div></div></div>
+        <div class="s-card s2"><div class="s-icon">⏳</div><div><div class="s-num">12</div><div class="s-label">待处理</div></div></div>
+        <div class="s-card s3"><div class="s-icon">✅</div><div><div class="s-num">168</div><div class="s-label">已退款</div></div></div>
+        <div class="s-card s4"><div class="s-icon">💸</div><div><div class="s-num">¥28.6万</div><div class="s-label">累计退款金额</div></div></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="u-tabs">
+        <a href="#" class="on">全部</a>
+        <a href="#">待处理 (12)</a>
+        <a href="#">审核中 (6)</a>
+        <a href="#">已退款 (168)</a>
+        <a href="#">已拒绝</a>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="退款单号/订单号">
+            <input type="text" class="a-input" placeholder="商户名称">
+            <select class="a-select">
+              <option>全部退款类型</option>
+              <option>质量问题</option>
+              <option>商品损坏</option>
+              <option>数量不符</option>
+              <option>未按时送达</option>
+              <option>其他</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>待处理</option>
+              <option>审核中</option>
+              <option>已退款</option>
+              <option>已拒绝</option>
+            </select>
+            <input type="text" class="a-input" placeholder="开始日期" style="width:130px;">
+            <input type="text" class="a-input" placeholder="结束日期" style="width:130px;">
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-line">导出</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>退款单号</th>
+                <th>订单号</th>
+                <th>商户</th>
+                <th>供应商</th>
+                <th>退款类型</th>
+                <th>退款金额</th>
+                <th>申请时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RF20260626001</td>
+                <td>PO20260622001</td>
+                <td>聚友海鲜大排档</td>
+                <td>绿源农产品</td>
+                <td><span class="tag tag-red">质量问题</span></td>
+                <td style="color:var(--mc-red);">¥1,280.00</td>
+                <td>2026-06-26 08:30</td>
+                <td><span class="tag tag-orange">待处理</span></td>
+                <td class="ops"><a href="#" class="edit">审核</a><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>RF20260625005</td>
+                <td>PO20260618002</td>
+                <td>川香食府</td>
+                <td>绿源农产品</td>
+                <td><span class="tag tag-orange">商品损坏</span></td>
+                <td style="color:var(--mc-red);">¥980.00</td>
+                <td>2026-06-25 16:20</td>
+                <td><span class="tag tag-blue">审核中</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>RF20260624008</td>
+                <td>PO20260615003</td>
+                <td>阳光快餐</td>
+                <td>泰丰粮油</td>
+                <td><span class="tag tag-blue">数量不符</span></td>
+                <td style="color:var(--mc-red);">¥540.00</td>
+                <td>2026-06-24 11:00</td>
+                <td><span class="tag tag-green">已退款</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>RF20260623012</td>
+                <td>PO20260610003</td>
+                <td>东北饺子馆</td>
+                <td>泰丰粮油</td>
+                <td><span class="tag tag-purple">未按时送达</span></td>
+                <td style="color:var(--mc-red);">¥2,260.00</td>
+                <td>2026-06-23 09:15</td>
+                <td><span class="tag tag-green">已退款</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>RF20260622015</td>
+                <td>PO20260608004</td>
+                <td>老王烧烤</td>
+                <td>绿源农产品</td>
+                <td><span class="tag tag-gray">其他</span></td>
+                <td style="color:var(--mc-red);">¥360.00</td>
+                <td>2026-06-22 14:30</td>
+                <td><span class="tag tag-red">已拒绝</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>RF20260621002</td>
+                <td>PO20260605005</td>
+                <td>聚友海鲜大排档</td>
+                <td>蓝海水产</td>
+                <td><span class="tag tag-red">质量问题</span></td>
+                <td style="color:var(--mc-red);">¥3,500.00</td>
+                <td>2026-06-21 10:00</td>
+                <td><span class="tag tag-green">已退款</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

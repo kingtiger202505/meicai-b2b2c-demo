@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>营业日结 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+
+  /* 班次切换 */
+  .shift-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .shift-tabs a { padding: 8px 18px; border-radius: 4px; font-size: 13px; cursor: pointer; background: #fff; border: 1px solid #eee; }
+  .shift-tabs a.on { background: var(--mc-green); color: #fff; font-weight: bold; border-color: var(--mc-green); }
+
+  /* 对账表 */
+  .reconcile-table th, .reconcile-table td { padding: 10px 14px !important; }
+  .reconcile-table .diff-ok { color: var(--mc-green); font-weight: bold; }
+  .reconcile-table .diff-warn { color: var(--mc-red); font-weight: bold; }
+
+  /* 现金对账卡 */
+  .cash-card { background: #fff; border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  .cash-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #eee; font-size: 14px; }
+  .cash-row.total { border-top: 2px solid var(--mc-orange); border-bottom: none; padding-top: 14px; font-size: 16px; font-weight: bold; }
+  .cash-row .cv { color: var(--mc-red); font-weight: bold; }
+  .cash-row .ci { color: var(--mc-green); font-weight: bold; }
+
+  /* 班次历史 */
+  .shift-history .sh-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f0f0f0; }
+  .sh-item .sh-time { width: 120px; font-size: 13px; color: #666; }
+  .sh-item .sh-person { width: 100px; font-size: 14px; }
+  .sh-item .sh-amount { flex: 1; font-size: 14px; color: var(--mc-red); font-weight: bold; }
+  .sh-item .sh-status { width: 80px; text-align: right; }
+
+  /* 日结大按钮 */
+  .daily-close-btn { display: block; width: 100%; padding: 18px; background: linear-gradient(135deg, var(--mc-orange), #ff6b00); color: #fff; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 16px; box-shadow: 0 4px 12px rgba(255,107,0,.3); }
+  .daily-close-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,107,0,.4); }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html" class="active">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">财务管理 / <b>营业日结</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 班次切换 -->
+      <div class="shift-tabs">
+        <a class="on" data-shift="mid">中班 11:00-19:00（当前）</a>
+        <a data-shift="morning">早班 07:00-11:00</a>
+        <a data-shift="night">晚班 19:00-23:00</a>
+      </div>
+
+      <!-- 今日汇总 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">💰</div><div><div class="s-num">¥8,620</div><div class="s-label">本班营业额</div><div class="s-trend up">↑ 18.5%</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">🧾</div><div><div class="s-num">96</div><div class="s-label">本班订单数</div><div class="s-trend up">↑ 12 单</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">↩️</div><div><div class="s-num">¥186</div><div class="s-label">本班退款</div><div class="s-trend">2 单</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">📊</div><div><div class="s-num">¥8,434</div><div class="s-label">本班净收入</div><div class="s-trend up">↑ 16.8%</div></div></div>
+      </div>
+
+      <!-- 收款方式对账 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>💳 收款方式对账（应收 vs 实收）</h3></div>
+        <div class="a-panel-bd" style="padding:0;">
+          <table class="a-table reconcile-table">
+            <thead>
+              <tr>
+                <th>收款方式</th><th>订单数</th><th>应收金额</th>
+                <th>实收金额</th><th>退款金额</th><th>净收入</th>
+                <th>差异</th><th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>微信支付</b></td>
+                <td>42</td>
+                <td>¥3,620.00</td>
+                <td>¥3,618.00</td>
+                <td style="color:var(--mc-red);">-¥98.00</td>
+                <td style="font-weight:bold;">¥3,520.00</td>
+                <td class="diff-warn">-¥2.00</td>
+                <td><span class="tag tag-red">待核对</span></td>
+              </tr>
+              <tr>
+                <td><b>支付宝</b></td>
+                <td>34</td>
+                <td>¥2,980.00</td>
+                <td>¥2,980.00</td>
+                <td style="color:var(--mc-red);">-¥0.00</td>
+                <td style="font-weight:bold;">¥2,980.00</td>
+                <td class="diff-ok">¥0.00</td>
+                <td><span class="tag tag-green">已对账</span></td>
+              </tr>
+              <tr>
+                <td><b>现金</b></td>
+                <td>16</td>
+                <td>¥1,520.00</td>
+                <td>¥1,518.00</td>
+                <td style="color:var(--mc-red);">-¥68.00</td>
+                <td style="font-weight:bold;">¥1,450.00</td>
+                <td class="diff-warn">-¥2.00</td>
+                <td><span class="tag tag-orange">需盘点</span></td>
+              </tr>
+              <tr>
+                <td><b>会员卡</b></td>
+                <td>4</td>
+                <td>¥500.00</td>
+                <td>¥500.00</td>
+                <td style="color:var(--mc-red);">-¥20.00</td>
+                <td style="font-weight:bold;">¥480.00</td>
+                <td class="diff-ok">¥0.00</td>
+                <td><span class="tag tag-green">已对账</span></td>
+              </tr>
+              <tr style="background:#fafafa;font-weight:bold;">
+                <td>合计</td>
+                <td>96</td>
+                <td>¥8,620.00</td>
+                <td>¥8,616.00</td>
+                <td style="color:var(--mc-red);">-¥186.00</td>
+                <td>¥8,430.00</td>
+                <td class="diff-warn">-¥4.00</td>
+                <td><span class="tag tag-orange">差异 ¥4</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="padding:12px 16px;background:#fff5e6;font-size:13px;color:#8a5a00;">
+            ⚠️ <b>差异说明</b>：现金差异 -¥2.00 可能是抹零或找零误差；微信差异 -¥2.00 需核对微信商户后台流水。建议日结前完成核对。
+          </div>
+        </div>
+      </div>
+
+      <!-- 现金抽屉对账 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="a-panel">
+          <div class="a-panel-hd"><h3>💵 现金抽屉对账</h3></div>
+          <div class="a-panel-bd">
+            <div class="cash-card">
+              <div class="cash-row"><span>期初现金（接班时）</span><b>¥500.00</b></div>
+              <div class="cash-row"><span>+ 现金收款</span><span class="cv">¥1,520.00</span></div>
+              <div class="cash-row"><span>- 现金退款</span><span>-¥68.00</span></div>
+              <div class="cash-row"><span>- 抹零合计</span><span>-¥2.00</span></div>
+              <div class="cash-row total"><span>应有现金</span><span class="cv">¥1,950.00</span></div>
+              <div class="cash-row" style="margin-top:8px;">
+                <span>实点现金</span>
+                <input type="number" id="actualCash" placeholder="0.00" style="width:120px;height:32px;border:1px solid #ddd;border-radius:4px;padding:0 10px;font-size:14px;">
+              </div>
+              <div class="cash-row total">
+                <span>差异</span>
+                <b id="cashDiff" style="color:#999;">— 待盘点</b>
+              </div>
+              <button class="btn btn-primary" style="width:100%;margin-top:12px;" id="btnCount">确认盘点</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="a-panel">
+          <div class="a-panel-hd"><h3>📋 交接班事项</h3></div>
+          <div class="a-panel-bd">
+            <div style="font-size:13px;line-height:1.8;">
+              <div style="padding:8px 0;border-bottom:1px dashed #eee;">
+                <b style="color:var(--mc-red);">⚠️ 待处理</b>
+                <div style="margin-top:4px;">• 2 笔退款待店长审批（包间B ¥1,260）</div>
+                <div>• 1 笔微信差异 -¥2.00 需核对</div>
+                <div>• 3 张桌台待清台（3/7号桌、包间B）</div>
+              </div>
+              <div style="padding:8px 0;border-bottom:1px dashed #eee;">
+                <b style="color:var(--mc-orange);">📦 库存提醒</b>
+                <div style="margin-top:4px;">• 西红柿库存 3kg < 安全库存 8kg</div>
+                <div>• 鸡蛋库存 30枚 < 安全库存 60枚</div>
+                <div>• 已生成采购建议，待下单</div>
+              </div>
+              <div style="padding:8px 0;">
+                <b style="color:var(--mc-green);">✓ 已完成</b>
+                <div style="margin-top:4px;">• 96 笔订单已结账</div>
+                <div>• 128 道菜已出餐</div>
+                <div>• 后厨 KDS 已清空</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 班次历史 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>🕒 今日班次记录</h3></div>
+        <div class="a-panel-bd" style="padding:0;">
+          <div class="shift-history">
+            <div class="sh-item">
+              <div class="sh-time">07:00 - 11:00</div>
+              <div class="sh-person">小李（早班）</div>
+              <div class="sh-amount">¥1,820.00</div>
+              <div class="sh-status"><span class="tag tag-green">已交接</span></div>
+            </div>
+            <div class="sh-item">
+              <div class="sh-time">11:00 - 19:00</div>
+              <div class="sh-person">小王（中班）<span style="color:var(--mc-orange);">当前</span></div>
+              <div class="sh-amount">¥8,620.00</div>
+              <div class="sh-status"><span class="tag tag-orange">待交接</span></div>
+            </div>
+            <div class="sh-item">
+              <div class="sh-time">19:00 - 23:00</div>
+              <div class="sh-person">小张（晚班）</div>
+              <div class="sh-amount">—</div>
+              <div class="sh-status"><span class="tag tag-gray">未开始</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 日结操作 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>🔒 日结操作</h3></div>
+        <div class="a-panel-bd">
+          <div style="font-size:13px;color:#666;margin-bottom:12px;line-height:1.8;">
+            日结将执行以下操作：<br>
+            ✓ 生成本班日结报表 &nbsp; ✓ 冻结本班营业数据 &nbsp; ✓ 交接至下一班次 &nbsp; ✓ 同步至总部经营看板
+          </div>
+          <button class="daily-close-btn" id="btnDailyClose">🔒 确认日结并交接班</button>
+          <div style="font-size:12px;color:#999;margin-top:8px;text-align:center;">日结后本班数据不可修改，如需调整请联系店长</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // 班次切换
+  document.querySelectorAll('.shift-tabs a').forEach(function(a){
+    a.onclick = function(){
+      document.querySelectorAll('.shift-tabs a').forEach(function(x){ x.classList.remove('on'); });
+      a.classList.add('on');
+      // 实际项目此处应加载对应班次数据，这里仅切换样式
+    };
+  });
+
+  // 现金盘点
+  var expected = 1950.00;
+  $('actualCash').addEventListener('input', function(){
+    var actual = parseFloat(this.value);
+    if(isNaN(actual)){ $('cashDiff').textContent = '— 待盘点'; $('cashDiff').style.color = '#999'; return; }
+    var diff = actual - expected;
+    if(diff === 0){
+      $('cashDiff').textContent = '¥0.00 ✓ 一致';
+      $('cashDiff').style.color = 'var(--mc-green)';
+    } else if(diff > 0){
+      $('cashDiff').textContent = '+¥' + diff.toFixed(2) + '（盘盈）';
+      $('cashDiff').style.color = 'var(--mc-green)';
+    } else {
+      $('cashDiff').textContent = diff.toFixed(2) + '（盘亏）';
+      $('cashDiff').style.color = 'var(--mc-red)';
+    }
+  });
+
+  $('btnCount').onclick = function(){
+    var actual = parseFloat($('actualCash').value);
+    if(isNaN(actual)){ alert('请输入实点现金金额'); return; }
+    var diff = actual - expected;
+    if(Math.abs(diff) < 0.01){
+      alert('✓ 现金盘点完成\n实点 ¥' + actual.toFixed(2) + ' = 应有 ¥' + expected.toFixed(2) + '\n账实相符，可交接');
+    } else {
+      alert('⚠️ 现金盘点完成\n实点 ¥' + actual.toFixed(2) + ' / 应有 ¥' + expected.toFixed(2) + '\n差异 ' + (diff>0?'+':'') + diff.toFixed(2) + ' 元\n需店长签字确认');
+    }
+  };
+
+  // 日结
+  $('btnDailyClose').onclick = function(){
+    if(!confirm('确认执行日结？\n\n将执行：\n• 生成本班日结报表\n• 冻结本班营业数据\n• 交接至下一班次\n\n日结后数据不可修改，请确认所有订单已结账、退款已处理。')) return;
+    alert('✓ 日结成功\n\n本班日结报表已生成\n营业额 ¥8,620 / 净收入 ¥8,434\n已交接至晚班（小张）\n同步至总部经营看板完成');
+  };
+})();
+</script>
+</body>
+</html>

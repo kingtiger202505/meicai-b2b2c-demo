@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>支付结算 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+
+  /* 收款方式分布条 */
+  .pay-bar { display: flex; height: 24px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .pay-bar div { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; }
+
+  /* 待结账订单 */
+  .pending-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .pending-card { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 14px; cursor: pointer; transition: all .2s; border-left: 3px solid var(--mc-orange); }
+  .pending-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); transform: translateY(-2px); }
+  .pending-card .pc-hd { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .pending-card .pc-table { font-size: 16px; font-weight: bold; }
+  .pending-card .pc-no { font-size: 11px; color: #999; }
+  .pending-card .pc-time { font-size: 12px; color: #999; }
+  .pending-card .pc-amount { color: var(--mc-red); font-size: 22px; font-weight: bold; }
+  .pending-card .pc-items { font-size: 12px; color: #666; margin: 6px 0; line-height: 1.6; }
+  .pending-card .pc-btn { width: 100%; background: var(--mc-orange); color: #fff; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 13px; cursor: pointer; }
+  .pending-card.urgent { border-left-color: var(--mc-red); }
+
+  /* 结账弹窗 */
+  .pay-modal { width: 580px; }
+  .pay-section { padding: 14px 0; border-bottom: 1px dashed #eee; }
+  .pay-section:last-child { border-bottom: none; }
+  .pay-section h4 { font-size: 14px; margin-bottom: 10px; }
+  .pay-methods { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .pay-method { border: 2px solid #eee; border-radius: 6px; padding: 12px 6px; text-align: center; cursor: pointer; transition: all .2s; background: #fff; }
+  .pay-method:hover { border-color: var(--mc-orange); }
+  .pay-method.on { border-color: var(--mc-orange); background: #fff5e6; }
+  .pay-method .pm-icon { font-size: 22px; }
+  .pay-method .pm-name { font-size: 12px; margin-top: 4px; color: #666; }
+
+  .pay-input-group { display: flex; gap: 10px; align-items: center; }
+  .pay-input-group input { flex: 1; height: 36px; border: 1px solid #ddd; border-radius: 4px; padding: 0 12px; font-size: 16px; }
+  .quick-amounts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .quick-amounts button { padding: 4px 10px; border: 1px solid #ddd; background: #fff; border-radius: 3px; font-size: 12px; cursor: pointer; }
+
+  .pay-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; font-size: 14px; }
+  .pay-summary .ps-row { display: flex; justify-content: space-between; }
+  .pay-summary .ps-row b { color: var(--mc-red); }
+  .pay-summary .ps-total { grid-column: 1 / -1; padding-top: 10px; border-top: 2px solid var(--mc-orange); font-size: 18px; font-weight: bold; }
+
+  /* 小票预览 */
+  .receipt { background: #fff; padding: 16px; border: 1px dashed #ccc; font-family: "Courier New", monospace; font-size: 12px; line-height: 1.7; }
+  .receipt .r-hd { text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 8px; }
+  .receipt .r-row { display: flex; justify-content: space-between; }
+  .receipt .r-total { border-top: 1px dashed #ccc; padding-top: 6px; margin-top: 6px; font-size: 14px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html" class="active">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">营业收银 / <b>支付结算</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 今日收款统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">💰</div><div><div class="s-num">¥8,620</div><div class="s-label">今日收款总额</div><div class="s-trend up">↑ 18.5%</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">✓</div><div><div class="s-num">96</div><div class="s-label">已结账订单</div><div class="s-trend up">↑ 12单</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">⏰</div><div><div class="s-num">8</div><div class="s-label">待结账订单</div><div class="s-trend">需尽快处理</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">💳</div><div><div><div style="font-size:13px;color:#999;">收款方式分布</div>
+          <div class="pay-bar" style="width:140px;">
+            <div style="background:#4cb050;width:42%;">微42%</div>
+            <div style="background:#1677ff;width:35%;">支35%</div>
+            <div style="background:#ff9500;width:18%;">现18%</div>
+            <div style="background:#b36ae0;width:5%;"></div>
+          </div>
+        </div></div></div>
+      </div>
+
+      <!-- 待结账订单 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>⏰ 待结账订单（点击卡片或结账按钮进入支付）</h3>
+          <select class="a-select"><option>全部</option><option>大厅</option><option>包间</option><option>外卖</option></select>
+        </div>
+        <div class="a-panel-bd">
+          <div class="pending-list" id="pendingList"></div>
+        </div>
+      </div>
+
+      <!-- 今日支付记录 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>📋 今日支付流水</h3></div>
+        <div class="a-panel-bd" style="padding:0;">
+          <table class="a-table">
+            <thead><tr><th>时间</th><th>订单号</th><th>桌号/类型</th><th>金额</th><th>支付方式</th><th>抹零</th><th>实收</th><th>收银员</th></tr></thead>
+            <tbody id="payLogBody">
+              <tr><td>13:42</td><td>DD20260625142</td><td>3号桌</td><td>¥186.00</td><td><span class="tag tag-green">微信</span></td><td>-¥0.00</td><td style="font-weight:bold;">¥186.00</td><td>小王</td></tr>
+              <tr><td>13:15</td><td>DD20260625135</td><td>7号桌</td><td>¥98.50</td><td><span class="tag tag-green">微信</span></td><td>-¥0.50</td><td style="font-weight:bold;">¥98.00</td><td>小王</td></tr>
+              <tr><td>12:50</td><td>DD20260625128</td><td>包间B</td><td>¥1,260.00</td><td><span class="tag" style="background:#e6f2ff;color:#1677ff;">支付宝</span></td><td>-¥0.00</td><td style="font-weight:bold;">¥1,260.00</td><td>小李</td></tr>
+              <tr><td>12:30</td><td>DD20260625121</td><td>外卖</td><td>¥68.00</td><td><span class="tag tag-orange">现金</span></td><td>-¥0.00</td><td style="font-weight:bold;">¥68.00</td><td>小王</td></tr>
+              <tr><td>11:58</td><td>DD20260625115</td><td>5号桌</td><td>¥420.00</td><td><span class="tag" style="background:#f3e8ff;color:#8e44ad;">会员卡</span></td><td>-¥0.00</td><td style="font-weight:bold;">¥420.00</td><td>小王</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 结账弹窗 -->
+<div id="payModal" class="mc-mask">
+  <div class="mc-modal pay-modal">
+    <div class="mc-modal-hd">
+      <h3 id="payTitle">💳 结账</h3>
+      <span class="x" data-close="payModal">×</span>
+    </div>
+    <div class="mc-modal-bd">
+      <!-- 订单信息 -->
+      <div class="pay-section">
+        <h4>订单信息</h4>
+        <div class="pay-summary">
+          <div class="ps-row"><span>桌号/类型</span><b id="pTable">—</b></div>
+          <div class="ps-row"><span>订单号</span><b id="pOrder">—</b></div>
+          <div class="ps-row"><span>开台时间</span><b id="pStart">—</b></div>
+          <div class="ps-row"><span>用餐时长</span><b id="pDur">—</b></div>
+        </div>
+      </div>
+
+      <!-- 账单明细 -->
+      <div class="pay-section">
+        <h4>账单明细</h4>
+        <div id="pItems" style="max-height:160px;overflow-y:auto;font-size:13px;"></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0 0;border-top:1px dashed #eee;margin-top:8px;">
+          <span>应付金额</span><b style="color:var(--mc-red);font-size:18px;" id="pTotal">¥0.00</b>
+        </div>
+      </div>
+
+      <!-- 抹零 -->
+      <div class="pay-section">
+        <h4>抹零设置</h4>
+        <div class="quick-amounts" id="roundBtns">
+          <button data-round="0" class="on">不抹零</button>
+          <button data-round="0.5">抹角（0.5元以下）</button>
+          <button data-round="1">抹元（1元以下）</button>
+          <button data-round="10">抹十（10元以下）</button>
+        </div>
+        <div style="margin-top:8px;font-size:13px;color:#666;">抹零后实收：<b style="color:var(--mc-red);" id="pRounded">¥0.00</b></div>
+      </div>
+
+      <!-- 支付方式 -->
+      <div class="pay-section">
+        <h4>支付方式</h4>
+        <div class="pay-methods" id="payMethods">
+          <div class="pay-method on" data-pm="微信"><div class="pm-icon">💚</div><div class="pm-name">微信</div></div>
+          <div class="pay-method" data-pm="支付宝"><div class="pm-icon">💙</div><div class="pm-name">支付宝</div></div>
+          <div class="pay-method" data-pm="现金"><div class="pm-icon">💵</div><div class="pm-name">现金</div></div>
+          <div class="pay-method" data-pm="会员卡"><div class="pm-icon">💳</div><div class="pm-name">会员卡</div></div>
+          <div class="pay-method" data-pm="组合"><div class="pm-icon">🔀</div><div class="pm-name">组合支付</div></div>
+        </div>
+      </div>
+
+      <!-- 现金支付：找零 -->
+      <div class="pay-section" id="cashSection" style="display:none;">
+        <h4>现金收款</h4>
+        <div class="pay-input-group">
+          <input type="number" id="cashReceived" placeholder="实收现金" step="0.01">
+          <span style="font-size:13px;color:#666;">找零：<b style="color:var(--mc-green);" id="cashChange">¥0.00</b></span>
+        </div>
+        <div class="quick-amounts">
+          <button data-cash="100">¥100</button>
+          <button data-cash="200">¥200</button>
+          <button data-cash="500">¥500</button>
+          <button data-cash="exact">刚好</button>
+        </div>
+      </div>
+
+      <!-- 会员卡支付：余额 -->
+      <div class="pay-section" id="memberSection" style="display:none;">
+        <h4>会员卡支付</h4>
+        <div class="pay-input-group">
+          <input type="text" id="memberPhone" placeholder="会员手机号">
+          <button class="btn btn-line btn-sm" id="memberQuery">查询</button>
+        </div>
+        <div style="margin-top:8px;font-size:13px;color:#666;" id="memberInfo">请输入手机号查询会员</div>
+      </div>
+
+      <!-- 汇总 -->
+      <div class="pay-section">
+        <div class="pay-summary">
+          <div class="ps-row"><span>应付</span><b id="pDue">¥0.00</b></div>
+          <div class="ps-row"><span>抹零</span><b id="pRoundOff">¥0.00</b></div>
+          <div class="ps-row"><span>实收</span><b id="pActual">¥0.00</b></div>
+          <div class="ps-row"><span>找零</span><b id="pChangeShow">¥0.00</b></div>
+          <div class="ps-total"><span>支付方式</span><b id="pMethod">微信</b></div>
+        </div>
+      </div>
+
+      <!-- 小票预览（折叠） -->
+      <details style="margin-top:12px;">
+        <summary style="cursor:pointer;font-size:13px;color:var(--mc-orange);">🖨️ 小票预览（点击展开）</summary>
+        <div class="receipt" id="receiptPreview" style="margin-top:8px;"></div>
+      </details>
+    </div>
+    <div class="mc-modal-ft">
+      <button class="btn btn-line" data-close="payModal">取消</button>
+      <button class="btn btn-line" id="btnPrint">🖨️ 打印小票</button>
+      <button class="btn btn-orange btn-lg" id="btnConfirmPay">✓ 确认收款</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // 待结账订单
+  var pending = [
+    { order:'DD20260625201', table:'4号桌', area:'大厅', amount:268, start:'12:15', dur:'1小时27分', items:[
+      { name:'番茄炒蛋', qty:2, price:38 },
+      { name:'鱼香肉丝', qty:1, price:48 },
+      { name:'米饭', qty:4, price:8 }
+    ]},
+    { order:'DD20260625198', table:'5号桌', area:'大厅', amount:98, start:'12:40', dur:'1小时02分', items:[
+      { name:'西红柿鸡蛋面', qty:2, price:42 },
+      { name:'凉拌黄瓜', qty:1, price:16 }
+    ]},
+    { order:'DD20260625210', table:'8号桌', area:'大厅', amount:186, start:'13:05', dur:'37分', items:[
+      { name:'番茄炒蛋', qty:1, price:38 },
+      { name:'麻婆豆腐', qty:1, price:32 },
+      { name:'紫菜蛋花汤', qty:1, price:18 },
+      { name:'米饭', qty:2, price:4 }
+    ]},
+    { order:'DD20260625188', table:'12号桌', area:'大厅', amount:1260, start:'11:45', dur:'1小时57分', urgent:true, items:[
+      { name:'番茄炒蛋', qty:3, price:38 },
+      { name:'红烧排骨', qty:2, price:88 },
+      { name:'清蒸鲈鱼', qty:1, price:168 },
+      { name:'白切鸡', qty:1, price:88 }
+    ]},
+    { order:'DD20260625175', table:'包间A', area:'包间', amount:880, start:'11:20', dur:'2小时22分', urgent:true, items:[
+      { name:'红烧排骨', qty:2, price:88 },
+      { name:'清蒸鲈鱼', qty:2, price:168 }
+    ]},
+    { order:'DD20260625220', table:'露台2', area:'露台', amount:128, start:'12:30', dur:'1小时12分', items:[
+      { name:'西红柿鸡蛋面', qty:2, price:42 },
+      { name:'凉拌木耳', qty:1, price:22 }
+    ]}
+  ];
+
+  // 渲染待结账列表
+  function renderPending(){
+    var html = pending.map(function(p, i){
+      var urgent = p.urgent ? ' urgent' : '';
+      var itemsHtml = p.items.map(function(it){ return it.name+'×'+it.qty; }).join(' / ');
+      return '<div class="pending-card'+urgent+'" data-idx="'+i+'">'+
+        '<div class="pc-hd"><div><div class="pc-table">'+p.table+'</div><div class="pc-no">'+p.order+'</div></div>'+
+        '<div class="pc-time">⏱ '+p.dur+'</div></div>'+
+        '<div class="pc-items">'+itemsHtml+'</div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+        '<div class="pc-amount">¥'+p.amount.toFixed(0)+'</div>'+
+        '<button class="pc-btn" data-idx="'+i+'">💳 立即结账</button></div>'+
+      '</div>';
+    }).join('');
+    $('pendingList').innerHTML = html;
+    document.querySelectorAll('.pending-card').forEach(function(c){
+      c.onclick = function(){ openPay(pending[parseInt(c.getAttribute('data-idx'))]); };
+    });
+  }
+  renderPending();
+
+  // 弹窗开关
+  function openModal(id){ $(id).classList.add('show'); }
+  function closeModal(id){ $(id).classList.remove('show'); }
+  document.querySelectorAll('[data-close]').forEach(function(el){
+    el.addEventListener('click', function(){ closeModal(el.getAttribute('data-close')); });
+  });
+  document.querySelectorAll('.mc-mask').forEach(function(m){
+    m.addEventListener('click', function(e){ if(e.target === m) m.classList.remove('show'); });
+  });
+
+  // 当前结账状态
+  var cur = { order:null, total:0, round:0, method:'微信', cash:0 };
+
+  function openPay(p){
+    cur.order = p;
+    cur.total = p.amount;
+    cur.round = 0;
+    cur.method = '微信';
+    cur.cash = 0;
+
+    $('payTitle').textContent = '💳 结账 · ' + p.table;
+    $('pTable').textContent = p.table + ' / ' + p.area;
+    $('pOrder').textContent = p.order;
+    $('pStart').textContent = p.start;
+    $('pDur').textContent = p.dur;
+
+    // 渲染菜品
+    $('pItems').innerHTML = p.items.map(function(it){
+      return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f5f5f5;">'+
+        '<span>'+it.name+' ×'+it.qty+'</span><b>¥'+(it.price*it.qty).toFixed(0)+'</b></div>';
+    }).join('');
+
+    $('pTotal').textContent = '¥' + p.amount.toFixed(2);
+    // 重置抹零按钮
+    document.querySelectorAll('#roundBtns button').forEach(function(b, i){
+      b.classList.toggle('on', i === 0);
+    });
+    // 重置支付方式
+    document.querySelectorAll('.pay-method').forEach(function(m, i){
+      m.classList.toggle('on', i === 0);
+    });
+    $('cashSection').style.display = 'none';
+    $('memberSection').style.display = 'none';
+    $('cashReceived').value = '';
+
+    updateSummary();
+    renderReceipt();
+    openModal('payModal');
+  }
+
+  // 实收 = 应付 - 抹零
+  function getActual(){ return cur.total - cur.round; }
+
+  function updateSummary(){
+    var actual = getActual();
+    $('pRounded').textContent = '¥' + actual.toFixed(2);
+    $('pDue').textContent = '¥' + cur.total.toFixed(2);
+    $('pRoundOff').textContent = '-¥' + cur.round.toFixed(2);
+    $('pActual').textContent = '¥' + actual.toFixed(2);
+    $('pMethod').textContent = cur.method;
+
+    // 现金找零
+    if(cur.method === '现金' && cur.cash > 0){
+      var change = cur.cash - actual;
+      $('pChangeShow').textContent = '¥' + (change > 0 ? change : 0).toFixed(2);
+      $('cashChange').textContent = '¥' + (change > 0 ? change : 0).toFixed(2);
+    } else {
+      $('pChangeShow').textContent = '¥0.00';
+    }
+  }
+
+  // 抹零按钮
+  document.querySelectorAll('#roundBtns button').forEach(function(b){
+    b.onclick = function(){
+      document.querySelectorAll('#roundBtns button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      var r = parseFloat(b.getAttribute('data-round'));
+      var mod = cur.total % (r || 1);
+      if(r === 0) cur.round = 0;
+      else if(r === 0.5) cur.round = (cur.total % 1) < 0.5 ? (cur.total % 1) : 0;
+      else cur.round = cur.total % r;
+      updateSummary();
+      renderReceipt();
+    };
+  });
+
+  // 支付方式切换
+  document.querySelectorAll('.pay-method').forEach(function(m){
+    m.onclick = function(){
+      document.querySelectorAll('.pay-method').forEach(function(x){ x.classList.remove('on'); });
+      m.classList.add('on');
+      cur.method = m.getAttribute('data-pm');
+      $('cashSection').style.display = (cur.method === '现金') ? '' : 'none';
+      $('memberSection').style.display = (cur.method === '会员卡') ? '' : 'none';
+      updateSummary();
+      renderReceipt();
+    };
+  });
+
+  // 现金快捷金额
+  $('cashReceived').addEventListener('input', function(){
+    cur.cash = parseFloat(this.value) || 0;
+    updateSummary();
+  });
+  document.querySelectorAll('[data-cash]').forEach(function(b){
+    b.onclick = function(){
+      var v = b.getAttribute('data-cash');
+      if(v === 'exact') $('cashReceived').value = getActual().toFixed(2);
+      else $('cashReceived').value = v;
+      cur.cash = parseFloat($('cashReceived').value) || 0;
+      updateSummary();
+    };
+  });
+
+  // 会员卡查询（模拟）
+  $('memberQuery').onclick = function(){
+    var phone = $('memberPhone').value.trim();
+    if(!phone || phone.length !== 11){ alert('请输入正确的11位手机号'); return; }
+    $('memberInfo').innerHTML = '李先生 · 会员等级：<b style="color:#b36ae0;">金卡</b> · 余额：<b style="color:var(--mc-green);">¥3,820.00</b> · 积分：1,260';
+  };
+
+  // 小票预览
+  function renderReceipt(){
+    if(!cur.order) return;
+    var p = cur.order;
+    var actual = getActual();
+    var now = new Date();
+    var ts = now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2)+'-'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+    var html = '<div class="r-hd"><b>湘味楼</b><br>电话：010-12345678<br>'+ts+'</div>';
+    html += '<div class="r-row"><span>订单号</span><span>'+p.order+'</span></div>';
+    html += '<div class="r-row"><span>桌号</span><span>'+p.table+'</span></div>';
+    html += '<div class="r-row"><span>收银员</span><span>小王</span></div>';
+    html += '<div style="border-top:1px dashed #ccc;border-bottom:1px dashed #ccc;margin:6px 0;padding:6px 0;">';
+    p.items.forEach(function(it){
+      html += '<div class="r-row"><span>'+it.name+' ×'+it.qty+'</span><span>¥'+(it.price*it.qty).toFixed(0)+'</span></div>';
+    });
+    html += '</div>';
+    html += '<div class="r-row"><span>应付</span><span>¥'+cur.total.toFixed(2)+'</span></div>';
+    if(cur.round > 0) html += '<div class="r-row"><span>抹零</span><span>-¥'+cur.round.toFixed(2)+'</span></div>';
+    html += '<div class="r-row r-total"><span>实收</span><span>¥'+actual.toFixed(2)+'</span></div>';
+    html += '<div class="r-row"><span>支付方式</span><span>'+cur.method+'</span></div>';
+    if(cur.method === '现金' && cur.cash > 0){
+      html += '<div class="r-row"><span>现金</span><span>¥'+cur.cash.toFixed(2)+'</span></div>';
+      html += '<div class="r-row"><span>找零</span><span>¥'+(cur.cash-actual).toFixed(2)+'</span></div>';
+    }
+    html += '<div style="text-align:center;margin-top:10px;">感谢惠顾，欢迎再次光临！</div>';
+    $('receiptPreview').innerHTML = html;
+  }
+
+  // 确认收款
+  $('btnConfirmPay').onclick = function(){
+    if(!cur.order){ return; }
+    var actual = getActual();
+    if(cur.method === '现金' && cur.cash < actual){
+      alert('实收现金不足，还差 ¥' + (actual - cur.cash).toFixed(2));
+      return;
+    }
+    if(cur.method === '会员卡' && !$('memberInfo').innerHTML.includes('余额')){
+      alert('请先查询会员信息'); return;
+    }
+    // 写入支付流水
+    var now = new Date();
+    var ts = ('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+    var tagClass = cur.method === '微信' ? 'tag-green' : (cur.method === '支付宝' ? '' : (cur.method === '现金' ? 'tag-orange' : ''));
+    var tagStyle = cur.method === '支付宝' ? 'style="background:#e6f2ff;color:#1677ff;"' : (cur.method === '会员卡' ? 'style="background:#f3e8ff;color:#8e44ad;"' : '');
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>'+ts+'</td>'+
+      '<td>'+cur.order.order+'</td>'+
+      '<td>'+cur.order.table+'</td>'+
+      '<td>¥'+cur.total.toFixed(2)+'</td>'+
+      '<td><span class="tag '+tagClass+'" '+tagStyle+'>'+cur.method+'</span></td>'+
+      '<td>-¥'+cur.round.toFixed(2)+'</td>'+
+      '<td style="font-weight:bold;">¥'+actual.toFixed(2)+'</td>'+
+      '<td>小王</td>';
+    $('payLogBody').insertBefore(tr, $('payLogBody').firstChild);
+
+    // 从待结账列表移除
+    var idx = pending.indexOf(cur.order);
+    if(idx >= 0) pending.splice(idx, 1);
+    renderPending();
+
+    alert('✓ 收款成功\n实收 ¥' + actual.toFixed(2) + '（' + cur.method + '）\n小票已打印');
+    closeModal('payModal');
+  };
+
+  // 打印小票
+  $('btnPrint').onclick = function(){ alert('🖨️ 小票已发送至打印机'); };
+})();
+</script>
+</body>
+</html>

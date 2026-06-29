@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>供应商管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">供应商管理 / <b>供应商列表</b></div>
+      <div class="u-info">
+        <span>管理员：张三</span>
+        <div class="avatar">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1">
+          <div class="s-icon">🏭</div>
+          <div><div class="s-num">1,860</div><div class="s-label">总供应商</div></div>
+        </div>
+        <div class="s-card s2">
+          <div class="s-icon">⏳</div>
+          <div><div class="s-num">12</div><div class="s-label">待审核</div></div>
+        </div>
+        <div class="s-card s3">
+          <div class="s-icon">✅</div>
+          <div><div class="s-num">1,798</div><div class="s-label">已通过</div></div>
+        </div>
+        <div class="s-card s4">
+          <div class="s-icon">❌</div>
+          <div><div class="s-num">50</div><div class="s-label">已驳回/冻结</div></div>
+        </div>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="供应商名称/编号">
+            <select class="a-select">
+              <option>全部品类</option>
+              <option>新鲜蔬菜</option>
+              <option>肉禽蛋品</option>
+              <option>水产海鲜</option>
+              <option>米面粮油</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>待审核</option>
+              <option>已通过</option>
+              <option>已驳回</option>
+              <option>已冻结</option>
+            </select>
+            <select class="a-select">
+              <option>全部等级</option>
+              <option>普通</option>
+              <option>银牌</option>
+              <option>金牌</option>
+              <option>战略</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-line">导出</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>供应商编号</th>
+                <th>企业名称</th>
+                <th>主营品类</th>
+                <th>联系人</th>
+                <th>供应区域</th>
+                <th>等级</th>
+                <th>商品数</th>
+                <th>成交额</th>
+                <th>入驻时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>S20001</td>
+                <td>绿源农产品有限公司</td>
+                <td>新鲜蔬菜</td>
+                <td>李经理<br>138****6688</td>
+                <td>北京·朝阳</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td>86</td>
+                <td>¥186万</td>
+                <td>2024-08-15</td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>S20002</td>
+                <td>顺发肉业合作社</td>
+                <td>肉禽蛋品</td>
+                <td>王总<br>139****1234</td>
+                <td>河北·廊坊</td>
+                <td><span class="tag tag-gray">银牌</span></td>
+                <td>52</td>
+                <td>¥98万</td>
+                <td>2024-10-20</td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr style="background:#fffbe6;">
+                <td>S20003</td>
+                <td>海滨水产直供</td>
+                <td>水产海鲜</td>
+                <td>陈老板<br>137****5678</td>
+                <td>山东·青岛</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>0</td>
+                <td>—</td>
+                <td>2026-06-24</td>
+                <td><span class="tag tag-orange">待审核</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">审核</a>
+                  <a href="#" class="del">驳回</a>
+                </td>
+              </tr>
+              <tr style="background:#fffbe6;">
+                <td>S20004</td>
+                <td>东北粮仓直供基地</td>
+                <td>米面粮油</td>
+                <td>刘经理<br>136****3456</td>
+                <td>黑龙江·哈尔滨</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>0</td>
+                <td>—</td>
+                <td>2026-06-23</td>
+                <td><span class="tag tag-orange">待审核</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">审核</a>
+                  <a href="#" class="del">驳回</a>
+                </td>
+              </tr>
+              <tr>
+                <td>S20005</td>
+                <td>川蜀调味品厂</td>
+                <td>调味干货</td>
+                <td>周厂长<br>135****9012</td>
+                <td>四川·成都</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td>120</td>
+                <td>¥210万</td>
+                <td>2024-05-08</td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>S20006</td>
+                <td>京北养殖基地</td>
+                <td>肉禽蛋品</td>
+                <td>马场长<br>133****7890</td>
+                <td>北京·顺义</td>
+                <td><span class="tag tag-gray">银牌</span></td>
+                <td>45</td>
+                <td>¥72万</td>
+                <td>2025-01-12</td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>S20007</td>
+                <td>华南鲜果供应链</td>
+                <td>新鲜蔬菜</td>
+                <td>孙总<br>132****4567</td>
+                <td>广东·广州</td>
+                <td><span class="tag tag-gray">银牌</span></td>
+                <td>68</td>
+                <td>¥156万</td>
+                <td>2024-11-30</td>
+                <td><span class="tag tag-red">已冻结</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">解冻</a>
+                </td>
+              </tr>
+              <tr style="background:#fffbe6;">
+                <td>S20008</td>
+                <td>塞外牛羊肉直供</td>
+                <td>肉禽蛋品</td>
+                <td>赵老板<br>131****8901</td>
+                <td>内蒙古·呼和浩特</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>0</td>
+                <td>—</td>
+                <td>2026-06-25</td>
+                <td><span class="tag tag-orange">待审核</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">审核</a>
+                  <a href="#" class="del">驳回</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <span>...</span>
+            <a href="#">186</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 审核详情示意 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>待审核供应商明细（S20003 海滨水产直供）</h3></div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <tbody>
+              <tr><th style="width:160px;">企业名称</th><td>海滨水产直供</td><th style="width:160px;">统一信用代码</th><td>91370200MA3XXXXXX</td></tr>
+              <tr><th>法人代表</th><td>陈海</td><th>注册资本</th><td>500万元</td></tr>
+              <tr><th>联系人/电话</th><td>陈老板 137****5678</td><th>主营品类</th><td>水产海鲜</td></tr>
+              <tr><th>供应区域</th><td>山东·青岛</td><th>年供货能力</th><td>800吨</td></tr>
+              <tr><th>营业执照</th><td>📎 <a href="#" class="edit">营业执照.jpg</a></td><th>食品经营许可证</th><td>📎 <a href="#" class="edit">许可证.jpg</a></td></tr>
+              <tr><th>企业简介</th><td colspan="3">青岛本地水产养殖企业，主营活冻白虾、冰鲜海鱼，自有冷链配送，覆盖华北区域。</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn btn-primary">✓ 审核通过</button>
+            <button class="btn btn-danger">✗ 驳回</button>
+            <input type="text" class="a-input" placeholder="驳回原因/审核意见" style="flex:1;width:auto;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

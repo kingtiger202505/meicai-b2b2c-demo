@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>管理后台 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <!-- 侧边栏 -->
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html" class="active">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <!-- 主区 -->
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">首页 / <b>数据看板</b></div>
+      <div class="u-info">
+        <span>管理员：张三</span>
+        <div class="avatar">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计卡片 -->
+      <div class="a-stat">
+        <div class="s-card s1">
+          <div class="s-icon">💰</div>
+          <div>
+            <div class="s-num">¥286,920</div>
+            <div class="s-label">今日销售额</div>
+            <div class="s-trend up">↑ 12.5% 较昨日</div>
+          </div>
+        </div>
+        <div class="s-card s2">
+          <div class="s-icon">📦</div>
+          <div>
+            <div class="s-num">1,568</div>
+            <div class="s-label">今日订单数</div>
+            <div class="s-trend up">↑ 8.3% 较昨日</div>
+          </div>
+        </div>
+        <div class="s-card s3">
+          <div class="s-icon">👥</div>
+          <div>
+            <div class="s-num">328</div>
+            <div class="s-label">今日新增商户</div>
+            <div class="s-trend down">↓ 2.1% 较昨日</div>
+          </div>
+        </div>
+        <div class="s-card s4">
+          <div class="s-icon">🥬</div>
+          <div>
+            <div class="s-num">2,156</div>
+            <div class="s-label">在售商品数</div>
+            <div class="s-trend up">↑ 15 个</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 销售图表 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>近7日销售趋势</h3>
+          <div>
+            <select class="a-select">
+              <option>销售额</option>
+              <option>订单量</option>
+              <option>新增用户</option>
+            </select>
+          </div>
+        </div>
+        <div class="a-panel-bd">
+          <div class="chart-box">
+            <div class="bar" style="height:60%;"><small>06-19<br>¥22万</small></div>
+            <div class="bar" style="height:75%;"><small>06-20<br>¥25万</small></div>
+            <div class="bar" style="height:50%;"><small>06-21<br>¥19万</small></div>
+            <div class="bar" style="height:85%;"><small>06-22<br>¥28万</small></div>
+            <div class="bar" style="height:70%;"><small>06-23<br>¥24万</small></div>
+            <div class="bar" style="height:90%;"><small>06-24<br>¥31万</small></div>
+            <div class="bar" style="height:100%;"><small>06-25<br>¥33万</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- 待处理 -->
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>待处理事项</h3>
+          </div>
+          <div class="a-panel-bd">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#fafafa;border-radius:4px;">
+                <span>待发货订单</span>
+                <span style="color:var(--mc-red);font-weight:bold;">56 <a href="orders.html" class="btn btn-sm btn-primary" style="margin-left:8px;">处理</a></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#fafafa;border-radius:4px;">
+                <span>待审核退款</span>
+                <span style="color:var(--mc-red);font-weight:bold;">8 <a href="#" class="btn btn-sm btn-primary" style="margin-left:8px;">处理</a></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#fafafa;border-radius:4px;">
+                <span>库存预警商品</span>
+                <span style="color:var(--mc-orange);font-weight:bold;">23 <a href="products.html" class="btn btn-sm btn-primary" style="margin-left:8px;">查看</a></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#fafafa;border-radius:4px;">
+                <span>待审核商户</span>
+                <span style="color:var(--mc-orange);font-weight:bold;">5 <a href="users.html" class="btn btn-sm btn-primary" style="margin-left:8px;">处理</a></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 热销商品 -->
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>热销商品 TOP5</h3>
+          </div>
+          <div class="a-panel-bd">
+            <table class="a-table">
+              <thead>
+                <tr><th>排名</th><th>商品名称</th><th>销量</th><th>销售额</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>山东大白菜 25kg/箱</td><td>12,580</td><td>¥23.7万</td></tr>
+                <tr><td>2</td><td>东北珍珠米 25kg/袋</td><td>8,920</td><td>¥87.4万</td></tr>
+                <tr><td>3</td><td>海天金标生抽 1.9L×6</td><td>7,360</td><td>¥52.9万</td></tr>
+                <tr><td>4</td><td>冷鲜猪前腿肉 10kg/箱</td><td>5,240</td><td>¥99.0万</td></tr>
+                <tr><td>5</td><td>鲜鸡蛋 360枚/箱</td><td>4,860</td><td>¥90.4万</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 最新订单 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>最新订单</h3>
+          <a href="orders.html" style="font-size:13px;color:var(--mc-green);">查看全部 ›</a>
+        </div>
+        <div class="a-panel-bd" style="padding:0;">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>订单号</th><th>商户</th><th>商品</th><th>金额</th><th>状态</th><th>下单时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MC20260625085001</td><td>湘味楼餐饮</td><td>大白菜×5, 猪肉×2</td><td style="color:var(--mc-red);">¥688.50</td>
+                <td><span class="tag tag-orange">待发货</span></td><td>2026-06-25 08:50</td>
+              </tr>
+              <tr>
+                <td>MC20260625084532</td><td>川香食府</td><td>珍珠米×4</td><td style="color:var(--mc-red);">¥392.00</td>
+                <td><span class="tag tag-green">已发货</span></td><td>2026-06-25 08:45</td>
+              </tr>
+              <tr>
+                <td>MC20260625082018</td><td>老王烧烤店</td><td>牛腩×2</td><td style="color:var(--mc-red);">¥796.00</td>
+                <td><span class="tag tag-red">待付款</span></td><td>2026-06-25 08:20</td>
+              </tr>
+              <tr>
+                <td>MC20260625075900</td><td>阳光快餐</td><td>白虾×3, 生抽×2</td><td style="color:var(--mc-red);">¥1,258.00</td>
+                <td><span class="tag tag-gray">已完成</span></td><td>2026-06-25 07:59</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

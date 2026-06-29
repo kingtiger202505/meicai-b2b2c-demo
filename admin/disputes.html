@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>纠纷管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html" class="active">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">运营管理 / <b>纠纷管理</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1"><div class="s-icon">⚖</div><div><div class="s-num">186</div><div class="s-label">纠纷总数</div></div></div>
+        <div class="s-card s2"><div class="s-icon">🔴</div><div><div class="s-num">12</div><div class="s-label">待处理</div></div></div>
+        <div class="s-card s3"><div class="s-icon">⏳</div><div><div class="s-num">28</div><div class="s-label">处理中</div></div></div>
+        <div class="s-card s4"><div class="s-icon">✅</div><div><div class="s-num">146</div><div class="s-label">已完结</div></div></div>
+      </div>
+
+      <!-- 状态Tab -->
+      <div class="a-panel">
+        <div class="a-panel-bd" style="padding:12px 20px;display:flex;gap:24px;font-size:14px;border-bottom:1px solid #eee;">
+          <a href="#" style="padding:6px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">全部 (186)</a>
+          <a href="#" style="padding:6px 0;color:#666;">待处理 (12)</a>
+          <a href="#" style="padding:6px 0;color:#666;">处理中 (28)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已完结 (146)</a>
+          <div style="flex:1;"></div>
+          <span style="color:#999;font-size:12px;">纠纷类型：</span>
+          <select class="a-select" style="width:120px;">
+            <option>全部</option>
+            <option>商品质量</option>
+            <option>数量短缺</option>
+            <option>配送延迟</option>
+            <option>价格争议</option>
+            <option>退款纠纷</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="纠纷单号/订单号">
+            <input type="text" class="a-input" placeholder="采购商/供应商">
+            <select class="a-select">
+              <option>全部类型</option>
+              <option>商品质量</option>
+              <option>数量短缺</option>
+              <option>配送延迟</option>
+              <option>价格争议</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>待处理</option>
+              <option>处理中</option>
+              <option>已完结</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+          </div>
+
+          <!-- 纠纷1 待处理 -->
+          <div class="dp-card">
+            <div class="dp-hd">
+              <div>
+                <div class="dp-no">纠纷单号：DP20260625001 | 订单：PO20260622001</div>
+                <div class="dp-title">商品质量问题 — 活冻白虾解冻变色</div>
+              </div>
+              <span class="tag tag-red">待处理</span>
+            </div>
+            <div class="dp-meta">
+              <div>采购商：<b>聚友海鲜大排档</b></div>
+              <div>供应商：<b>海滨水产直供</b></div>
+              <div>纠纷类型：<b style="color:#e53935;">商品质量</b></div>
+              <div>订单金额：<b>¥7,950</b></div>
+              <div>申诉金额：<b style="color:#e53935;">¥2,000</b></div>
+              <div>提交时间：<b>2026-06-25 11:30</b></div>
+            </div>
+            <div class="dp-chat">
+              <div class="msg msg-buyer"><span>聚友海鲜大排档</span>：收到货后发现约30%的白虾外壳发黑，解冻后有异味。该批货采购价¥7,950，要求全额退款并承担损失。</div>
+              <div class="msg msg-supplier"><span>海滨水产直供</span>：我们的冷链全程-18℃配送，到货时外包装完好。发黑可能是运输过程中温控波动导致，同意补偿¥800。</div>
+            </div>
+            <div class="dp-ft">
+              <div style="font-size:13px;color:#999;">剩余 <b style="color:#e53935;">24小时</b> 未处理</div>
+              <div class="ops">
+                <a href="#" class="btn btn-primary btn-sm">介入处理</a>
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 纠纷2 处理中 -->
+          <div class="dp-card">
+            <div class="dp-hd">
+              <div>
+                <div class="dp-no">纠纷单号：DP20260624002 | 订单：PO20260621002</div>
+                <div class="dp-title">数量短缺 — 猪前腿肉少10箱</div>
+              </div>
+              <span class="tag tag-orange">处理中</span>
+            </div>
+            <div class="dp-meta">
+              <div>采购商：<b>川香食府</b></div>
+              <div>供应商：<b>顺发肉业合作社</b></div>
+              <div>纠纷类型：<b style="color:#e65100;">数量短缺</b></div>
+              <div>订单金额：<b>¥3,700</b></div>
+              <div>申诉金额：<b style="color:#e53935;">¥1,850</b></div>
+              <div>处理人：<b>管理员-李四</b></div>
+            </div>
+            <div class="dp-chat">
+              <div class="msg msg-buyer"><span>川香食府</span>：下单20箱猪前腿肉，只收到10箱，缺少10箱。急需用货，请尽快处理。</div>
+              <div class="msg msg-supplier"><span>顺发肉业</span>：库存不足，我们已联系补发，但需要2天时间。</div>
+              <div class="msg msg-admin"><span>管理员介入</span>：要求供应商48小时内补发短缺货物，否则按采购价赔偿50%。</div>
+            </div>
+            <div class="dp-ft">
+              <div style="font-size:13px;color:#999;">处理中，请等待供应商补货或反馈</div>
+              <div class="ops">
+                <a href="#" class="btn btn-primary btn-sm">继续处理</a>
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 纠纷3 已完结 -->
+          <div class="dp-card">
+            <div class="dp-hd">
+              <div>
+                <div class="dp-no">纠纷单号：DP20260620003 | 订单：PO20260618003</div>
+                <div class="dp-title">配送延迟 — 黄瓜到货超时2天</div>
+              </div>
+              <span class="tag tag-green">已完结</span>
+            </div>
+            <div class="dp-meta">
+              <div>采购商：<b>湘味楼餐饮</b></div>
+              <div>供应商：<b>绿源农产品</b></div>
+              <div>纠纷类型：<b>配送延迟</b></div>
+              <div>订单金额：<b>¥2,600</b></div>
+              <div>赔付金额：<b style="color:var(--mc-green);">¥260（10%）</b></div>
+              <div>完结时间：<b>2026-06-22 16:00</b></div>
+            </div>
+            <div class="dp-chat">
+              <div class="msg msg-buyer"><span>湘味楼</span>：约定周一到货，实际周三才收到，导致食材积压损耗。</div>
+              <div class="msg msg-supplier"><span>绿源农产品</span>：因交通管制导致延误，深表歉意，同意赔付10%。</div>
+              <div class="msg msg-admin"><span>管理员裁定</span>：供应商承担延误责任，赔付订单金额10%（¥260），已从供应商账户扣除并退还采购商。</div>
+            </div>
+            <div class="dp-ft">
+              <div style="font-size:13px;color:var(--mc-green);">✅ 已完结 — 赔付完成</div>
+              <div class="ops">
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 纠纷4 待处理 -->
+          <div class="dp-card">
+            <div class="dp-hd">
+              <div>
+                <div class="dp-no">纠纷单号：DP20260625004 | 订单：PO20260624006</div>
+                <div class="dp-title">价格争议 — 东北珍珠米报价与实际不符</div>
+              </div>
+              <span class="tag tag-red">待处理</span>
+            </div>
+            <div class="dp-meta">
+              <div>采购商：<b>东北饺子馆</b></div>
+              <div>供应商：<b>东北粮仓直供基地</b></div>
+              <div>纠纷类型：<b style="color:#e53935;">价格争议</b></div>
+              <div>订单金额：<b>¥9,500</b></div>
+              <div>申诉金额：<b style="color:#e53935;">¥1,000</b></div>
+              <div>提交时间：<b>2026-06-25 09:15</b></div>
+            </div>
+            <div class="dp-chat">
+              <div class="msg msg-buyer"><span>东北饺子馆</span>：询价时报¥90/袋，到货发票却是¥95/袋，100袋多收¥500，要求退还差价。</div>
+              <div class="msg msg-supplier"><span>东北粮仓</span>：报价单有效期为48小时，采购方确认时已超过有效期，按新价格执行。</div>
+            </div>
+            <div class="dp-ft">
+              <div style="font-size:13px;color:#999;">剩余 <b style="color:#e53935;">18小时</b> 未处理</div>
+              <div class="ops">
+                <a href="#" class="btn btn-primary btn-sm">介入处理</a>
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

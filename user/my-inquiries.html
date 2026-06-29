@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>我的询价 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B食材采购平台</div>
+    <div>
+      <a href="#">登录</a> | <a href="#">注册</a>
+      <a href="orders.html">我的订单</a>
+      <a href="cart.html">购物车</a>
+      <a href="../supplier/supplier-join.html">供应商入驻</a>
+      <a href="#">帮助中心</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索新鲜蔬菜、肉类、水产、粮油...">
+      <button>搜索</button>
+    </div>
+    <a href="cart.html" class="u-cart">🛒 购物车 <span class="badge">3</span></a>
+  </div>
+</div>
+
+<div class="nav-buyer">
+  <div class="container">
+    <a href="index.html">首页</a>
+    <a href="products.html">蔬菜</a>
+    <a href="products.html">肉禽蛋</a>
+    <a href="products.html">水产海鲜</a>
+    <a href="products.html">米面粮油</a>
+    <a href="products.html">调料干货</a>
+    <a href="products.html">餐厨用品</a>
+    <a href="products.html">酒水饮料</a>
+    <a href="inquiry-publish.html">发布询价</a>
+    <a href="my-inquiries.html" class="active">我的询价</a>
+    <a href="orders.html">我的订单</a>
+    <a href="cart.html" class="cart-link">🛒 购物车</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 统计 -->
+  <div class="stat-strip">
+    <div class="ss ss1"><div class="ss-icon">📋</div><div><b>12</b><span>全部询价</span></div></div>
+    <div class="ss ss2"><div class="ss-icon">⏳</div><div><b>3</b><span>报价中</span></div></div>
+    <div class="ss ss3"><div class="ss-icon">✅</div><div><b>6</b><span>已采纳</span></div></div>
+    <div class="ss ss4"><div class="ss-icon">❌</div><div><b>3</b><span>已关闭</span></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="u-tabs">
+    <a href="#" class="on">全部</a>
+    <a href="#">报价中 (3)</a>
+    <a href="#">待采纳 (2)</a>
+    <a href="#">已采纳 (6)</a>
+    <a href="#">已关闭 (3)</a>
+  </div>
+
+  <div style="background:#fff;padding:20px;">
+    <div class="iq-list">
+
+      <!-- 询价1 报价中 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">6月食堂蔬菜批量采购</div>
+            <div class="iq-no">询价单号：INQ20260625001 | 发布时间：2026-06-25 09:00</div>
+          </div>
+          <span class="tag tag-orange">报价中</span>
+        </div>
+        <div class="iq-meta">
+          <div>品类：<b>新鲜蔬菜</b></div>
+          <div>报价截止：<b>2026-06-27 18:00</b></div>
+          <div>期望交货：<b>2026-06-28</b></div>
+          <div>已收报价：<b style="color:var(--mc-green);">5家</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>数量</th><th>期望单价</th></tr></thead>
+            <tbody>
+              <tr><td>大白菜</td><td>25kg/箱</td><td>50箱</td><td>¥18/箱</td></tr>
+              <tr><td>西红柿</td><td>15kg/箱</td><td>30箱</td><td>¥42/箱</td></tr>
+              <tr><td>黄瓜</td><td>10kg/箱</td><td>20箱</td><td>¥26/箱</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iq-ft">
+          <div>收货地址：北京市朝阳区xx路xx号</div>
+          <div class="ops">
+            <a href="#" class="btn btn-line btn-sm">查看详情</a>
+            <a href="#" class="btn btn-primary btn-sm">查看5家报价</a>
+            <a href="#" class="btn btn-line btn-sm">关闭询价</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 询价2 待采纳（展开报价） -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">餐厅肉类周采购询价</div>
+            <div class="iq-no">询价单号：INQ20260623002 | 发布时间：2026-06-23 14:00</div>
+          </div>
+          <span class="tag tag-green">待采纳</span>
+        </div>
+        <div class="iq-meta">
+          <div>品类：<b>肉禽蛋品</b></div>
+          <div>报价截止：<b>2026-06-25 12:00</b></div>
+          <div>期望交货：<b>2026-06-26</b></div>
+          <div>已收报价：<b style="color:var(--mc-green);">4家</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>数量</th><th>期望单价</th></tr></thead>
+            <tbody>
+              <tr><td>猪前腿肉</td><td>10kg/箱</td><td>10箱</td><td>¥185/箱</td></tr>
+              <tr><td>冷鲜牛腩</td><td>15kg/箱</td><td>5箱</td><td>¥390/箱</td></tr>
+              <tr><td>整鸡(三黄鸡)</td><td>10只/箱</td><td>8箱</td><td>¥165/箱</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 报价列表 -->
+        <div style="margin-top:16px;">
+          <div style="font-size:14px;font-weight:bold;margin-bottom:10px;">📊 收到的报价（4家）</div>
+
+          <div class="quote-card">
+            <div class="qc-hd">
+              <div>
+                <div class="qc-sup">绿源农产品有限公司</div>
+                <div class="qc-time">报价时间：2026-06-24 10:30</div>
+              </div>
+              <span class="tag tag-green">推荐</span>
+            </div>
+            <div class="qc-price">总计：¥4,280.00</div>
+            <div class="qc-info">
+              猪前腿肉 ¥180/箱 × 10 | 牛腩 ¥388/箱 × 5 | 整鸡 ¥160/箱 × 8<br>
+              交货期：2026-06-26上午 | 结算：货到付款 | 备注：自有冷库配送
+            </div>
+            <div class="qc-ops">
+              <a href="#" class="btn btn-primary btn-sm">采纳报价</a>
+              <a href="#" class="btn btn-line btn-sm">查看详情</a>
+              <a href="#" class="btn btn-line btn-sm">联系供应商</a>
+            </div>
+          </div>
+
+          <div class="quote-card">
+            <div class="qc-hd">
+              <div>
+                <div class="qc-sup">顺发肉业合作社</div>
+                <div class="qc-time">报价时间：2026-06-24 11:15</div>
+              </div>
+            </div>
+            <div class="qc-price">总计：¥4,350.00</div>
+            <div class="qc-info">
+              猪前腿肉 ¥185/箱 × 10 | 牛腩 ¥395/箱 × 5 | 整鸡 ¥162/箱 × 8<br>
+              交货期：2026-06-26 | 结算：月结
+            </div>
+            <div class="qc-ops">
+              <a href="#" class="btn btn-primary btn-sm">采纳报价</a>
+              <a href="#" class="btn btn-line btn-sm">查看详情</a>
+            </div>
+          </div>
+
+          <div class="quote-card">
+            <div class="qc-hd">
+              <div>
+                <div class="qc-sup">京北养殖基地</div>
+                <div class="qc-time">报价时间：2026-06-24 14:20</div>
+              </div>
+            </div>
+            <div class="qc-price">总计：¥4,520.00</div>
+            <div class="qc-info">
+              猪前腿肉 ¥190/箱 × 10 | 牛腩 ¥400/箱 × 5 | 整鸡 ¥168/箱 × 8<br>
+              交货期：2026-06-27 | 结算：在线支付
+            </div>
+            <div class="qc-ops">
+              <a href="#" class="btn btn-primary btn-sm">采纳报价</a>
+              <a href="#" class="btn btn-line btn-sm">查看详情</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="iq-ft" style="margin-top:16px;border-top:1px dashed #eee;padding-top:12px;">
+          <div>收货地址：北京市海淀区xx路xx号</div>
+          <div class="ops">
+            <a href="#" class="btn btn-line btn-sm">关闭询价</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 询价3 已采纳 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">水产海鲜节日备货采购</div>
+            <div class="iq-no">询价单号：INQ20260620003 | 发布时间：2026-06-20 10:00</div>
+          </div>
+          <span class="tag tag-gray">已采纳</span>
+        </div>
+        <div class="iq-meta">
+          <div>品类：<b>水产海鲜</b></div>
+          <div>报价截止：<b>2026-06-22 18:00</b></div>
+          <div>已收报价：<b>6家</b></div>
+          <div>采纳供应商：<b style="color:var(--mc-green);">海滨水产直供</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>数量</th><th>采纳单价</th></tr></thead>
+            <tbody>
+              <tr><td>活冻白虾</td><td>5kg/箱</td><td>30箱</td><td style="color:var(--mc-red);">¥155/箱</td></tr>
+              <tr><td>冰鲜鲈鱼</td><td>8kg/箱</td><td>15箱</td><td style="color:var(--mc-red);">¥220/箱</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iq-ft">
+          <div>采纳总价：<span class="price">¥7,800.00</span> &nbsp; 已生成采购订单 PO20260622001</div>
+          <div class="ops">
+            <a href="orders.html" class="btn btn-primary btn-sm">查看订单</a>
+            <a href="#" class="btn btn-line btn-sm">询价详情</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 询价4 已关闭 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">调料干货补货询价</div>
+            <div class="iq-no">询价单号：INQ20260618004 | 发布时间：2026-06-18 16:00</div>
+          </div>
+          <span class="tag tag-gray">已关闭</span>
+        </div>
+        <div class="iq-meta">
+          <div>品类：<b>调味干货</b></div>
+          <div>关闭原因：<b>采购计划变更</b></div>
+          <div>已收报价：<b>3家</b></div>
+        </div>
+        <div class="iq-ft">
+          <div style="color:#999;">该询价已关闭</div>
+          <div class="ops">
+            <a href="#" class="btn btn-line btn-sm">查看详情</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pagination">
+      <a href="#">‹ 上一页</a>
+      <span class="cur">1</span>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">下一页 ›</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:20px 0;">
+    <a href="inquiry-publish.html" class="btn btn-primary btn-lg">+ 发布新询价</a>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

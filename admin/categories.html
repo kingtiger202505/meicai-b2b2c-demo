@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>商品分类 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html" class="active">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">商品管理 / <b>商品分类</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;">
+
+        <!-- 左侧：分类树 -->
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>分类树</h3>
+            <button class="btn btn-primary btn-sm">+ 新增一级分类</button>
+          </div>
+          <div class="a-panel-bd">
+            <div class="cat-tree">
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▾</span> <b>新鲜蔬菜</b> <span class="cat-cnt">(2,860)</span></div>
+                <div class="cat-sub">
+                  <div class="cat-l2">叶菜类 <span class="cat-cnt">(860)</span></div>
+                  <div class="cat-l2">根茎类 <span class="cat-cnt">(620)</span></div>
+                  <div class="cat-l2">瓜果类 <span class="cat-cnt">(580)</span></div>
+                  <div class="cat-l2">菌菇类 <span class="cat-cnt">(420)</span></div>
+                  <div class="cat-l2">豆制品 <span class="cat-cnt">(380)</span></div>
+                </div>
+              </div>
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▾</span> <b>肉禽蛋品</b> <span class="cat-cnt">(1,860)</span></div>
+                <div class="cat-sub">
+                  <div class="cat-l2">猪肉类 <span class="cat-cnt">(680)</span></div>
+                  <div class="cat-l2">牛羊肉 <span class="cat-cnt">(520)</span></div>
+                  <div class="cat-l2">禽肉 <span class="cat-cnt">(420)</span></div>
+                  <div class="cat-l2">蛋品 <span class="cat-cnt">(240)</span></div>
+                </div>
+              </div>
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▾</span> <b>水产海鲜</b> <span class="cat-cnt">(1,260)</span></div>
+                <div class="cat-sub">
+                  <div class="cat-l2">活鲜 <span class="cat-cnt">(560)</span></div>
+                  <div class="cat-l2">冻鲜 <span class="cat-cnt">(480)</span></div>
+                  <div class="cat-l2">干货水产 <span class="cat-cnt">(220)</span></div>
+                </div>
+              </div>
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▾</span> <b>米面粮油</b> <span class="cat-cnt">(1,580)</span></div>
+                <div class="cat-sub">
+                  <div class="cat-l2">大米 <span class="cat-cnt">(420)</span></div>
+                  <div class="cat-l2">面粉 <span class="cat-cnt">(380)</span></div>
+                  <div class="cat-l2">食用油 <span class="cat-cnt">(360)</span></div>
+                  <div class="cat-l2">杂粮 <span class="cat-cnt">(420)</span></div>
+                </div>
+              </div>
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▾</span> <b>调味干货</b> <span class="cat-cnt">(1,120)</span></div>
+                <div class="cat-sub">
+                  <div class="cat-l2">调味料 <span class="cat-cnt">(580)</span></div>
+                  <div class="cat-l2">干货 <span class="cat-cnt">(340)</span></div>
+                  <div class="cat-l2">添加剂 <span class="cat-cnt">(200)</span></div>
+                </div>
+              </div>
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▸</span> <b>餐厨用品</b> <span class="cat-cnt">(680)</span></div>
+              </div>
+              <div class="cat-l1">
+                <div class="cat-hd"><span>▸</span> <b>酒水饮料</b> <span class="cat-cnt">(520)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：分类详情 -->
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>子分类管理 - 新鲜蔬菜</h3>
+            <button class="btn btn-primary btn-sm">+ 新增子分类</button>
+          </div>
+          <div class="a-panel-bd">
+            <table class="a-table">
+              <thead>
+                <tr>
+                  <th>排序</th>
+                  <th>子分类名称</th>
+                  <th>分类图标</th>
+                  <th>商品数</th>
+                  <th>是否显示</th>
+                  <th>是否热门</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>叶菜类</td>
+                  <td>🥬</td>
+                  <td>860</td>
+                  <td><span class="tag tag-green">显示</span></td>
+                  <td><span class="tag tag-orange">热门</span></td>
+                  <td>2026-01-05</td>
+                  <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="del">删除</a></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>根茎类</td>
+                  <td>🥕</td>
+                  <td>620</td>
+                  <td><span class="tag tag-green">显示</span></td>
+                  <td><span class="tag tag-gray">否</span></td>
+                  <td>2026-01-05</td>
+                  <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>瓜果类</td>
+                  <td>🥒</td>
+                  <td>580</td>
+                  <td><span class="tag tag-green">显示</span></td>
+                  <td><span class="tag tag-orange">热门</span></td>
+                  <td>2026-01-05</td>
+                  <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>菌菇类</td>
+                  <td>🍄</td>
+                  <td>420</td>
+                  <td><span class="tag tag-green">显示</span></td>
+                  <td><span class="tag tag-gray">否</span></td>
+                  <td>2026-01-05</td>
+                  <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>豆制品</td>
+                  <td>🧈</td>
+                  <td>380</td>
+                  <td><span class="tag tag-green">显示</span></td>
+                  <td><span class="tag tag-gray">否</span></td>
+                  <td>2026-01-10</td>
+                  <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="del">删除</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 一级分类列表 -->
+      <div class="a-panel" style="margin-top:20px;">
+        <div class="a-panel-hd">
+          <h3>一级分类列表</h3>
+        </div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>排序</th>
+                <th>分类名称</th>
+                <th>分类图标</th>
+                <th>子分类数</th>
+                <th>商品总数</th>
+                <th>是否显示</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>新鲜蔬菜</td><td>🥬</td><td>5</td><td>2,860</td><td><span class="tag tag-green">显示</span></td><td>2026-01-05</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a></td></tr>
+              <tr><td>2</td><td>肉禽蛋品</td><td>🥩</td><td>4</td><td>1,860</td><td><span class="tag tag-green">显示</span></td><td>2026-01-05</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td></tr>
+              <tr><td>3</td><td>水产海鲜</td><td>🐟</td><td>3</td><td>1,260</td><td><span class="tag tag-green">显示</span></td><td>2026-01-05</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td></tr>
+              <tr><td>4</td><td>米面粮油</td><td>🍚</td><td>4</td><td>1,580</td><td><span class="tag tag-green">显示</span></td><td>2026-01-05</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td></tr>
+              <tr><td>5</td><td>调味干货</td><td>🧂</td><td>3</td><td>1,120</td><td><span class="tag tag-green">显示</span></td><td>2026-01-05</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td></tr>
+              <tr><td>6</td><td>餐厨用品</td><td>🍳</td><td>0</td><td>680</td><td><span class="tag tag-green">显示</span></td><td>2026-01-10</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">上移</a><a href="#" class="edit">下移</a></td></tr>
+              <tr><td>7</td><td>酒水饮料</td><td>🍷</td><td>0</td><td>520</td><td><span class="tag tag-gray">隐藏</span></td><td>2026-01-10</td><td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">下移</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

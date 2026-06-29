@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>购物车 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B食材采购平台</div>
+    <div>
+      <a href="#">登录</a> | <a href="#">注册</a>
+      <a href="orders.html">我的订单</a>
+      <a href="cart.html">购物车</a>
+      <a href="../supplier/supplier-join.html">供应商入驻</a>
+      <a href="#">帮助中心</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索新鲜蔬菜、肉类、水产、粮油...">
+      <button>搜索</button>
+    </div>
+    <a href="cart.html" class="u-cart">🛒 购物车 <span class="badge">3</span></a>
+  </div>
+</div>
+
+<div class="nav-buyer">
+  <div class="container">
+    <a href="index.html">首页</a>
+    <a href="products.html">蔬菜</a>
+    <a href="products.html">肉禽蛋</a>
+    <a href="products.html">水产海鲜</a>
+    <a href="products.html">米面粮油</a>
+    <a href="products.html">调料干货</a>
+    <a href="products.html">餐厨用品</a>
+    <a href="products.html">酒水饮料</a>
+    <a href="inquiry-publish.html">发布询价</a>
+    <a href="my-inquiries.html">我的询价</a>
+    <a href="orders.html">我的订单</a>
+    <a href="cart.html" class="cart-link active">🛒 购物车</a>
+  </div>
+</div>
+
+<div class="container">
+  <div style="background:#fff;margin-top:20px;padding:20px;">
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th style="width:40px;"><input type="checkbox" checked></th>
+          <th>商品信息</th>
+          <th>单价</th>
+          <th>数量</th>
+          <th>小计</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td>
+            <div class="p-mini">
+              <div class="p-img"></div>
+              <div>
+                <div style="font-size:14px;">山东大白菜 新鲜净菜 餐饮用料</div>
+                <div style="font-size:12px;color:#999;">规格：25kg/箱</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--mc-red);">¥18.90</td>
+          <td>
+            <div class="qty-box">
+              <button>−</button>
+              <input type="text" value="5">
+              <button>+</button>
+            </div>
+          </td>
+          <td style="color:var(--mc-red);font-weight:bold;">¥94.50</td>
+          <td><a href="#" style="color:var(--mc-red);">删除</a></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td>
+            <div class="p-mini">
+              <div class="p-img"></div>
+              <div>
+                <div style="font-size:14px;">冷鲜猪前腿肉 肉质紧实 适合炒菜</div>
+                <div style="font-size:12px;color:#999;">规格：10kg/箱</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--mc-red);">¥189.00</td>
+          <td>
+            <div class="qty-box">
+              <button>−</button>
+              <input type="text" value="2">
+              <button>+</button>
+            </div>
+          </td>
+          <td style="color:var(--mc-red);font-weight:bold;">¥378.00</td>
+          <td><a href="#" style="color:var(--mc-red);">删除</a></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td>
+            <div class="p-mini">
+              <div class="p-img"></div>
+              <div>
+                <div style="font-size:14px;">海天金标生抽 酿造酱油 调味料</div>
+                <div style="font-size:12px;color:#999;">规格：1.9L×6瓶</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--mc-red);">¥72.00</td>
+          <td>
+            <div class="qty-box">
+              <button>−</button>
+              <input type="text" value="3">
+              <button>+</button>
+            </div>
+          </td>
+          <td style="color:var(--mc-red);font-weight:bold;">¥216.00</td>
+          <td><a href="#" style="color:var(--mc-red);">删除</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="cart-bar">
+      <div>
+        <label><input type="checkbox" checked> 全选</label>
+        <a href="#" style="margin-left:20px;color:#888;">删除选中</a>
+        <a href="#" style="margin-left:20px;color:#888;">移入收藏夹</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;">
+        <div style="font-size:14px;">已选 <b style="color:var(--mc-red);">3</b> 件商品</div>
+        <div style="font-size:14px;">合计：<span style="color:var(--mc-red);font-size:24px;font-weight:bold;">¥688.50</span></div>
+        <a href="#" class="btn btn-primary btn-lg">去结算</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

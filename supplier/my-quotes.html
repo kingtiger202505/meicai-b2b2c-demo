@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>我的报价 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B（供应商：绿源农产品）</div>
+    <div>
+      <a href="#">账户设置</a>
+      <a href="my-quotes.html">我的报价</a>
+      <a href="product-publish.html">我的商品</a>
+      <a href="orders.html">订单管理</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索询价单、采购商...">
+      <button>搜索</button>
+    </div>
+    <a href="#" class="u-cart">消息 <span class="badge">2</span></a>
+  </div>
+</div>
+
+<div class="nav-supplier">
+  <div class="container">
+    <a href="../user/index.html">← 返回首页</a>
+    <a href="my-quotes.html" class="active">询价大厅</a>
+    <a href="my-quotes.html">我的报价</a>
+    <a href="product-publish.html">发布商品</a>
+    <a href="product-publish.html">我的商品</a>
+    <a href="orders.html">订单管理</a>
+    <span style="float:right;color:#c8e6c9;font-size:13px;line-height:44px;">供应商：绿源农产品有限公司</span>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 统计 -->
+  <div class="stat-strip">
+    <div class="ss ss1"><div class="ss-icon">报价</div><div><b>28</b><span>全部报价</span></div></div>
+    <div class="ss ss2"><div class="ss-icon">待采</div><div><b>5</b><span>待采纳</span></div></div>
+    <div class="ss ss3"><div class="ss-icon">成交</div><div><b>18</b><span>已采纳</span></div></div>
+    <div class="ss ss4"><div class="ss-icon">总额</div><div><b>¥186万</b><span>成交总额</span></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="u-tabs">
+    <a href="#" class="on">全部</a>
+    <a href="#">待采纳 (5)</a>
+    <a href="#">已采纳 (18)</a>
+    <a href="#">未采纳 (5)</a>
+  </div>
+
+  <div style="background:#fff;padding:20px;">
+    <div class="iq-list">
+
+      <!-- 报价1 待采纳 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">报价：餐厅肉类周采购询价</div>
+            <div class="iq-no">询价单号：INQ20260623002 | 报价时间：2026-06-24 10:30</div>
+          </div>
+          <span class="tag tag-orange">待采纳</span>
+        </div>
+        <div class="iq-meta">
+          <div>采购商：<b>川香食府</b></div>
+          <div>品类：<b>肉禽蛋品</b></div>
+          <div>报价截止：<b>2026-06-25 12:00</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>采购数量</th><th>我的报价</th><th>小计</th></tr></thead>
+            <tbody>
+              <tr><td>猪前腿肉</td><td>10kg/箱</td><td>10箱</td><td style="color:var(--mc-red);">¥180/箱</td><td>¥1,800</td></tr>
+              <tr><td>冷鲜牛腩</td><td>15kg/箱</td><td>5箱</td><td style="color:var(--mc-red);">¥388/箱</td><td>¥1,940</td></tr>
+              <tr><td>整鸡(三黄鸡)</td><td>10只/箱</td><td>8箱</td><td style="color:var(--mc-red);">¥160/箱</td><td>¥1,280</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iq-ft">
+          <div>报价总额：<span class="price">¥4,280.00</span> &nbsp; 交货期：2026-06-26上午 | 结算：货到付款</div>
+          <div class="ops">
+            <a href="#" class="btn btn-line btn-sm">修改报价</a>
+            <a href="#" class="btn btn-line btn-sm">撤回报价</a>
+            <a href="#" class="btn btn-primary btn-sm">联系采购商</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 报价2 已采纳 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">报价：水产海鲜节日备货采购</div>
+            <div class="iq-no">询价单号：INQ20260620003 | 报价时间：2026-06-21 15:00</div>
+          </div>
+          <span class="tag tag-green">已采纳</span>
+        </div>
+        <div class="iq-meta">
+          <div>采购商：<b>聚友海鲜大排档</b></div>
+          <div>品类：<b>水产海鲜</b></div>
+          <div>订单号：<b>PO20260622001</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>采购数量</th><th>成交单价</th><th>小计</th></tr></thead>
+            <tbody>
+              <tr><td>活冻白虾</td><td>5kg/箱</td><td>30箱</td><td style="color:var(--mc-red);">¥155/箱</td><td>¥4,650</td></tr>
+              <tr><td>冰鲜鲈鱼</td><td>8kg/箱</td><td>15箱</td><td style="color:var(--mc-red);">¥220/箱</td><td>¥3,300</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iq-ft">
+          <div>成交总额：<span class="price">¥7,950.00</span> &nbsp; 已生成订单，待发货</div>
+          <div class="ops">
+            <a href="orders.html" class="btn btn-primary btn-sm">查看订单</a>
+            <a href="#" class="btn btn-line btn-sm">报价详情</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 报价3 未采纳 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">报价：6月食堂蔬菜批量采购</div>
+            <div class="iq-no">询价单号：INQ20260615005 | 报价时间：2026-06-16 09:30</div>
+          </div>
+          <span class="tag tag-gray">未采纳</span>
+        </div>
+        <div class="iq-meta">
+          <div>采购商：<b>阳光快餐</b></div>
+          <div>品类：<b>新鲜蔬菜</b></div>
+          <div>结果：<b style="color:var(--mc-red);">已选择其他供应商</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>采购数量</th><th>我的报价</th><th>小计</th></tr></thead>
+            <tbody>
+              <tr><td>大白菜</td><td>25kg/箱</td><td>50箱</td><td>¥19/箱</td><td>¥950</td></tr>
+              <tr><td>西红柿</td><td>15kg/箱</td><td>30箱</td><td>¥44/箱</td><td>¥1,320</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iq-ft">
+          <div style="color:#999;">报价总额：¥2,270.00（未被采纳）</div>
+          <div class="ops">
+            <a href="#" class="btn btn-line btn-sm">查看详情</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 报价4 待采纳 -->
+      <div class="iq-card">
+        <div class="iq-hd">
+          <div>
+            <div class="iq-title">报价：粮油大批量采购</div>
+            <div class="iq-no">询价单号：INQ20260624006 | 报价时间：2026-06-25 08:00</div>
+          </div>
+          <span class="tag tag-orange">待采纳</span>
+        </div>
+        <div class="iq-meta">
+          <div>采购商：<b>东北饺子馆</b></div>
+          <div>品类：<b>米面粮油</b></div>
+          <div>报价截止：<b>2026-06-26 18:00</b></div>
+        </div>
+        <div class="iq-items">
+          <table>
+            <thead><tr><th>商品名称</th><th>规格</th><th>采购数量</th><th>我的报价</th><th>小计</th></tr></thead>
+            <tbody>
+              <tr><td>东北珍珠米</td><td>25kg/袋</td><td>100袋</td><td style="color:var(--mc-red);">¥95/袋</td><td>¥9,500</td></tr>
+              <tr><td>中筋面粉</td><td>25kg/袋</td><td>80袋</td><td style="color:var(--mc-red);">¥78/袋</td><td>¥6,240</td></tr>
+              <tr><td>大豆油</td><td>20L/桶</td><td>30桶</td><td style="color:var(--mc-red);">¥168/桶</td><td>¥5,040</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="iq-ft">
+          <div>报价总额：<span class="price">¥20,780.00</span> &nbsp; 交货期：2026-06-27 | 结算：月结30天</div>
+          <div class="ops">
+            <a href="#" class="btn btn-line btn-sm">修改报价</a>
+            <a href="#" class="btn btn-primary btn-sm">联系采购商</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pagination">
+      <a href="#">‹ 上一页</a>
+      <span class="cur">1</span>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">下一页 ›</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:20px 0;">
+    <a href="#" class="btn btn-primary btn-lg">前往询价大厅接单</a>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

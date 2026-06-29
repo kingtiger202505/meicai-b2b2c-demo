@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>后厨KDS - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+
+  /* KDS 状态 Tab */
+  .kds-tabs { display: flex; gap: 0; margin-bottom: 16px; background: #fff; border-radius: 6px; overflow: hidden; }
+  .kds-tabs a { flex: 1; padding: 14px; text-align: center; font-size: 15px; color: #666; cursor: pointer; border-right: 1px solid #eee; position: relative; }
+  .kds-tabs a:last-child { border-right: none; }
+  .kds-tabs a.on { color: #fff; font-weight: bold; }
+  .kds-tabs a[data-status="todo"].on { background: var(--mc-red); }
+  .kds-tabs a[data-status="doing"].on { background: var(--mc-orange); }
+  .kds-tabs a[data-status="done"].on { background: var(--mc-green); }
+  .kds-tabs a .badge { background: var(--mc-red); color: #fff; border-radius: 10px; padding: 1px 8px; font-size: 12px; margin-left: 6px; }
+  .kds-tabs a.on .badge { background: rgba(255,255,255,.3); }
+
+  /* 订单卡片 */
+  .kds-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kds-card { background: #fff; border-radius: 8px; padding: 14px; border-top: 4px solid var(--mc-red); transition: all .2s; position: relative; }
+  .kds-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,.12); }
+  .kds-card.doing { border-top-color: var(--mc-orange); }
+  .kds-card.done { border-top-color: var(--mc-green); opacity: .85; }
+  .kds-card.urgent { animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(228,57,60,.4); } 50% { box-shadow: 0 0 0 8px rgba(228,57,60,0); } }
+
+  .kc-hd { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .kc-table { font-size: 22px; font-weight: bold; color: #333; }
+  .kc-no { font-size: 11px; color: #999; }
+  .kc-time { font-size: 12px; color: var(--mc-red); font-weight: bold; background: #fdeaea; padding: 4px 8px; border-radius: 4px; }
+  .kc-time.doing { color: var(--mc-orange); background: #fff5e6; }
+  .kc-time.done { color: var(--mc-green); background: #eaf7ea; }
+
+  .kc-items { font-size: 16px; line-height: 2; border-top: 1px dashed #eee; padding-top: 10px; }
+  .kc-item { display: flex; justify-content: space-between; align-items: center; }
+  .kc-item .ki-name { font-weight: 500; }
+  .kc-item .ki-qty { color: var(--mc-red); font-size: 20px; font-weight: bold; }
+  .kc-item .ki-tag { background: #fff5e6; color: var(--mc-orange); font-size: 11px; padding: 1px 6px; border-radius: 3px; margin-left: 6px; }
+
+  .kc-remark { margin-top: 8px; padding: 6px 10px; background: #fff5e6; border-left: 3px solid var(--mc-orange); font-size: 12px; color: #8a5a00; }
+
+  .kc-ft { margin-top: 12px; display: flex; gap: 6px; }
+  .kc-ft button { flex: 1; padding: 10px; font-size: 14px; border-radius: 4px; cursor: pointer; border: none; font-weight: bold; }
+  .kc-ft .btn-start { background: var(--mc-orange); color: #fff; }
+  .kc-ft .btn-finish { background: var(--mc-green); color: #fff; }
+  .kc-ft .btn-urge { background: #fff; color: var(--mc-red); border: 1px solid var(--mc-red); }
+  .kc-ft .btn-done-show { background: #f0f0f0; color: #999; }
+
+  /* 出餐叫号 */
+  .call-banner { background: linear-gradient(135deg, var(--mc-green), #8ec63f); color: #fff; padding: 16px 20px; border-radius: 6px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .call-banner .cb-title { font-size: 16px; font-weight: bold; }
+  .call-banner .cb-num { font-size: 32px; font-weight: bold; margin: 0 16px; }
+  .call-banner .cb-list { font-size: 13px; opacity: .9; }
+  .call-banner .cb-list b { background: rgba(255,255,255,.2); padding: 2px 10px; border-radius: 10px; margin: 0 4px; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html" class="active">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">营业收银 / <b>后厨 KDS</b></div>
+      <div class="u-info">
+        <span>厨师：老李 · 后厨</span>
+        <div class="avatar" style="background:var(--mc-green);">厨</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 出餐叫号横幅 -->
+      <div class="call-banner">
+        <div>
+          <span class="cb-title">🔊 出餐叫号</span>
+          <span class="cb-num">A018</span>
+        </div>
+        <div class="cb-list">
+          已叫号：<b>A018</b><b>A017</b><b>A016</b><b>A015</b>
+        </div>
+        <div>
+          <button class="btn btn-line" style="background:rgba(255,255,255,.2);color:#fff;border:none;" onclick="alert('已重新叫号 A018')">🔊 重新叫号</button>
+        </div>
+      </div>
+
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">📋</div><div><div class="s-num">6</div><div class="s-label">待制作</div><div class="s-trend">需尽快处理</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">🍳</div><div><div class="s-num">4</div><div class="s-label">制作中</div><div class="s-trend">进行中</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">✓</div><div><div class="s-num">128</div><div class="s-label">今日已出餐</div><div class="s-trend up">↑ 12 单</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#b36ae0,#8e44ad);">⏰</div><div><div class="s-num">2</div><div class="s-label">超时单</div><div class="s-trend down">需关注</div></div></div>
+      </div>
+
+      <!-- 状态 Tab -->
+      <div class="kds-tabs">
+        <a data-status="todo" class="on">📋 待制作<span class="badge">6</span></a>
+        <a data-status="doing">🍳 制作中<span class="badge">4</span></a>
+        <a data-status="done">✓ 已出餐<span class="badge">128</span></a>
+      </div>
+
+      <!-- 订单卡片 -->
+      <div class="kds-grid" id="kdsGrid"></div>
+
+      <!-- 说明 -->
+      <div style="margin-top:20px;padding:14px;background:#fff;border-radius:6px;font-size:13px;color:#666;line-height:1.8;">
+        <b style="color:var(--mc-orange);">💡 KDS 使用说明</b><br>
+        • 订单从小程序/收银台进入后，自动出现在「待制作」<br>
+        • 厨师点击「开始制作」→ 卡片移到「制作中」，开始计时<br>
+        • 出餐完成点击「出餐叫号」→ 自动叫号 + 移到「已出餐」<br>
+        • 超过 15 分钟未出餐的订单自动标红 + 闪烁催单<br>
+        • 同桌多份相同菜品自动合并显示数量，方便批量制作
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // 订单数据
+  var orders = [
+    { id:'A019', status:'todo', table:'12号桌', area:'大厅', time:'13:42', elapsed:'2分', items:[
+      { name:'番茄炒蛋', qty:3, tag:'加辣' },
+      { name:'红烧排骨', qty:2 },
+      { name:'清蒸鲈鱼', qty:1, tag:'不要葱' }
+    ]},
+    { id:'A020', status:'todo', table:'包间A', area:'包间', time:'13:40', elapsed:'4分', items:[
+      { name:'白切鸡', qty:1 },
+      { name:'蒜蓉粉丝蒸扇贝', qty:6 }
+    ]},
+    { id:'A018', status:'todo', table:'8号桌', area:'大厅', time:'13:35', elapsed:'9分', urgent:true, items:[
+      { name:'番茄炒蛋', qty:1 },
+      { name:'麻婆豆腐', qty:1, tag:'加辣' },
+      { name:'紫菜蛋花汤', qty:1 }
+    ]},
+    { id:'A017', status:'todo', table:'露台2', area:'露台', time:'13:30', elapsed:'14分', urgent:true, items:[
+      { name:'西红柿鸡蛋面', qty:2 },
+      { name:'凉拌木耳', qty:1, tag:'少油' }
+    ]},
+    { id:'A016', status:'todo', table:'4号桌', area:'大厅', time:'13:25', elapsed:'19分', items:[
+      { name:'鱼香肉丝', qty:1 },
+      { name:'番茄炒蛋', qty:2 },
+      { name:'米饭', qty:4 }
+    ]},
+    { id:'A015', status:'todo', table:'外卖', area:'外卖', time:'13:20', elapsed:'24分', items:[
+      { name:'西红柿鸡蛋面', qty:3 }
+    ]},
+
+    { id:'A014', status:'doing', table:'5号桌', area:'大厅', time:'13:10', elapsed:'制作 8分', items:[
+      { name:'西红柿鸡蛋面', qty:2 },
+      { name:'凉拌黄瓜', qty:1 }
+    ]},
+    { id:'A013', status:'doing', table:'3号桌', area:'大厅', time:'13:05', elapsed:'制作 13分', urgent:true, items:[
+      { name:'红烧排骨', qty:1 },
+      { name:'清蒸鲈鱼', qty:1, tag:'清蒸时间长' }
+    ]},
+    { id:'A012', status:'doing', table:'包间B', area:'包间', time:'13:00', elapsed:'制作 18分', urgent:true, items:[
+      { name:'白切鸡', qty:1 },
+      { name:'清蒸鲈鱼', qty:2 },
+      { name:'红烧排骨', qty:2 }
+    ]},
+    { id:'A011', status:'doing', table:'2号桌', area:'大厅', time:'12:55', elapsed:'制作 23分', items:[
+      { name:'番茄炒蛋', qty:1 }
+    ]},
+
+    { id:'A010', status:'done', table:'1号桌', area:'大厅', time:'12:50', elapsed:'出餐 5分', items:[
+      { name:'麻婆豆腐', qty:1 },
+      { name:'米饭', qty:2 }
+    ]},
+    { id:'A009', status:'done', table:'6号桌', area:'大厅', time:'12:40', elapsed:'出餐 15分', items:[
+      { name:'鱼香肉丝', qty:1 }
+    ]}
+  ];
+
+  var curStatus = 'todo';
+
+  function render(){
+    var grid = $('kdsGrid');
+    grid.innerHTML = '';
+    var list = orders.filter(function(o){ return o.status === curStatus; });
+    if(list.length === 0){
+      grid.innerHTML = '<div style="grid-column:1 / -1;text-align:center;padding:60px;color:#999;font-size:14px;">暂无订单</div>';
+      return;
+    }
+    list.forEach(function(o){
+      var card = document.createElement('div');
+      card.className = 'kds-card ' + o.status + (o.urgent ? ' urgent' : '');
+      var timeClass = o.status === 'doing' ? 'doing' : (o.status === 'done' ? 'done' : '');
+      var html = '<div class="kc-hd">'+
+        '<div><div class="kc-table">'+o.table+'</div><div class="kc-no">#'+o.id+' · '+o.area+'</div></div>'+
+        '<div class="kc-time '+timeClass+'">⏱ '+o.elapsed+'</div>'+
+      '</div>';
+      // 合并相同菜
+      var merged = {};
+      o.items.forEach(function(it){
+        var key = it.name + '|' + (it.tag || '');
+        if(!merged[key]) merged[key] = { name:it.name, qty:0, tag:it.tag };
+        merged[key].qty += it.qty;
+      });
+      html += '<div class="kc-items">';
+      Object.keys(merged).forEach(function(k){
+        var it = merged[k];
+        html += '<div class="kc-item"><span class="ki-name">'+it.name+(it.tag?'<span class="ki-tag">'+it.tag+'</span>':'')+'</span><span class="ki-qty">×'+it.qty+'</span></div>';
+      });
+      html += '</div>';
+      // 备注
+      if(o.urgent){
+        html += '<div class="kc-remark">⚠️ 超时提醒：已超过 15 分钟未出餐，请优先处理！</div>';
+      }
+      // 操作按钮
+      html += '<div class="kc-ft">';
+      if(o.status === 'todo'){
+        html += '<button class="btn-start" data-act="start" data-id="'+o.id+'">🍳 开始制作</button>';
+        html += '<button class="btn-urge" data-act="urge" data-id="'+o.id+'">🔔 催单</button>';
+      } else if(o.status === 'doing'){
+        html += '<button class="btn-finish" data-act="finish" data-id="'+o.id+'">✓ 出餐叫号</button>';
+        html += '<button class="btn-urge" data-act="urge" data-id="'+o.id+'">🔔 催单</button>';
+      } else {
+        html += '<button class="btn-done-show" disabled>✓ 已出餐 '+o.elapsed+'</button>';
+      }
+      html += '</div>';
+      card.innerHTML = html;
+      grid.appendChild(card);
+    });
+
+    // 绑定按钮
+    grid.querySelectorAll('button[data-act]').forEach(function(btn){
+      btn.onclick = function(){
+        var act = btn.getAttribute('data-act');
+        var id = btn.getAttribute('data-id');
+        var order = orders.find(function(o){ return o.id === id; });
+        if(!order) return;
+        if(act === 'start'){
+          order.status = 'doing';
+          order.elapsed = '制作 0分';
+          alert('已开始制作 '+order.table+' 的订单');
+          render();
+        } else if(act === 'finish'){
+          order.status = 'done';
+          order.elapsed = '出餐 0分';
+          alert('🔊 已出餐，叫号：'+order.id+'\n请服务员取餐送至 '+order.table);
+          render();
+        } else if(act === 'urge'){
+          alert('🔔 已向前厅发送催单提醒：'+order.table+' 的客人在等候');
+        }
+      };
+    });
+  }
+  render();
+
+  // Tab 切换
+  document.querySelectorAll('.kds-tabs a').forEach(function(a){
+    a.onclick = function(){
+      document.querySelectorAll('.kds-tabs a').forEach(function(x){ x.classList.remove('on'); });
+      a.classList.add('on');
+      curStatus = a.getAttribute('data-status');
+      render();
+    };
+  });
+})();
+</script>
+</body>
+</html>

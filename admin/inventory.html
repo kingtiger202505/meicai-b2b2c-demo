@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>库存管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html" class="active">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">商品管理 / <b>库存管理</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1"><div class="s-icon">📦</div><div><div class="s-num">8,620</div><div class="s-label">SKU总数</div></div></div>
+        <div class="s-card s2"><div class="s-icon">⚠</div><div><div class="s-num">126</div><div class="s-label">库存预警</div></div></div>
+        <div class="s-card s3"><div class="s-icon">🔴</div><div><div class="s-num">38</div><div class="s-label">缺货商品</div></div></div>
+        <div class="s-card s4"><div class="s-icon">⏰</div><div><div class="s-num">86</div><div class="s-label">临期商品</div></div></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="u-tabs">
+        <a href="#" class="on">全部库存</a>
+        <a href="#">库存预警 (126)</a>
+        <a href="#">缺货 (38)</a>
+        <a href="#">临期 (86)</a>
+        <a href="#">滞销 (45)</a>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="商品名称/SKU编码">
+            <select class="a-select">
+              <option>全部分类</option>
+              <option>新鲜蔬菜</option>
+              <option>肉禽蛋品</option>
+              <option>水产海鲜</option>
+              <option>米面粮油</option>
+              <option>调味干货</option>
+            </select>
+            <select class="a-select">
+              <option>全部供应商</option>
+              <option>绿源农产品</option>
+              <option>蓝海水产</option>
+              <option>泰丰粮油</option>
+            </select>
+            <select class="a-select">
+              <option>全部仓库</option>
+              <option>北京1号仓</option>
+              <option>北京2号仓</option>
+              <option>上海仓</option>
+              <option>济南仓</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>充足</option>
+              <option>预警</option>
+              <option>缺货</option>
+              <option>临期</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-primary">+ 盘点录入</button>
+            <button class="btn btn-line">导出</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>SKU编码</th>
+                <th>商品名称</th>
+                <th>分类</th>
+                <th>供应商</th>
+                <th>仓库</th>
+                <th>当前库存</th>
+                <th>安全库存</th>
+                <th>单位</th>
+                <th>库存状态</th>
+                <th>最近入库</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SKU20260001</td>
+                <td>有机大白菜</td>
+                <td>新鲜蔬菜</td>
+                <td>绿源农产品</td>
+                <td>北京1号仓</td>
+                <td><b style="color:var(--mc-green);">860</b></td>
+                <td>200</td>
+                <td>箱</td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td>2026-06-24</td>
+                <td class="ops"><a href="#" class="edit">调整</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260002</td>
+                <td>猪前腿肉</td>
+                <td>肉禽蛋品</td>
+                <td>绿源农产品</td>
+                <td>北京1号仓</td>
+                <td><b style="color:var(--mc-red);">28</b></td>
+                <td>100</td>
+                <td>箱</td>
+                <td><span class="tag tag-red">缺货</span></td>
+                <td>2026-06-22</td>
+                <td class="ops"><a href="#" class="edit">补货</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260003</td>
+                <td>活冻白虾</td>
+                <td>水产海鲜</td>
+                <td>蓝海水产</td>
+                <td>北京2号仓</td>
+                <td><b style="color:#ff9500;">80</b></td>
+                <td>100</td>
+                <td>箱</td>
+                <td><span class="tag tag-orange">预警</span></td>
+                <td>2026-06-23</td>
+                <td class="ops"><a href="#" class="edit">补货</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260004</td>
+                <td>东北珍珠米</td>
+                <td>米面粮油</td>
+                <td>泰丰粮油</td>
+                <td>济南仓</td>
+                <td><b style="color:var(--mc-green);">1,200</b></td>
+                <td>300</td>
+                <td>袋</td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td>2026-06-20</td>
+                <td class="ops"><a href="#" class="edit">调整</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260005</td>
+                <td>冰鲜鲈鱼</td>
+                <td>水产海鲜</td>
+                <td>蓝海水产</td>
+                <td>北京2号仓</td>
+                <td><b style="color:#ff9500;">45</b></td>
+                <td>80</td>
+                <td>箱</td>
+                <td><span class="tag tag-purple">临期</span></td>
+                <td>2026-06-19</td>
+                <td class="ops"><a href="#" class="edit">促销</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260006</td>
+                <td>冷鲜牛腩</td>
+                <td>肉禽蛋品</td>
+                <td>绿源农产品</td>
+                <td>北京1号仓</td>
+                <td><b style="color:var(--mc-green);">220</b></td>
+                <td>80</td>
+                <td>箱</td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td>2026-06-24</td>
+                <td class="ops"><a href="#" class="edit">调整</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260007</td>
+                <td>整鸡(三黄鸡)</td>
+                <td>肉禽蛋品</td>
+                <td>绿源农产品</td>
+                <td>北京1号仓</td>
+                <td><b style="color:var(--mc-red);">0</b></td>
+                <td>60</td>
+                <td>箱</td>
+                <td><span class="tag tag-red">缺货</span></td>
+                <td>2026-06-18</td>
+                <td class="ops"><a href="#" class="edit">补货</a><a href="#" class="edit">流水</a></td>
+              </tr>
+              <tr>
+                <td>SKU20260008</td>
+                <td>大豆油</td>
+                <td>米面粮油</td>
+                <td>泰丰粮油</td>
+                <td>济南仓</td>
+                <td><b style="color:var(--mc-green);">680</b></td>
+                <td>200</td>
+                <td>桶</td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td>2026-06-21</td>
+                <td class="ops"><a href="#" class="edit">调整</a><a href="#" class="edit">流水</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">...</a>
+            <a href="#">86</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 库存流水 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>近期库存流水</h3>
+          <button class="btn btn-line btn-sm">导出流水</button>
+        </div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>流水号</th>
+                <th>商品</th>
+                <th>仓库</th>
+                <th>变动类型</th>
+                <th>变动数量</th>
+                <th>变动后库存</th>
+                <th>关联单据</th>
+                <th>操作人</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>IS20260626001</td>
+                <td>有机大白菜</td>
+                <td>北京1号仓</td>
+                <td><span class="tag tag-green">入库</span></td>
+                <td style="color:var(--mc-green);">+200</td>
+                <td>860</td>
+                <td>采购单 PU20260624001</td>
+                <td>系统</td>
+                <td>2026-06-24 08:00</td>
+              </tr>
+              <tr>
+                <td>IS20260626002</td>
+                <td>有机大白菜</td>
+                <td>北京1号仓</td>
+                <td><span class="tag tag-blue">出库</span></td>
+                <td style="color:var(--mc-red);">-50</td>
+                <td>810</td>
+                <td>订单 PO20260622001</td>
+                <td>系统</td>
+                <td>2026-06-24 10:30</td>
+              </tr>
+              <tr>
+                <td>IS20260626003</td>
+                <td>猪前腿肉</td>
+                <td>北京1号仓</td>
+                <td><span class="tag tag-blue">出库</span></td>
+                <td style="color:var(--mc-red);">-72</td>
+                <td>28</td>
+                <td>订单 PO20260618002</td>
+                <td>系统</td>
+                <td>2026-06-22 06:00</td>
+              </tr>
+              <tr>
+                <td>IS20260626004</td>
+                <td>活冻白虾</td>
+                <td>北京2号仓</td>
+                <td><span class="tag tag-orange">盘亏</span></td>
+                <td style="color:var(--mc-red);">-5</td>
+                <td>80</td>
+                <td>盘点 PD20260623001</td>
+                <td>李四</td>
+                <td>2026-06-23 18:00</td>
+              </tr>
+              <tr>
+                <td>IS20260626005</td>
+                <td>东北珍珠米</td>
+                <td>济南仓</td>
+                <td><span class="tag tag-green">入库</span></td>
+                <td style="color:var(--mc-green);">+500</td>
+                <td>1,200</td>
+                <td>采购单 PU20260620005</td>
+                <td>系统</td>
+                <td>2026-06-20 14:00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

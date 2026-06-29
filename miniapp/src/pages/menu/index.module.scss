@@ -1,0 +1,393 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $color-bg-page;
+}
+
+// 餐厅信息头
+.restBar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $page-padding;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: #fff;
+}
+
+.restLogo {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+}
+
+.restInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.restName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+}
+
+.restDesc {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+  margin-top: 4rpx;
+}
+
+// 点餐方式切换
+.typeSwitch {
+  display: flex;
+  gap: $spacing-sm;
+  margin-left: auto;
+}
+
+.typeBtn {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+
+  &.active {
+    background: #fff;
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// 桌号横幅
+.tableBar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $page-padding;
+  background: #fff8ed;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  border-bottom: 1rpx solid #f0e2c8;
+
+  .tableIcon {
+    font-size: 32rpx;
+  }
+
+  .tableText {
+    flex: 1;
+    color: #8a5a00;
+  }
+
+  .tableNo {
+    color: $color-primary;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-md;
+    margin-left: 4rpx;
+  }
+
+  .tableAction {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+    padding: 4rpx 0;
+  }
+
+  // 未绑定警告态
+  &.tableBarWarn {
+    background: #fdeaea;
+    border-bottom-color: #f5d5d5;
+
+    .tableText {
+      color: #c0392b;
+    }
+  }
+}
+
+// 主体：左侧分类 + 右侧菜品
+.content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.catSide {
+  width: 180rpx;
+  height: 100%;
+  background: #f0f1f2;
+  flex-shrink: 0;
+}
+
+.catItem {
+  padding: $spacing-lg $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  text-align: center;
+  position: relative;
+  transition: all $transition-base;
+
+  &.active {
+    background: #fff;
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6rpx;
+      height: 36rpx;
+      background: $color-primary;
+      border-radius: 0 $radius-xs $radius-xs 0;
+    }
+  }
+}
+
+.dishList {
+  flex: 1;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.dishGroup {
+  padding: $spacing-md $spacing-md $spacing-sm;
+}
+
+.groupTitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  padding: $spacing-sm 0;
+}
+
+.dishCard {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.dishImg {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}
+
+.dishBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dishName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.dishDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+  @include text-ellipsis-multi(2);
+}
+
+.tagRow {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 8rpx;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: $font-size-xs;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-xs;
+  background: $color-tag-bg;
+  color: $color-tag-text;
+}
+
+.dishFt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+}
+
+.price {
+  color: $color-price;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+.priceSmall {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
+}
+
+.sales {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+// 购物车浮层
+.cartBar {
+  position: fixed;
+  left: $page-padding;
+  right: $page-padding;
+  bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+  height: 96rpx;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  padding: 0 $spacing-md 0 24rpx;
+  z-index: 100;
+  box-shadow: $shadow-float;
+}
+
+.cartIcon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  margin-top: -32rpx;
+  position: relative;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  border-radius: $radius-round;
+  background: $color-error;
+  color: #fff;
+  font-size: 20rpx;
+  text-align: center;
+  line-height: 32rpx;
+  padding: 0 6rpx;
+}
+
+.cartInfo {
+  flex: 1;
+  margin-left: $spacing-md;
+}
+
+.cartPrice {
+  color: #fff;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.cartHint {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.submitBtn {
+  height: 72rpx;
+  padding: 0 40rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  color: #fff;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.9;
+  }
+
+  &.disabled {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// 购物车详情弹层
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 90;
+}
+
+.cartPanel {
+  position: fixed;
+  left: $page-padding;
+  right: $page-padding;
+  bottom: calc(env(safe-area-inset-bottom) + 124rpx);
+  background: #fff;
+  border-radius: $radius-md;
+  max-height: 700rpx;
+  overflow: hidden;
+  z-index: 95;
+  box-shadow: $shadow-popup;
+}
+
+.cartPanelHd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.cartPanelTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.clearBtn {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.cartPanelBd {
+  max-height: 560rpx;
+  overflow-y: auto;
+}
+
+.cartRow {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  gap: $spacing-md;
+}
+
+.cartRowName {
+  flex: 1;
+  font-size: $font-size-md;
+  @include text-ellipsis;
+}
+
+.cartRowPrice {
+  color: $color-price;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}

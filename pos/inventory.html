@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>食材库存 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+  .stock-bar { height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden; margin-top: 4px; width: 100px; }
+  .stock-bar i { display: block; height: 100%; border-radius: 3px; }
+
+  /* ===== Modal ===== */
+  .mc-mask { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .mc-mask.show { display: flex; }
+  .mc-modal { width: 460px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+  .mc-modal-hd { padding: 14px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+  .mc-modal-hd h3 { font-size: 15px; }
+  .mc-modal-hd .x { cursor: pointer; color: #999; font-size: 20px; line-height: 1; }
+  .mc-modal-bd { padding: 20px; }
+  .mc-modal-ft { padding: 12px 20px; border-top: 1px solid #eee; text-align: right; display: flex; gap: 10px; justify-content: flex-end; }
+  .mc-row { margin-bottom: 14px; display: flex; align-items: center; }
+  .mc-row label { width: 88px; color: #666; font-size: 13px; text-align: right; padding-right: 12px; }
+  .mc-row .req { color: var(--mc-red); margin-left: 2px; }
+  .mc-row input, .mc-row select, .mc-row textarea { flex: 1; height: 32px; border: 1px solid #ddd; border-radius: 4px; padding: 0 10px; font-size: 13px; }
+  .mc-row textarea { height: 70px; padding: 8px 10px; resize: vertical; }
+  .mc-row .unit { margin-left: 6px; color: #999; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html" class="active">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">库存与采购 / <b>食材库存</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 库存概览 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">📦</div><div><div class="s-num">28</div><div class="s-label">食材种类</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">⚖️</div><div><div class="s-num">¥3,260</div><div class="s-label">库存总值</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">!</div><div><div class="s-num">3</div><div class="s-label">预警食材</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">↓</div><div><div class="s-num">8</div><div class="s-label">今日消耗项</div></div></div>
+      </div>
+
+      <!-- 工具栏 -->
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="食材名称">
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>正常</option>
+              <option>预警</option>
+              <option>缺货</option>
+            </select>
+            <select class="a-select">
+              <option>全部分类</option>
+              <option>蔬菜</option>
+              <option>肉类</option>
+              <option>水产</option>
+              <option>粮油</option>
+              <option>调料</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <button class="btn btn-orange">+ 新增食材</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>食材原料</th><th>分类</th><th>关联美菜商品</th>
+                <th>当前库存</th><th>安全库存</th><th>库存进度</th>
+                <th>状态</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>西红柿</b></td><td>蔬菜</td>
+                <td>有机西红柿 15kg/箱 <a href="#" class="edit">查看</a></td>
+                <td style="color:var(--mc-red);font-weight:bold;">3 kg</td><td>8 kg</td>
+                <td><div class="stock-bar"><i style="width:37%;background:var(--mc-red);"></i></div></td>
+                <td><span class="tag tag-red">预警</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>猪前腿肉</b></td><td>肉类</td>
+                <td>冷鲜猪前腿肉 10kg/箱 <a href="#" class="edit">查看</a></td>
+                <td style="color:var(--mc-red);font-weight:bold;">2 kg</td><td>5 kg</td>
+                <td><div class="stock-bar"><i style="width:40%;background:var(--mc-red);"></i></div></td>
+                <td><span class="tag tag-red">预警</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>鸡蛋</b></td><td>蛋类</td>
+                <td>鲜鸡蛋 360枚/箱 <a href="#" class="edit">查看</a></td>
+                <td style="color:var(--mc-red);font-weight:bold;">30 枚</td><td>60 枚</td>
+                <td><div class="stock-bar"><i style="width:50%;background:var(--mc-red);"></i></div></td>
+                <td><span class="tag tag-red">预警</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>猪排骨</b></td><td>肉类</td>
+                <td>猪排骨 冷鲜肋排 10kg/箱 <a href="#" class="edit">查看</a></td>
+                <td>8 kg</td><td>5 kg</td>
+                <td><div class="stock-bar"><i style="width:100%;background:var(--mc-green);"></i></div></td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>鸡胸肉</b></td><td>肉类</td>
+                <td>冷鲜鸡胸肉 10kg/箱 <a href="#" class="edit">查看</a></td>
+                <td>6.5 kg</td><td>4 kg</td>
+                <td><div class="stock-bar"><i style="width:100%;background:var(--mc-green);"></i></div></td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>牛腩</b></td><td>肉类</td>
+                <td>冷鲜牛腩 15kg/箱 <a href="#" class="edit">查看</a></td>
+                <td>4.2 kg</td><td>6 kg</td>
+                <td><div class="stock-bar"><i style="width:70%;background:var(--mc-orange);"></i></div></td>
+                <td><span class="tag tag-orange">偏低</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>豆腐</b></td><td>蔬菜</td>
+                <td>北豆腐 5kg/箱 <a href="#" class="edit">查看</a></td>
+                <td>5 kg</td><td>3 kg</td>
+                <td><div class="stock-bar"><i style="width:100%;background:var(--mc-green);"></i></div></td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>东北珍珠米</b></td><td>粮油</td>
+                <td>东北珍珠米 25kg/袋 <a href="#" class="edit">查看</a></td>
+                <td>20 kg</td><td>10 kg</td>
+                <td><div class="stock-bar"><i style="width:100%;background:var(--mc-green);"></i></div></td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+              <tr>
+                <td><b>海天生抽</b></td><td>调料</td>
+                <td>海天金标生抽 1.9L×6 <a href="#" class="edit">查看</a></td>
+                <td>3.8 L</td><td>2 L</td>
+                <td><div class="stock-bar"><i style="width:100%;background:var(--mc-green);"></i></div></td>
+                <td><span class="tag tag-green">充足</span></td>
+                <td class="ops"><a href="purchase.html" class="edit">补货</a><a href="#" class="edit">明细</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <span class="cur">1</span><a href="#">2</a><a href="#">3</a><a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 损耗登记 & 盘点调整 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>⚠️ 损耗登记（变质/做坏/偷拿，单独记账）</h3>
+            <button id="btnLoss" class="btn btn-orange" style="height:28px;padding:0 12px;font-size:12px;">+ 登记损耗</button>
+          </div>
+          <div class="a-panel-bd" style="padding:0;">
+            <table class="a-table">
+              <thead>
+                <tr><th>时间</th><th>食材</th><th>损耗量</th><th>损耗类型</th><th>原因</th><th>操作人</th></tr>
+              </thead>
+              <tbody id="lossBody">
+                <tr>
+                  <td>06-25 21:30</td>
+                  <td>西红柿</td>
+                  <td style="color:var(--mc-red);">-1.5 kg</td>
+                  <td><span class="tag tag-red">变质</span></td>
+                  <td>冷藏故障，软化报废</td>
+                  <td>小王</td>
+                </tr>
+                <tr>
+                  <td>06-25 19:12</td>
+                  <td>鱼香肉丝(成品)</td>
+                  <td style="color:var(--mc-red);">-1 份</td>
+                  <td><span class="tag tag-orange">做坏</span></td>
+                  <td>新人火候过大，烧焦</td>
+                  <td>厨师老李</td>
+                </tr>
+                <tr>
+                  <td>06-24 22:00</td>
+                  <td>鸡蛋</td>
+                  <td style="color:var(--mc-red);">-6 枚</td>
+                  <td><span class="tag tag-orange">破损</span></td>
+                  <td>搬运磕碰</td>
+                  <td>小张</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="padding:10px 16px;background:#fff5e6;font-size:12px;color:#8a5a00;">
+              💡 损耗单独立录入，不混入正常成本；月底汇总进"异常损耗报表"，便于追责与改善。
+            </div>
+          </div>
+        </div>
+
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>📋 盘点调整（实际数 vs 账面数，差额清零）</h3>
+            <button id="btnStock" class="btn btn-orange" style="height:28px;padding:0 12px;font-size:12px;">+ 新增盘点</button>
+          </div>
+          <div class="a-panel-bd" style="padding:0;">
+            <table class="a-table">
+              <thead>
+                <tr><th>盘点时间</th><th>食材</th><th>账面数</th><th>实盘数</th><th>差异</th><th>处理</th></tr>
+              </thead>
+              <tbody id="stockBody">
+                <tr>
+                  <td>06-25 23:00</td>
+                  <td>东北珍珠米</td>
+                  <td>20.0 kg</td>
+                  <td>19.3 kg</td>
+                  <td style="color:var(--mc-red);">-0.7 kg</td>
+                  <td><span class="tag tag-red">盘亏</span> 入损耗</td>
+                </tr>
+                <tr>
+                  <td>06-25 23:00</td>
+                  <td>海天生抽</td>
+                  <td>3.80 L</td>
+                  <td>3.85 L</td>
+                  <td style="color:var(--mc-green);">+0.05 L</td>
+                  <td><span class="tag tag-green">盘盈</span> 调增</td>
+                </tr>
+                <tr>
+                  <td>06-25 23:00</td>
+                  <td>猪前腿肉</td>
+                  <td>2.0 kg</td>
+                  <td>1.6 kg</td>
+                  <td style="color:var(--mc-red);">-0.4 kg</td>
+                  <td><span class="tag tag-red">盘亏</span> 入损耗</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="padding:10px 16px;background:#fff5e6;font-size:12px;color:#8a5a00;">
+              💡 月底全量盘点后，差额一次性入"盘亏/盘盈"科目，账面库存与实盘对齐，清零累积误差。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 出入库记录 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="a-panel">
+          <div class="a-panel-hd"><h3>📥 入库记录（美菜采购到货自动回填）</h3></div>
+          <div class="a-panel-bd" style="padding:0;">
+            <table class="a-table">
+              <thead><tr><th>时间</th><th>食材</th><th>入库量</th><th>来源采购单</th></tr></thead>
+              <tbody>
+                <tr><td>06-23 09:20</td><td>西红柿</td><td style="color:var(--mc-green);">+30 kg</td><td><a href="#" class="edit">MC20260623092015</a></td></tr>
+                <tr><td>06-23 09:20</td><td>黄瓜</td><td style="color:var(--mc-green);">+10 kg</td><td><a href="#" class="edit">MC20260623092015</a></td></tr>
+                <tr><td>06-22 08:30</td><td>东北珍珠米</td><td style="color:var(--mc-green);">+100 kg</td><td><a href="#" class="edit">MC20260622083022</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="a-panel">
+          <div class="a-panel-hd"><h3>📤 出库记录（销售消耗自动扣减）</h3></div>
+          <div class="a-panel-bd" style="padding:0;">
+            <table class="a-table">
+              <thead><tr><th>时间</th><th>食材</th><th>消耗量</th><th>关联菜品/订单</th></tr></thead>
+              <tbody>
+                <tr><td>12:05</td><td>西红柿</td><td style="color:var(--mc-red);">-0.4 kg</td><td>番茄炒蛋×2 / DD...001</td></tr>
+                <tr><td>12:05</td><td>鸡蛋</td><td style="color:var(--mc-red);">-6 枚</td><td>番茄炒蛋×2 / DD...001</td></tr>
+                <tr><td>11:58</td><td>猪前腿肉</td><td style="color:var(--mc-red);">-0.1 kg</td><td>鱼香肉丝×1 / DD...030</td></tr>
+                <tr><td>11:50</td><td>面条</td><td style="color:var(--mc-red);">-0.4 kg</td><td>西红柿鸡蛋面×2 / DD...012</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 损耗登记弹窗 -->
+<div id="lossModal" class="mc-mask">
+  <div class="mc-modal">
+    <div class="mc-modal-hd">
+      <h3>⚠️ 登记损耗</h3>
+      <span class="x" data-close="lossModal">×</span>
+    </div>
+    <div class="mc-modal-bd">
+      <div class="mc-row">
+        <label>食材名称<span class="req">*</span></label>
+        <input id="lossName" type="text" placeholder="如：西红柿">
+      </div>
+      <div class="mc-row">
+        <label>损耗数量<span class="req">*</span></label>
+        <input id="lossQty" type="number" step="0.01" placeholder="0.00">
+        <span class="unit" id="lossUnit">kg</span>
+      </div>
+      <div class="mc-row">
+        <label>单位</label>
+        <select id="lossUnitSel">
+          <option value="kg">kg</option>
+          <option value="枚">枚</option>
+          <option value="份">份</option>
+          <option value="L">L</option>
+        </select>
+      </div>
+      <div class="mc-row">
+        <label>损耗类型<span class="req">*</span></label>
+        <select id="lossType">
+          <option value="变质">变质</option>
+          <option value="做坏">做坏</option>
+          <option value="破损">破损</option>
+          <option value="过期">过期</option>
+          <option value="丢失">丢失</option>
+        </select>
+      </div>
+      <div class="mc-row">
+        <label>原因说明</label>
+        <textarea id="lossReason" placeholder="说明损耗原因，便于追溯"></textarea>
+      </div>
+      <div class="mc-row">
+        <label>操作人</label>
+        <input id="lossOp" type="text" value="小王">
+      </div>
+    </div>
+    <div class="mc-modal-ft">
+      <button class="btn btn-line" data-close="lossModal">取消</button>
+      <button class="btn btn-orange" id="lossSave">确认登记</button>
+    </div>
+  </div>
+</div>
+
+<!-- 盘点调整弹窗 -->
+<div id="stockModal" class="mc-mask">
+  <div class="mc-modal">
+    <div class="mc-modal-hd">
+      <h3>📋 新增盘点</h3>
+      <span class="x" data-close="stockModal">×</span>
+    </div>
+    <div class="mc-modal-bd">
+      <div class="mc-row">
+        <label>食材名称<span class="req">*</span></label>
+        <input id="stName" type="text" placeholder="如：东北珍珠米">
+      </div>
+      <div class="mc-row">
+        <label>账面数量<span class="req">*</span></label>
+        <input id="stBook" type="number" step="0.001" placeholder="0.00">
+        <span class="unit" id="stUnit">kg</span>
+      </div>
+      <div class="mc-row">
+        <label>实盘数量<span class="req">*</span></label>
+        <input id="stReal" type="number" step="0.001" placeholder="0.00">
+        <span class="unit" id="stUnit2">kg</span>
+      </div>
+      <div class="mc-row">
+        <label>单位</label>
+        <select id="stUnitSel">
+          <option value="kg">kg</option>
+          <option value="枚">枚</option>
+          <option value="L">L</option>
+          <option value="袋">袋</option>
+        </select>
+      </div>
+      <div class="mc-row">
+        <label>差异</label>
+        <input id="stDiff" type="text" placeholder="自动计算" readonly style="background:#fafafa;">
+      </div>
+      <div class="mc-row">
+        <label>备注</label>
+        <textarea id="stRemark" placeholder="如：月度全量盘点"></textarea>
+      </div>
+    </div>
+    <div class="mc-modal-ft">
+      <button class="btn btn-line" data-close="stockModal">取消</button>
+      <button class="btn btn-orange" id="stSave">确认盘点</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ===== 通用弹窗开关 =====
+  function openModal(id){ $(id).classList.add('show'); }
+  function closeModal(id){ $(id).classList.remove('show'); }
+  document.querySelectorAll('[data-close]').forEach(function(el){
+    el.addEventListener('click', function(){ closeModal(el.getAttribute('data-close')); });
+  });
+  // 点击遮罩关闭
+  document.querySelectorAll('.mc-mask').forEach(function(m){
+    m.addEventListener('click', function(e){
+      if(e.target === m) m.classList.remove('show');
+    });
+  });
+
+  // ===== 损耗登记 =====
+  $('btnLoss').addEventListener('click', function(){ openModal('lossModal'); });
+  // 单位联动
+  $('lossUnitSel').addEventListener('change', function(){ $('lossUnit').textContent = this.value; });
+  $('lossSave').addEventListener('click', function(){
+    var name = $('lossName').value.trim();
+    var qty  = parseFloat($('lossQty').value);
+    var unit = $('lossUnitSel').value;
+    var type = $('lossType').value;
+    var reason = $('lossReason').value.trim() || '—';
+    var op = $('lossOp').value.trim() || '小王';
+    if(!name){ alert('请填写食材名称'); return; }
+    if(!(qty > 0)){ alert('请填写有效的损耗数量'); return; }
+    var now = new Date();
+    var ts = ('0'+(now.getMonth()+1)).slice(-2)+'-'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+    var tagClass = (type==='变质'||type==='过期'||type==='丢失') ? 'tag-red' : 'tag-orange';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>'+ts+'</td>'+
+      '<td>'+name+'</td>'+
+      '<td style="color:var(--mc-red);">-'+qty+' '+unit+'</td>'+
+      '<td><span class="tag '+tagClass+'">'+type+'</span></td>'+
+      '<td>'+reason+'</td>'+
+      '<td>'+op+'</td>';
+    $('lossBody').insertBefore(tr, $('lossBody').firstChild);
+    // 清空表单
+    $('lossName').value = ''; $('lossQty').value = ''; $('lossReason').value = '';
+    closeModal('lossModal');
+    alert('损耗已登记，库存已同步扣减');
+  });
+
+  // ===== 盘点调整 =====
+  $('btnStock').addEventListener('click', function(){ openModal('stockModal'); });
+  // 单位联动
+  $('stUnitSel').addEventListener('change', function(){ $('stUnit').textContent = this.value; $('stUnit2').textContent = this.value; });
+  // 自动计算差异
+  function calcDiff(){
+    var b = parseFloat($('stBook').value);
+    var r = parseFloat($('stReal').value);
+    if(isNaN(b) || isNaN(r)){ $('stDiff').value = ''; return; }
+    var d = (r - b);
+    var sign = d >= 0 ? '+' : '';
+    $('stDiff').value = sign + d.toFixed(2);
+    $('stDiff').style.color = d >= 0 ? 'var(--mc-green)' : 'var(--mc-red)';
+  }
+  $('stBook').addEventListener('input', calcDiff);
+  $('stReal').addEventListener('input', calcDiff);
+  $('stSave').addEventListener('click', function(){
+    var name = $('stName').value.trim();
+    var b = parseFloat($('stBook').value);
+    var r = parseFloat($('stReal').value);
+    var unit = $('stUnitSel').value;
+    if(!name){ alert('请填写食材名称'); return; }
+    if(isNaN(b) || isNaN(r)){ alert('请填写账面数和实盘数'); return; }
+    var d = r - b;
+    var now = new Date();
+    var ts = ('0'+(now.getMonth()+1)).slice(-2)+'-'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+    var diffColor = d >= 0 ? 'var(--mc-green)' : 'var(--mc-red)';
+    var diffSign = d >= 0 ? '+' : '';
+    var tagClass = d >= 0 ? 'tag-green' : 'tag-red';
+    var tagText = d >= 0 ? '盘盈' : '盘亏';
+    var handle = d >= 0 ? '调增' : '入损耗';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>'+ts+'</td>'+
+      '<td>'+name+'</td>'+
+      '<td>'+b.toFixed(2)+' '+unit+'</td>'+
+      '<td>'+r.toFixed(2)+' '+unit+'</td>'+
+      '<td style="color:'+diffColor+';">'+diffSign+d.toFixed(2)+' '+unit+'</td>'+
+      '<td><span class="tag '+tagClass+'">'+tagText+'</span> '+handle+'</td>';
+    $('stockBody').insertBefore(tr, $('stockBody').firstChild);
+    // 清空表单
+    $('stName').value=''; $('stBook').value=''; $('stReal').value=''; $('stDiff').value=''; $('stRemark').value='';
+    $('stDiff').style.color = '';
+    closeModal('stockModal');
+    alert('盘点已提交，账面库存已对齐');
+  });
+})();
+</script>
+</body>
+</html>

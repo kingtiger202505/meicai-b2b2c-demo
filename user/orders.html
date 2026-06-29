@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>我的订单 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B食材采购平台</div>
+    <div>
+      <a href="#">登录</a> | <a href="#">注册</a>
+      <a href="orders.html">我的订单</a>
+      <a href="cart.html">购物车</a>
+      <a href="../supplier/supplier-join.html">供应商入驻</a>
+      <a href="#">帮助中心</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索新鲜蔬菜、肉类、水产、粮油...">
+      <button>搜索</button>
+    </div>
+    <a href="cart.html" class="u-cart">🛒 购物车 <span class="badge">3</span></a>
+  </div>
+</div>
+
+<div class="nav-buyer">
+  <div class="container">
+    <a href="index.html">首页</a>
+    <a href="products.html">蔬菜</a>
+    <a href="products.html">肉禽蛋</a>
+    <a href="products.html">水产海鲜</a>
+    <a href="products.html">米面粮油</a>
+    <a href="products.html">调料干货</a>
+    <a href="products.html">餐厨用品</a>
+    <a href="products.html">酒水饮料</a>
+    <a href="inquiry-publish.html">发布询价</a>
+    <a href="my-inquiries.html">我的询价</a>
+    <a href="orders.html" class="active">我的订单</a>
+    <a href="cart.html" class="cart-link">🛒 购物车</a>
+  </div>
+</div>
+
+<div class="container">
+  <div style="background:#fff;margin-top:20px;padding:20px;">
+    <div style="border-bottom:1px solid #eee;margin-bottom:20px;display:flex;gap:30px;">
+      <a href="#" style="padding:10px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">全部订单</a>
+      <a href="#" style="padding:10px 0;color:#666;">待付款 <span style="color:var(--mc-red);">(1)</span></a>
+      <a href="#" style="padding:10px 0;color:#666;">待发货 <span style="color:var(--mc-red);">(1)</span></a>
+      <a href="#" style="padding:10px 0;color:#666;">待收货 <span style="color:var(--mc-red);">(2)</span></a>
+      <a href="#" style="padding:10px 0;color:#666;">已完成</a>
+      <a href="#" style="padding:10px 0;color:#666;">已取消</a>
+    </div>
+
+    <!-- 订单1 -->
+    <div style="border:1px solid #eee;margin-bottom:16px;border-radius:4px;">
+      <div style="background:#fafafa;padding:10px 16px;font-size:13px;color:#666;display:flex;justify-content:space-between;border-bottom:1px solid #eee;">
+        <div>下单时间：2026-06-24 09:30 &nbsp;|&nbsp; 订单号：MC20260624093012345</div>
+        <div><span class="tag tag-orange">待发货</span></div>
+      </div>
+      <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;display:flex;gap:16px;align-items:center;">
+          <div class="p-img" style="width:60px;height:60px;background:#f0f0f0;border-radius:4px;"></div>
+          <div>
+            <div style="font-size:14px;">山东大白菜 新鲜净菜 餐饮用料</div>
+            <div style="font-size:12px;color:#999;">规格：25kg/箱 × 5</div>
+          </div>
+          <div style="color:#999;font-size:13px;">等3件商品</div>
+        </div>
+        <div style="text-align:center;padding:0 30px;">
+          <div style="color:var(--mc-red);font-size:18px;font-weight:bold;">¥688.50</div>
+          <div style="font-size:12px;color:#999;">含运费</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="#" class="btn btn-line btn-sm">订单详情</a>
+          <a href="#" class="btn btn-primary btn-sm">催发货</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 订单2 -->
+    <div style="border:1px solid #eee;margin-bottom:16px;border-radius:4px;">
+      <div style="background:#fafafa;padding:10px 16px;font-size:13px;color:#666;display:flex;justify-content:space-between;border-bottom:1px solid #eee;">
+        <div>下单时间：2026-06-22 14:20 &nbsp;|&nbsp; 订单号：MC20260622142054321</div>
+        <div><span class="tag tag-green">待收货</span></div>
+      </div>
+      <div style="padding:16px;">
+        <div class="steps">
+          <div class="step done"><div class="dot">✓</div>下单</div>
+          <div class="step done"><div class="dot">✓</div>付款</div>
+          <div class="step done"><div class="dot">✓</div>发货</div>
+          <div class="step cur"><div class="dot">4</div>收货</div>
+          <div class="step"><div class="dot">5</div>完成</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="flex:1;display:flex;gap:16px;align-items:center;">
+            <div class="p-img" style="width:60px;height:60px;background:#f0f0f0;border-radius:4px;"></div>
+            <div>
+              <div style="font-size:14px;">东北珍珠米 一级大米 餐厅专用</div>
+              <div style="font-size:12px;color:#999;">规格：25kg/袋 × 4</div>
+            </div>
+            <div style="color:#999;font-size:13px;">等2件商品</div>
+          </div>
+          <div style="text-align:center;padding:0 30px;">
+            <div style="color:var(--mc-red);font-size:18px;font-weight:bold;">¥392.00</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <a href="#" class="btn btn-line btn-sm">查看物流</a>
+            <a href="#" class="btn btn-primary btn-sm">确认收货</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 订单3 -->
+    <div style="border:1px solid #eee;margin-bottom:16px;border-radius:4px;">
+      <div style="background:#fafafa;padding:10px 16px;font-size:13px;color:#666;display:flex;justify-content:space-between;border-bottom:1px solid #eee;">
+        <div>下单时间：2026-06-20 10:15 &nbsp;|&nbsp; 订单号：MC20260620101598765</div>
+        <div><span class="tag tag-red">待付款</span></div>
+      </div>
+      <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;display:flex;gap:16px;align-items:center;">
+          <div class="p-img" style="width:60px;height:60px;background:#f0f0f0;border-radius:4px;"></div>
+          <div>
+            <div style="font-size:14px;">冷鲜牛腩 进口牛肉 肥瘦相间</div>
+            <div style="font-size:12px;color:#999;">规格：15kg/箱 × 2</div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:0 30px;">
+          <div style="color:var(--mc-red);font-size:18px;font-weight:bold;">¥796.00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="#" class="btn btn-line btn-sm">取消订单</a>
+          <a href="#" class="btn btn-orange btn-sm">立即付款</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 订单4 -->
+    <div style="border:1px solid #eee;margin-bottom:16px;border-radius:4px;">
+      <div style="background:#fafafa;padding:10px 16px;font-size:13px;color:#666;display:flex;justify-content:space-between;border-bottom:1px solid #eee;">
+        <div>下单时间：2026-06-15 16:40 &nbsp;|&nbsp; 订单号：MC20260615164011111</div>
+        <div><span class="tag tag-gray">已完成</span></div>
+      </div>
+      <div style="padding:16px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;display:flex;gap:16px;align-items:center;">
+          <div class="p-img" style="width:60px;height:60px;background:#f0f0f0;border-radius:4px;"></div>
+          <div>
+            <div style="font-size:14px;">活冻白虾 海捕大虾 去线虾</div>
+            <div style="font-size:12px;color:#999;">规格：5kg/箱 × 3</div>
+          </div>
+          <div style="color:#999;font-size:13px;">等4件商品</div>
+        </div>
+        <div style="text-align:center;padding:0 30px;">
+          <div style="color:var(--mc-red);font-size:18px;font-weight:bold;">¥1,258.00</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="#" class="btn btn-line btn-sm">订单详情</a>
+          <a href="#" class="btn btn-primary btn-sm">再次购买</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <a href="#">‹ 上一页</a>
+      <span class="cur">1</span>
+      <a href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">下一页 ›</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

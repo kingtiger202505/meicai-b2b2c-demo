@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>发布商品 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B（供应商：绿源农产品）</div>
+    <div>
+      <a href="#">账户设置</a>
+      <a href="my-quotes.html">我的报价</a>
+      <a href="product-publish.html">我的商品</a>
+      <a href="orders.html">订单管理</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索询价单...">
+      <button>搜索</button>
+    </div>
+    <a href="#" class="u-cart">消息 <span class="badge">2</span></a>
+  </div>
+</div>
+
+<div class="nav-supplier">
+  <div class="container">
+    <a href="../user/index.html">← 返回首页</a>
+    <a href="my-quotes.html">询价大厅</a>
+    <a href="my-quotes.html">我的报价</a>
+    <a href="product-publish.html" class="active">发布商品</a>
+    <a href="product-publish.html">我的商品</a>
+    <a href="orders.html">订单管理</a>
+    <span style="float:right;color:#c8e6c9;font-size:13px;line-height:44px;">供应商：绿源农产品有限公司</span>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 步骤条 -->
+  <div class="publish-flow">
+    <div class="pf-step active">
+      <div class="pf-num">1</div>
+      <h4>填写商品信息</h4>
+      <p>基本信息与规格</p>
+    </div>
+    <div class="pf-step">
+      <div class="pf-num">2</div>
+      <h4>上传资质图片</h4>
+      <p>检验报告等</p>
+    </div>
+    <div class="pf-step">
+      <div class="pf-num">3</div>
+      <h4>提交等待审核</h4>
+      <p>平台审核通过后上架</p>
+    </div>
+  </div>
+
+  <div class="u-form-wrap">
+    <h2>发布商品</h2>
+    <div class="u-form">
+      <div class="f-item">
+        <label>商品分类 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <select><option>大品类</option><option selected>新鲜蔬菜</option><option>肉禽蛋品</option><option>水产海鲜</option><option>米面粮油</option></select>
+            <select><option>子分类</option><option>叶菜类</option><option>根茎类</option><option>瓜果类</option><option>菌菇类</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>商品名称 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="如：有机大白菜">
+          <div class="hint">填写商品标准名称，不含规格/品牌/数量等信息</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>品牌</label>
+        <div class="ctrl">
+          <input type="text" placeholder="自有品牌或无">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>规格单位 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <input type="text" placeholder="如：25" style="width:80px;">
+            <select><option>kg</option><option selected>kg</option><option>克</option><option>升</option><option>箱</option><option>袋</option><option>桶</option><option>只</option><option>件</option></select>
+            <span style="line-height:36px;color:#999;">/</span>
+            <select><option selected>箱</option><option>袋</option><option>桶</option><option>件</option><option>盒</option></select>
+          </div>
+          <div class="hint">例：25kg/箱，表示每箱毛重25千克</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>单价 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <div style="position:relative;flex:1;">
+              <input type="text" placeholder="0.00" style="padding-left:20px;">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#999;">¥</span>
+            </div>
+            <select style="width:140px;"><option>元/箱</option><option>元/kg</option><option>元/袋</option><option>元/桶</option></select>
+          </div>
+          <div class="hint">建议参考同类商品定价，过高或过低将被审核驳回</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>最小起订量 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <input type="text" placeholder="如：5" style="width:100px;">
+            <span style="line-height:36px;color:#999;">箱/次</span>
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>供货库存 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <input type="text" placeholder="可供货数量" style="width:120px;">
+            <select style="width:100px;"><option selected>箱</option><option>kg</option><option>袋</option><option>桶</option></select>
+          </div>
+          <div class="hint">填写真实可发货库存，库存为0时商品自动下架</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>商品主图 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="upload-box" style="display:flex;gap:16px;align-items:center;justify-content:center;">
+            <div style="flex:1;">
+              <div style="font-size:20px;">主图</div>
+              <div>点击上传主图</div>
+              <div style="font-size:11px;color:#999;">建议尺寸 800×800，白底清晰图</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:20px;">细节</div>
+              <div>点击上传更多图片</div>
+              <div style="font-size:11px;color:#999;">最多5张，商品细节图</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>产地/来源</label>
+        <div class="ctrl">
+          <div class="row">
+            <select><option>省</option><option>北京</option><option>河北</option><option>山东</option></select>
+            <select><option>市</option></select>
+            <input type="text" placeholder="详细产地（如：山东寿光）" style="flex:1;">
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>生产日期</label>
+        <div class="ctrl">
+          <input type="text" placeholder="如：2026-06-20（留空则填今日）">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>保质期</label>
+        <div class="ctrl">
+          <div class="row">
+            <input type="text" placeholder="如：7" style="width:80px;">
+            <select style="width:120px;"><option>天</option><option selected>天</option><option>小时</option><option>月</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>储存条件</label>
+        <div class="ctrl">
+          <label style="float:none;width:auto;line-height:2;font-size:14px;">
+            <input type="checkbox"> 冷藏（0-4℃）
+          </label>
+          <label style="float:none;width:auto;line-height:2;font-size:14px;">
+            <input type="checkbox"> 冷冻（-18℃以下）
+          </label>
+          <label style="float:none;width:auto;line-height:2;font-size:14px;">
+            <input type="checkbox"> 常温避光
+          </label>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>商品描述</label>
+        <div class="ctrl">
+          <textarea placeholder="详细介绍商品特点、产地优势、食用建议等（100-500字）"></textarea>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>质检报告 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="upload-box">点击上传商品检验报告/检疫证明（jpg/pdf，≤10MB）</div>
+          <div class="hint">生鲜类商品必须提供有效期内的质检报告</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>认证资质</label>
+        <div class="ctrl">
+          <div class="upload-box">可上传绿色食品认证、有机认证、无公害证明等</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>&nbsp;</label>
+        <div class="ctrl">
+          <label style="float:none;width:auto;text-align:left;line-height:1.6;font-size:13px;">
+            <input type="checkbox"> 我确认所填商品信息真实有效，符合平台《商品发布规范》
+          </label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary btn-lg">提交审核</button>
+        <button class="btn btn-line btn-lg" style="margin-left:10px;">保存草稿</button>
+        <a href="#" class="btn btn-line btn-lg" style="margin-left:10px;">取消</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

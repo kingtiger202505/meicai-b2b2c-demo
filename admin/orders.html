@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>订单管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html" class="active">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">交易管理 / <b>订单管理</b></div>
+      <div class="u-info">
+        <span>管理员：张三</span>
+        <div class="avatar">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 状态标签 -->
+      <div class="a-panel" style="margin-bottom:16px;">
+        <div class="a-panel-bd" style="padding:12px 20px;display:flex;gap:24px;font-size:14px;">
+          <a href="#" style="padding:6px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">全部订单 (1568)</a>
+          <a href="#" style="padding:6px 0;color:#666;">待付款 (28)</a>
+          <a href="#" style="padding:6px 0;color:#666;">待发货 (56)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已发货 (120)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已完成 (1320)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已取消 (44)</a>
+        </div>
+      </div>
+
+      <!-- 搜索 -->
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="订单号">
+            <input type="text" class="a-input" placeholder="商户名称">
+            <input type="text" class="a-input" placeholder="收货人手机">
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>待付款</option>
+              <option>待发货</option>
+              <option>已发货</option>
+              <option>已完成</option>
+              <option>已取消</option>
+            </select>
+            <input type="text" class="a-input" placeholder="开始日期" style="width:140px;">
+            <span style="color:#999;">至</span>
+            <input type="text" class="a-input" placeholder="结束日期" style="width:140px;">
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <button class="btn btn-line">导出Excel</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>商户</th>
+                <th>商品</th>
+                <th>金额</th>
+                <th>支付方式</th>
+                <th>状态</th>
+                <th>下单时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MC20260625085001</td>
+                <td>湘味楼餐饮</td>
+                <td>大白菜×5, 猪肉×2 等3件</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥688.50</td>
+                <td>在线支付</td>
+                <td><span class="tag tag-orange">待发货</span></td>
+                <td>2026-06-25 08:50</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">发货</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625084532</td>
+                <td>川香食府</td>
+                <td>珍珠米×4</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥392.00</td>
+                <td>月结</td>
+                <td><span class="tag tag-green">已发货</span></td>
+                <td>2026-06-25 08:45</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">物流</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625082018</td>
+                <td>老王烧烤店</td>
+                <td>牛腩×2</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥796.00</td>
+                <td>在线支付</td>
+                <td><span class="tag tag-red">待付款</span></td>
+                <td>2026-06-25 08:20</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="del">取消</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625075900</td>
+                <td>阳光快餐</td>
+                <td>白虾×3, 生抽×2 等4件</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥1,258.00</td>
+                <td>在线支付</td>
+                <td><span class="tag tag-gray">已完成</span></td>
+                <td>2026-06-25 07:59</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625074210</td>
+                <td>东北饺子馆</td>
+                <td>面粉×6, 猪肉×3</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥1,098.00</td>
+                <td>月结</td>
+                <td><span class="tag tag-green">已发货</span></td>
+                <td>2026-06-25 07:42</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">物流</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625073055</td>
+                <td>清真兰州拉面</td>
+                <td>牛腩×5, 面粉×4</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥2,386.00</td>
+                <td>在线支付</td>
+                <td><span class="tag tag-orange">待发货</span></td>
+                <td>2026-06-25 07:30</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">发货</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625071588</td>
+                <td>聚友海鲜大排档</td>
+                <td>白虾×10, 鲍鱼×5</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥3,860.00</td>
+                <td>在线支付</td>
+                <td><span class="tag tag-gray">已完成</span></td>
+                <td>2026-06-25 07:15</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                </td>
+              </tr>
+              <tr>
+                <td>MC20260625070001</td>
+                <td>好再来快餐</td>
+                <td>大白菜×3, 生抽×2</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥201.30</td>
+                <td>在线支付</td>
+                <td><span class="tag tag-gray">已取消</span></td>
+                <td>2026-06-25 07:00</td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <span>...</span>
+            <a href="#">197</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

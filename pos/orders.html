@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>营业订单 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+  .pay-pie { display: flex; gap: 20px; align-items: center; }
+  .pay-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .pay-dot { width: 12px; height: 12px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html" class="active">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">经营报表 / <b>营业报表</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 今日营业统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">💰</div><div><div class="s-num">¥8,620</div><div class="s-label">今日营业额</div><div class="s-trend up">↑ 18.5%</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">🧾</div><div><div class="s-num">128</div><div class="s-label">今日订单</div><div class="s-trend up">↑ 12单</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">👥</div><div><div class="s-num">68</div><div class="s-label">就餐人数</div><div class="s-trend up">↑ 8人</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#b36ae0,#8e44ad);">¥</div><div><div class="s-num">¥67.3</div><div class="s-label">客单价</div><div class="s-trend up">↑ ¥3.2</div></div></div>
+      </div>
+
+      <!-- 营业趋势 + 支付分布 -->
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+        <div class="a-panel">
+          <div class="a-panel-hd">
+            <h3>近7日营业趋势</h3>
+            <select class="a-select"><option>营业额</option><option>订单数</option></select>
+          </div>
+          <div class="a-panel-bd">
+            <div class="chart-box">
+              <div class="bar" style="height:55%;"><small>06-19<br>¥6.2千</small></div>
+              <div class="bar" style="height:65%;"><small>06-20<br>¥7.3千</small></div>
+              <div class="bar" style="height:45%;"><small>06-21<br>¥5.1千</small></div>
+              <div class="bar" style="height:80%;"><small>06-22<br>¥8.9千</small></div>
+              <div class="bar" style="height:60%;"><small>06-23<br>¥6.7千</small></div>
+              <div class="bar" style="height:90%;"><small>06-24<br>¥10.1千</small></div>
+              <div class="bar" style="height:85%;"><small>06-25<br>¥8.6千</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="a-panel">
+          <div class="a-panel-hd"><h3>支付方式分布</h3></div>
+          <div class="a-panel-bd">
+            <div style="display:flex;flex-direction:column;gap:18px;">
+              <div class="pay-item">
+                <div class="pay-dot" style="background:var(--mc-green);"></div>
+                <div style="flex:1;">微信支付</div>
+                <b>76 单</b>
+                <span style="color:#999;width:50px;text-align:right;">59.4%</span>
+              </div>
+              <div class="pay-item">
+                <div class="pay-dot" style="background:var(--mc-orange);"></div>
+                <div style="flex:1;">支付宝</div>
+                <b>34 单</b>
+                <span style="color:#999;width:50px;text-align:right;">26.6%</span>
+              </div>
+              <div class="pay-item">
+                <div class="pay-dot" style="background:#5ec0e0;"></div>
+                <div style="flex:1;">现金</div>
+                <b>12 单</b>
+                <span style="color:#999;width:50px;text-align:right;">9.4%</span>
+              </div>
+              <div class="pay-item">
+                <div class="pay-dot" style="background:#999;"></div>
+                <div style="flex:1;">会员余额</div>
+                <b>6 单</b>
+                <span style="color:#999;width:50px;text-align:right;">4.6%</span>
+              </div>
+            </div>
+            <div style="margin-top:20px;padding:12px;background:#fafafa;border-radius:4px;font-size:12px;color:#999;">
+              小程序点餐订单默认走在线支付，堂食可现金/扫码收银。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 订单列表 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>今日营业订单</h3>
+          <button class="btn btn-line btn-sm">导出Excel</button>
+        </div>
+        <div class="a-panel-bd" style="padding:0;">
+          <div style="padding:12px 20px;display:flex;gap:24px;border-bottom:1px solid #eee;font-size:14px;">
+            <a href="#" style="padding:6px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">全部 (128)</a>
+            <a href="#" style="padding:6px 0;color:#666;">待制作 (6)</a>
+            <a href="#" style="padding:6px 0;color:#666;">待收银 (4)</a>
+            <a href="#" style="padding:6px 0;color:#666;">已完成 (116)</a>
+            <a href="#" style="padding:6px 0;color:#666;">已取消 (2)</a>
+          </div>
+          <div class="a-toolbar" style="padding:16px 20px;">
+            <input type="text" class="a-input" placeholder="订单号/桌号">
+            <select class="a-select">
+              <option>全部就餐方式</option>
+              <option>堂食</option>
+              <option>外卖配送</option>
+              <option>到店自取</option>
+            </select>
+            <select class="a-select">
+              <option>全部来源</option>
+              <option>小程序点餐</option>
+              <option>收银台下单</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+          </div>
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>订单号</th><th>来源</th><th>桌号/方式</th><th>菜品</th>
+                <th>金额</th><th>支付</th><th>状态</th><th>下单时间</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DD20260625120001</td>
+                <td><span class="tag tag-gray">小程序</span></td>
+                <td>3号桌 · 堂食</td>
+                <td>番茄炒蛋×2, 红烧排骨×1 等</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥72.00</td>
+                <td>微信支付</td>
+                <td><span class="tag tag-red">待制作</span></td>
+                <td>12:01</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">接单</a></td>
+              </tr>
+              <tr>
+                <td>DD20260625120015</td>
+                <td><span class="tag tag-gray">小程序</span></td>
+                <td>5号桌 · 堂食</td>
+                <td>宫保鸡丁×1, 酸辣土豆丝×1</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥58.00</td>
+                <td>支付宝</td>
+                <td><span class="tag tag-orange">制作中</span></td>
+                <td>12:05</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">出餐</a></td>
+              </tr>
+              <tr>
+                <td>DD20260625115830</td>
+                <td><span class="tag tag-gray">小程序</span></td>
+                <td>1号桌 · 堂食</td>
+                <td>麻婆豆腐×1, 鱼香肉丝×1</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥58.00</td>
+                <td>—</td>
+                <td><span class="tag tag-orange">待收银</span></td>
+                <td>11:58</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">收银</a></td>
+              </tr>
+              <tr>
+                <td>DD20260625115012</td>
+                <td><span class="tag tag-gray">小程序</span></td>
+                <td>2号桌 · 堂食</td>
+                <td>西红柿鸡蛋面×2, 凉拌黄瓜×1</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥48.00</td>
+                <td>微信支付</td>
+                <td><span class="tag tag-green">已完成</span></td>
+                <td>11:50</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>DD20260625114508</td>
+                <td><span class="tag tag-gray">小程序</span></td>
+                <td>外卖 · 配送</td>
+                <td>红烧排骨饭×3, 紫菜蛋花汤×1</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥92.00</td>
+                <td>支付宝</td>
+                <td><span class="tag tag-green">已完成</span></td>
+                <td>11:45</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>DD20260625113020</td>
+                <td><span class="tag tag-gray">收银台</span></td>
+                <td>6号桌 · 堂食</td>
+                <td>宫保鸡丁×2, 红烧牛腩面×2</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥132.00</td>
+                <td>现金</td>
+                <td><span class="tag tag-green">已完成</span></td>
+                <td>11:30</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>DD20260625112005</td>
+                <td><span class="tag tag-gray">小程序</span></td>
+                <td>自取</td>
+                <td>红烧牛腩面×2, 卤蛋×2</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥62.00</td>
+                <td>微信支付</td>
+                <td><span class="tag tag-green">已完成</span></td>
+                <td>11:20</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span><a href="#">2</a><a href="#">3</a><a href="#">4</a>
+            <span>...</span><a href="#">16</a><a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

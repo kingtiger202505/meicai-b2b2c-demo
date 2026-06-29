@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>向美菜采购 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+  .suggest-box { background: #fff5e6; border: 1px solid #ffd9a0; border-radius: 6px; padding: 16px 20px; margin-bottom: 20px; }
+  .suggest-box .sb-hd { font-size: 15px; font-weight: bold; color: #8a5a00; margin-bottom: 12px; }
+  .cart-row { display: flex; align-items: center; gap: 16px; padding: 12px; border-bottom: 1px solid #f0f0f0; }
+  .cart-row .cr-name { flex: 1; }
+  .cart-row .cr-name b { font-size: 14px; }
+  .cart-row .cr-name small { color: #999; font-size: 12px; display: block; margin-top: 2px; }
+  .link-tag { background: var(--mc-green-light); color: var(--mc-green); border: 1px solid #c8e6c9; border-radius: 3px; padding: 1px 6px; font-size: 11px; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html" class="active">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">库存与采购 / <b>向美菜采购</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">🛒</div><div><div class="s-num">12</div><div class="s-label">本月采购单</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">¥</div><div><div class="s-num">¥8,640</div><div class="s-label">本月采购额</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">!</div><div><div class="s-num">3</div><div class="s-label">待补货食材</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">↓</div><div><div class="s-num">1</div><div class="s-label">在途采购单</div></div></div>
+      </div>
+
+      <!-- 智能补货建议 -->
+      <div class="suggest-box">
+        <div class="sb-hd">🤖 智能补货建议 · 系统根据库存预警 + 今日销量自动推荐</div>
+        <div style="font-size:13px;color:#666;margin-bottom:12px;">以下食材库存低于安全阈值，建议立即向美菜采购补货：</div>
+
+        <div style="background:#fff;border-radius:6px;">
+          <div class="cart-row">
+            <input type="checkbox" checked>
+            <div class="cr-name">
+              <b>西红柿</b> <span class="link-tag">关联：有机西红柿 15kg/箱</span>
+              <small>当前余量 3kg / 安全库存 8kg · 今日已售 7.6kg · 建议采购 2 箱</small>
+            </div>
+            <div style="color:#999;font-size:13px;">美菜价 ¥45/箱</div>
+            <div class="qty-box"><button>−</button><input type="text" value="2" style="width:44px;text-align:center;border:1px solid #ddd;height:28px;"><button>+</button></div>
+            <div style="color:var(--mc-red);font-weight:bold;width:80px;text-align:right;">¥90.00</div>
+          </div>
+          <div class="cart-row">
+            <input type="checkbox" checked>
+            <div class="cr-name">
+              <b>猪前腿肉</b> <span class="link-tag">关联：冷鲜猪前腿肉 10kg/箱</span>
+              <small>当前余量 2kg / 安全库存 5kg · 今日已售 1.8kg · 建议采购 1 箱</small>
+            </div>
+            <div style="color:#999;font-size:13px;">美菜价 ¥189/箱</div>
+            <div class="qty-box"><button>−</button><input type="text" value="1" style="width:44px;text-align:center;border:1px solid #ddd;height:28px;"><button>+</button></div>
+            <div style="color:var(--mc-red);font-weight:bold;width:80px;text-align:right;">¥189.00</div>
+          </div>
+          <div class="cart-row">
+            <input type="checkbox" checked>
+            <div class="cr-name">
+              <b>鸡蛋</b> <span class="link-tag">关联：鲜鸡蛋 360枚/箱</span>
+              <small>当前余量 30枚 / 安全库存 60枚 · 今日已售 114枚 · 建议采购 1 箱</small>
+            </div>
+            <div style="color:#999;font-size:13px;">美菜价 ¥186/箱</div>
+            <div class="qty-box"><button>−</button><input type="text" value="1" style="width:44px;text-align:center;border:1px solid #ddd;height:28px;"><button>+</button></div>
+            <div style="color:var(--mc-red);font-weight:bold;width:80px;text-align:right;">¥186.00</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px dashed #ffd9a0;">
+          <div style="font-size:14px;">已选 <b style="color:var(--mc-red);">3</b> 项 · 合计 <span style="color:var(--mc-red);font-size:22px;font-weight:bold;">¥465.00</span></div>
+          <div>
+            <button class="btn btn-line">加入采购清单</button>
+            <button class="btn btn-orange btn-lg">一键向美菜下单</button>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#8a5a00;margin-top:8px;">
+          🔗 下单后将同步至美菜B2B平台（采购商端 user/orders.html），供应商接单发货后状态自动回传，签收入库自动回填POS库存。
+        </div>
+      </div>
+
+      <!-- 采购单列表 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>采购订单（对接美菜B2B）</h3>
+          <a href="orders.html" style="font-size:13px;color:var(--mc-green);">营业订单 ›</a>
+        </div>
+        <div class="a-panel-bd" style="padding:0;">
+          <div style="padding:12px 20px;display:flex;gap:24px;border-bottom:1px solid #eee;font-size:14px;">
+            <a href="#" style="padding:6px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">全部 (12)</a>
+            <a href="#" style="padding:6px 0;color:#666;">待发货 (1)</a>
+            <a href="#" style="padding:6px 0;color:#666;">已发货 (0)</a>
+            <a href="#" style="padding:6px 0;color:#666;">已签收 (11)</a>
+          </div>
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>采购单号</th><th>食材明细</th><th>金额</th>
+                <th>美菜供应商</th><th>状态</th><th>下单/到货</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MC20260624085001</td>
+                <td>猪前腿肉×2箱, 鸡蛋×1箱</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥564.00</td>
+                <td>绿源农产品 <a href="../supplier/orders.html" class="edit">供应商端</a></td>
+                <td><span class="tag tag-orange">待发货</span></td>
+                <td>06-24 08:50</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">催发货</a></td>
+              </tr>
+              <tr>
+                <td>MC20260623092015</td>
+                <td>西红柿×2箱, 黄瓜×1箱</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥118.00</td>
+                <td>绿源农产品 <a href="../supplier/orders.html" class="edit">供应商端</a></td>
+                <td><span class="tag tag-green">已签收·已入库</span></td>
+                <td>06-23 09:20 → 06-23 18:00</td>
+                <td class="ops"><a href="inventory.html" class="edit">查看库存</a></td>
+              </tr>
+              <tr>
+                <td>MC20260622083022</td>
+                <td>东北珍珠米×4袋</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥392.00</td>
+                <td>东北粮油直供 <a href="../supplier/orders.html" class="edit">供应商端</a></td>
+                <td><span class="tag tag-green">已签收·已入库</span></td>
+                <td>06-22 08:30 → 06-22 16:30</td>
+                <td class="ops"><a href="inventory.html" class="edit">查看库存</a></td>
+              </tr>
+              <tr>
+                <td>MC20260620071005</td>
+                <td>海天生抽×2箱, 干辣椒×1袋</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥156.00</td>
+                <td>调味干货批发 <a href="../supplier/orders.html" class="edit">供应商端</a></td>
+                <td><span class="tag tag-green">已签收·已入库</span></td>
+                <td>06-20 07:10 → 06-20 15:00</td>
+                <td class="ops"><a href="inventory.html" class="edit">查看库存</a></td>
+              </tr>
+              <tr>
+                <td>MC20260618064530</td>
+                <td>猪排骨×3箱, 牛腩×2箱</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥1,532.00</td>
+                <td>绿源农产品 <a href="../supplier/orders.html" class="edit">供应商端</a></td>
+                <td><span class="tag tag-green">已签收·已入库</span></td>
+                <td>06-18 06:45 → 06-18 17:20</td>
+                <td class="ops"><a href="inventory.html" class="edit">查看库存</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <span class="cur">1</span><a href="#">2</a><a href="#">3</a><a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 闭环说明 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>采购闭环说明</h3></div>
+        <div class="a-panel-bd">
+          <div class="steps">
+            <div class="step cur"><div class="dot">1</div>POS库存预警</div>
+            <div class="step cur"><div class="dot">2</div>一键向美菜下单</div>
+            <div class="step"><div class="dot">3</div>美菜供应商发货</div>
+            <div class="step"><div class="dot">4</div>餐厅签收入库</div>
+            <div class="step"><div class="dot">5</div>POS库存回填</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

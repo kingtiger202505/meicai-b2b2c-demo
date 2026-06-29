@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>发布采购询价 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B食材采购平台</div>
+    <div>
+      <a href="#">登录</a> | <a href="#">注册</a>
+      <a href="orders.html">我的订单</a>
+      <a href="cart.html">购物车</a>
+      <a href="../supplier/supplier-join.html">供应商入驻</a>
+      <a href="#">帮助中心</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索新鲜蔬菜、肉类、水产、粮油...">
+      <button>搜索</button>
+    </div>
+    <a href="cart.html" class="u-cart">🛒 购物车 <span class="badge">3</span></a>
+  </div>
+</div>
+
+<div class="nav-buyer">
+  <div class="container">
+    <a href="index.html">首页</a>
+    <a href="products.html">蔬菜</a>
+    <a href="products.html">肉禽蛋</a>
+    <a href="products.html">水产海鲜</a>
+    <a href="products.html">米面粮油</a>
+    <a href="products.html">调料干货</a>
+    <a href="products.html">餐厨用品</a>
+    <a href="products.html">酒水饮料</a>
+    <a href="inquiry-publish.html" class="active">发布询价</a>
+    <a href="my-inquiries.html">我的询价</a>
+    <a href="orders.html">我的订单</a>
+    <a href="cart.html" class="cart-link">🛒 购物车</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 步骤 -->
+  <div class="stat-strip">
+    <div class="ss ss1"><div class="ss-icon">1</div><div><b>发布询价</b><span>填写采购需求</span></div></div>
+    <div class="ss ss2"><div class="ss-icon">2</div><div><b>供应商报价</b><span>多家比价</span></div></div>
+    <div class="ss ss3"><div class="ss-icon">3</div><div><b>采纳报价</b><span>选最优供应商</span></div></div>
+    <div class="ss ss4"><div class="ss-icon">4</div><div><b>下单采购</b><span>生成采购订单</span></div></div>
+  </div>
+
+  <div class="u-form-wrap">
+    <h2>发布采购询价单</h2>
+    <div class="u-form">
+      <div class="f-item">
+        <label>询价单名称 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="如：6月食堂蔬菜批量采购">
+        </div>
+      </div>
+
+      <!-- 采购明细表 -->
+      <div class="f-item">
+        <label>采购明细 <span class="req">*</span></label>
+        <div class="ctrl">
+          <table class="a-table" style="border:1px solid #eee;">
+            <thead>
+              <tr>
+                <th>商品名称</th>
+                <th>规格要求</th>
+                <th>采购数量</th>
+                <th>单位</th>
+                <th>期望单价(元)</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" class="a-input" placeholder="如：大白菜" style="width:90%;"></td>
+                <td><input type="text" class="a-input" placeholder="如：25kg/箱" style="width:90%;"></td>
+                <td><input type="text" class="a-input" placeholder="数量" style="width:80px;"></td>
+                <td>
+                  <select class="a-select"><option>箱</option><option>袋</option><option>公斤</option><option>桶</option></select>
+                </td>
+                <td><input type="text" class="a-input" placeholder="选填" style="width:90px;"></td>
+                <td><a href="#" style="color:var(--mc-red);">删除</a></td>
+              </tr>
+              <tr>
+                <td><input type="text" class="a-input" placeholder="如：猪前腿肉" style="width:90%;"></td>
+                <td><input type="text" class="a-input" placeholder="如：10kg/箱" style="width:90%;"></td>
+                <td><input type="text" class="a-input" placeholder="数量" style="width:80px;"></td>
+                <td>
+                  <select class="a-select"><option>箱</option><option>袋</option><option>公斤</option><option>桶</option></select>
+                </td>
+                <td><input type="text" class="a-input" placeholder="选填" style="width:90px;"></td>
+                <td><a href="#" style="color:var(--mc-red);">删除</a></td>
+              </tr>
+              <tr>
+                <td><input type="text" class="a-input" placeholder="如：东北珍珠米" style="width:90%;"></td>
+                <td><input type="text" class="a-input" placeholder="如：25kg/袋" style="width:90%;"></td>
+                <td><input type="text" class="a-input" placeholder="数量" style="width:80px;"></td>
+                <td>
+                  <select class="a-select"><option>箱</option><option>袋</option><option>公斤</option><option>桶</option></select>
+                </td>
+                <td><input type="text" class="a-input" placeholder="选填" style="width:90px;"></td>
+                <td><a href="#" style="color:var(--mc-red);">删除</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-line btn-sm" style="margin-top:8px;">+ 添加一行</button>
+        </div>
+      </div>
+
+      <div class="f-item">
+        <label>采购品类 <span class="req">*</span></label>
+        <div class="ctrl">
+          <select>
+            <option>请选择品类</option>
+            <option>新鲜蔬菜</option>
+            <option>肉禽蛋品</option>
+            <option>水产海鲜</option>
+            <option>米面粮油</option>
+            <option>调味干货</option>
+            <option>综合采购</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>收货地址 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <select><option>省</option></select>
+            <select><option>市</option></select>
+            <select><option>区/县</option></select>
+          </div>
+          <input type="text" placeholder="详细地址" style="margin-top:8px;">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>报价截止时间 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="如：2026-06-27 18:00">
+          <div class="hint">供应商需在此时间前提交报价</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>期望交货时间 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="如：2026-06-28">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>报价方式 <span class="req">*</span></label>
+        <div class="ctrl">
+          <label style="float:none;width:auto;text-align:left;line-height:2;font-size:14px;">
+            <input type="radio" name="qmode" checked> 公开报价（所有供应商可见，互相竞价）
+          </label>
+          <label style="float:none;width:auto;text-align:left;line-height:2;font-size:14px;">
+            <input type="radio" name="qmode"> 封闭报价（供应商互不可见）
+          </label>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>补充说明</label>
+        <div class="ctrl">
+          <textarea placeholder="品质要求、配送要求、结算方式等"></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary btn-lg">发布询价</button>
+        <button class="btn btn-line btn-lg" style="margin-left:10px;">保存草稿</button>
+        <a href="my-inquiries.html" class="btn btn-line btn-lg" style="margin-left:10px;">我的询价单</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

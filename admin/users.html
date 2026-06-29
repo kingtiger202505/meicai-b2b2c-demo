@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>商户管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html" class="active">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">用户管理 / <b>商户管理</b></div>
+      <div class="u-info">
+        <span>管理员：张三</span>
+        <div class="avatar">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
+        <div class="s-card s1">
+          <div class="s-icon">👥</div>
+          <div>
+            <div class="s-num">1,860</div>
+            <div class="s-label">总商户数</div>
+          </div>
+        </div>
+        <div class="s-card s2">
+          <div class="s-icon">⏳</div>
+          <div>
+            <div class="s-num">5</div>
+            <div class="s-label">待审核</div>
+          </div>
+        </div>
+        <div class="s-card s3">
+          <div class="s-icon">✅</div>
+          <div>
+            <div class="s-num">1,798</div>
+            <div class="s-label">已认证</div>
+          </div>
+        </div>
+        <div class="s-card s4">
+          <div class="s-icon">💎</div>
+          <div>
+            <div class="s-num">328</div>
+            <div class="s-label">VIP商户</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="商户名称/账号">
+            <input type="text" class="a-input" placeholder="联系人/手机">
+            <select class="a-select">
+              <option>全部等级</option>
+              <option>普通商户</option>
+              <option>银牌商户</option>
+              <option>金牌商户</option>
+              <option>VIP商户</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>正常</option>
+              <option>待审核</option>
+              <option>已冻结</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-primary">+ 新增商户</button>
+            <button class="btn btn-line">导出</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>商户ID</th>
+                <th>商户名称</th>
+                <th>联系人</th>
+                <th>手机号</th>
+                <th>等级</th>
+                <th>订单数</th>
+                <th>消费总额</th>
+                <th>注册时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>M10001</td>
+                <td>湘味楼餐饮</td>
+                <td>李老板</td>
+                <td>138****6688</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td>286</td>
+                <td>¥126,800</td>
+                <td>2025-03-15</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10002</td>
+                <td>川香食府</td>
+                <td>王经理</td>
+                <td>139****1234</td>
+                <td><span class="tag tag-gray">银牌</span></td>
+                <td>168</td>
+                <td>¥68,200</td>
+                <td>2025-05-20</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10003</td>
+                <td>老王烧烤店</td>
+                <td>王师傅</td>
+                <td>137****5678</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>56</td>
+                <td>¥18,900</td>
+                <td>2025-08-10</td>
+                <td><span class="tag tag-orange">待审核</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">审核</a>
+                  <a href="#" class="edit">详情</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10004</td>
+                <td>阳光快餐</td>
+                <td>张姐</td>
+                <td>135****9012</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td>320</td>
+                <td>¥156,000</td>
+                <td>2024-11-08</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10005</td>
+                <td>东北饺子馆</td>
+                <td>刘老板</td>
+                <td>136****3456</td>
+                <td><span class="tag tag-gray">银牌</span></td>
+                <td>198</td>
+                <td>¥82,500</td>
+                <td>2025-02-28</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10006</td>
+                <td>清真兰州拉面</td>
+                <td>马师傅</td>
+                <td>133****7890</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>89</td>
+                <td>¥32,600</td>
+                <td>2025-06-12</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10007</td>
+                <td>聚友海鲜大排档</td>
+                <td>陈总</td>
+                <td>132****4567</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td>245</td>
+                <td>¥198,000</td>
+                <td>2024-09-05</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10008</td>
+                <td>好再来快餐</td>
+                <td>赵哥</td>
+                <td>131****8901</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>42</td>
+                <td>¥12,300</td>
+                <td>2025-09-18</td>
+                <td><span class="tag tag-red">已冻结</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">解冻</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10009</td>
+                <td>辣妹子川菜馆</td>
+                <td>周姐</td>
+                <td>130****2345</td>
+                <td><span class="tag tag-gray">银牌</span></td>
+                <td>156</td>
+                <td>¥72,800</td>
+                <td>2025-04-22</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+              <tr>
+                <td>M10010</td>
+                <td>顺兴大酒店</td>
+                <td>孙总</td>
+                <td>188****6789</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td>312</td>
+                <td>¥286,000</td>
+                <td>2024-07-30</td>
+                <td><span class="tag tag-green">正常</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">详情</a>
+                  <a href="#" class="edit">编辑</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <span>...</span>
+            <a href="#">186</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

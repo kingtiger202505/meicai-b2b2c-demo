@@ -1,0 +1,178 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+// 用户头部
+.profile {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $page-padding;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-round;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56rpx;
+  color: #fff;
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.nickName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: #fff;
+}
+
+.phone {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 6rpx;
+}
+
+.levelTag {
+  display: inline-block;
+  margin-left: $spacing-sm;
+  padding: 2rpx 12rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+}
+
+.loginBtn {
+  background: #fff !important;
+  color: $color-primary !important;
+  font-size: $font-size-sm !important;
+  border-radius: $radius-button !important;
+  border: none !important;
+}
+
+// 数据条
+.dataRow {
+  display: flex;
+  background: #fff;
+  margin: -$spacing-lg $page-padding 0;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  position: relative;
+  z-index: 2;
+}
+
+.dataItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+
+  .num {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .label {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+    margin-top: 4rpx;
+  }
+}
+
+// 菜单组
+.menuGroup {
+  margin: $spacing-lg $page-padding 0;
+  background: #fff;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.menuIcon {
+  width: 48rpx;
+  text-align: center;
+  font-size: 36rpx;
+  margin-right: $spacing-md;
+}
+
+.menuText {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.arrow {
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+}
+
+// 绑定手机号卡
+.bindPhoneCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: $spacing-lg $page-padding 0;
+  padding: $spacing-md $spacing-lg;
+  background: #fff5e6;
+  border-radius: $radius-md;
+  border-left: 6rpx solid $color-primary;
+}
+
+.bindTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #8a5a00;
+}
+
+.bindDesc {
+  font-size: $font-size-xs;
+  color: #b88a3a;
+  margin-top: 4rpx;
+}
+
+.bindBtn {
+  background: $color-primary !important;
+  color: #fff !important;
+  font-size: $font-size-sm !important;
+  border-radius: $radius-button !important;
+  border: none !important;
+}
+
+// 退出登录
+.logoutBtn {
+  margin: $spacing-xl $page-padding;
+  padding: $spacing-md;
+  text-align: center;
+  background: #fff;
+  border-radius: $radius-md;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}

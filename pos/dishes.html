@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菜品管理 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+  .dish-thumb { width: 48px; height: 48px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .bom-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bom-tag { background: #fff5e6; color: #8a5a00; border: 1px solid #ffd9a0; border-radius: 3px; padding: 2px 6px; font-size: 12px; }
+  .bom-detail { background: #fafafa; border-radius: 6px; padding: 16px; margin-top: 20px; }
+  .bom-detail table { width: 100%; font-size: 13px; }
+  .bom-detail th { color: #999; font-weight: normal; text-align: left; padding: 6px 10px; border-bottom: 1px solid #eee; }
+  .bom-detail td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html" class="active">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">菜品管理 / <b>菜品与配方</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">🍽️</div><div><div class="s-num">42</div><div class="s-label">在售菜品</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">✓</div><div><div class="s-num">38</div><div class="s-label">已配BOM</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">!</div><div><div class="s-num">4</div><div class="s-label">缺原料</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">★</div><div><div class="s-num">5</div><div class="s-label">今日热销</div></div></div>
+      </div>
+
+      <!-- 工具栏 -->
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="菜品名称">
+            <select class="a-select">
+              <option>全部分类</option>
+              <option>热菜</option>
+              <option>凉菜</option>
+              <option>主食</option>
+              <option>汤品</option>
+              <option>饮品</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>在售</option>
+              <option>已下架</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <button class="btn btn-orange">+ 新增菜品</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>菜品</th><th>分类</th><th>售价</th><th>成本(估)</th>
+                <th>原料配方BOM</th><th>今日销量</th><th>状态</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="dish-thumb">🍳</div>
+                    <div><b>番茄炒蛋</b><div style="font-size:12px;color:#999;">家常热菜</div></div>
+                  </div>
+                </td>
+                <td>热菜</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥9</td>
+                <td style="color:#999;">¥4.2</td>
+                <td>
+                  <div class="bom-tags">
+                    <span class="bom-tag">西红柿 0.2kg</span>
+                    <span class="bom-tag">鸡蛋 3枚</span>
+                  </div>
+                </td>
+                <td><b>38份</b></td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">BOM</a><a href="#" class="del">下架</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="dish-thumb">🥩</div>
+                    <div><b>红烧排骨</b><div style="font-size:12px;color:#999;">招牌菜</div></div>
+                  </div>
+                </td>
+                <td>热菜</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥48</td>
+                <td style="color:#999;">¥26.5</td>
+                <td>
+                  <div class="bom-tags">
+                    <span class="bom-tag">猪排骨 0.2kg</span>
+                    <span class="bom-tag">生抽 0.02L</span>
+                  </div>
+                </td>
+                <td><b>26份</b></td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">BOM</a><a href="#" class="del">下架</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="dish-thumb">🌶️</div>
+                    <div><b>宫保鸡丁</b><div style="font-size:12px;color:#999;">川菜系列</div></div>
+                  </div>
+                </td>
+                <td>热菜</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥38</td>
+                <td style="color:#999;">¥18.8</td>
+                <td>
+                  <div class="bom-tags">
+                    <span class="bom-tag">鸡胸肉 0.15kg</span>
+                    <span class="bom-tag">花生 0.05kg</span>
+                    <span class="bom-tag">干辣椒 0.01kg</span>
+                  </div>
+                </td>
+                <td><b>22份</b></td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">BOM</a><a href="#" class="del">下架</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="dish-thumb">🐟</div>
+                    <div><b>鱼香肉丝</b><div style="font-size:12px;color:#999;">下饭神器</div></div>
+                  </div>
+                </td>
+                <td>热菜</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥32</td>
+                <td style="color:#999;">¥15.2</td>
+                <td>
+                  <div class="bom-tags">
+                    <span class="bom-tag">猪前腿肉 0.1kg</span>
+                    <span class="bom-tag">木耳 0.03kg</span>
+                    <span class="bom-tag">胡萝卜 0.05kg</span>
+                  </div>
+                </td>
+                <td><b>18份</b></td>
+                <td><span class="tag tag-red">原料不足</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">BOM</a><a href="#" class="del">下架</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="dish-thumb">🍜</div>
+                    <div><b>红烧牛腩面</b><div style="font-size:12px;color:#999;">招牌主食</div></div>
+                  </div>
+                </td>
+                <td>主食</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥28</td>
+                <td style="color:#999;">¥12.6</td>
+                <td>
+                  <div class="bom-tags">
+                    <span class="bom-tag">牛腩 0.1kg</span>
+                    <span class="bom-tag">面条 0.2kg</span>
+                  </div>
+                </td>
+                <td><b>15份</b></td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">BOM</a><a href="#" class="del">下架</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="dish-thumb">🥣</div>
+                    <div><b>麻婆豆腐</b><div style="font-size:12px;color:#999;">经典川菜</div></div>
+                  </div>
+                </td>
+                <td>热菜</td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥22</td>
+                <td style="color:#999;">¥8.4</td>
+                <td>
+                  <div class="bom-tags">
+                    <span class="bom-tag">豆腐 0.25kg</span>
+                    <span class="bom-tag">猪肉末 0.05kg</span>
+                  </div>
+                </td>
+                <td><b>15份</b></td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a><a href="#" class="edit">BOM</a><a href="#" class="del">下架</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <span class="cur">1</span><a href="#">2</a><a href="#">3</a><a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOM 详情说明 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>原料配方 BOM 说明（番茄炒蛋 示例）</h3></div>
+        <div class="a-panel-bd">
+          <div class="bom-detail">
+            <table>
+              <thead>
+                <tr>
+                  <th>原料食材</th><th>关联美菜商品</th>
+                  <th>标准用量</th><th>净料率</th><th>损耗率</th><th>实际消耗</th>
+                  <th>当前库存</th><th>可制作份数</th><th>库存状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>西红柿</td>
+                  <td>有机西红柿 15kg/箱 <a href="#" class="edit">(美菜)</a></td>
+                  <td>0.20 kg</td>
+                  <td>85%</td>
+                  <td>5%</td>
+                  <td style="color:var(--mc-red);font-weight:bold;">0.235 kg</td>
+                  <td>3 kg</td>
+                  <td>12 份</td>
+                  <td><span class="tag tag-red">低于安全库存</span></td>
+                </tr>
+                <tr>
+                  <td>鸡蛋</td>
+                  <td>鲜鸡蛋 360枚/箱 <a href="#" class="edit">(美菜)</a></td>
+                  <td>3.00 枚</td>
+                  <td>100%</td>
+                  <td>3%</td>
+                  <td style="color:var(--mc-red);font-weight:bold;">3.09 枚</td>
+                  <td>30 枚</td>
+                  <td>9 份</td>
+                  <td><span class="tag tag-red">低于安全库存</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:12px;padding:10px;background:#fff5e6;border-radius:4px;font-size:13px;color:#8a5a00;line-height:1.7;">
+              💡 <b>扣库规则</b>：实际消耗 = 标准用量 ÷ 净料率 × (1 + 损耗率)<br>
+              示例：西红柿 0.2kg ÷ 85% × (1+5%) = 0.247kg（含加工损耗）<br>
+              💡 售出一份「番茄炒蛋」时，按"实际消耗"扣减库存；损耗率与净料率可在 BOM 编辑界面按食材维护。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

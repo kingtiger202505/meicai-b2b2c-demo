@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>商品审核 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html" class="active">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">商品管理 / <b>商品审核</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1"><div class="s-icon">📦</div><div><div class="s-num">8,620</div><div class="s-label">待审核商品</div></div></div>
+        <div class="s-card s2"><div class="s-icon">⏳</div><div><div class="s-num">126</div><div class="s-label">待审核</div></div></div>
+        <div class="s-card s3"><div class="s-icon">✅</div><div><div class="s-num">8,494</div><div class="s-label">本月已通过</div></div></div>
+        <div class="s-card s4"><div class="s-icon">❌</div><div><div class="s-num">320</div><div class="s-label">本月驳回</div></div></div>
+      </div>
+
+      <!-- 状态Tab -->
+      <div class="a-panel">
+        <div class="a-panel-bd" style="padding:12px 20px;display:flex;gap:24px;font-size:14px;border-bottom:1px solid #eee;">
+          <a href="#" style="padding:6px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">待审核 (126)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已通过</a>
+          <a href="#" style="padding:6px 0;color:#666;">已驳回</a>
+        </div>
+      </div>
+
+      <!-- 工具栏 -->
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="商品名称/编号">
+            <select class="a-select">
+              <option>全部供应商</option>
+              <option>绿源农产品</option>
+              <option>顺发肉业合作社</option>
+              <option>海滨水产直供</option>
+            </select>
+            <select class="a-select">
+              <option>全部品类</option>
+              <option>新鲜蔬菜</option>
+              <option>肉禽蛋品</option>
+              <option>水产海鲜</option>
+              <option>米面粮油</option>
+              <option>调味干货</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>待审核</option>
+              <option>已通过</option>
+              <option>已驳回</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-success btn-sm">批量通过</button>
+            <button class="btn btn-danger btn-sm">批量驳回</button>
+          </div>
+
+          <!-- 待审核商品卡片1 -->
+          <div class="review-card">
+            <div class="rc-hd">
+              <div>
+                <div class="rc-title">绿源农产品有限公司</div>
+                <div class="rc-sup">供应商编号：S20001 | 提交时间：2026-06-25 08:30</div>
+              </div>
+              <span class="tag tag-orange">待审核</span>
+            </div>
+            <div class="rc-info">
+              <div>品类：<b>新鲜蔬菜</b></div>
+              <div>本次提交：<b>5件商品</b></div>
+            </div>
+            <div class="rc-items">
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>有机大白菜</b>
+                  <span>规格：25kg/箱 | 库存：200箱</span>
+                  <div class="ri-price">¥18.00/箱</div>
+                </div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>新鲜西红柿</b>
+                  <span>规格：15kg/箱 | 库存：150箱</span>
+                  <div class="ri-price">¥42.00/箱</div>
+                </div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>荷兰黄瓜</b>
+                  <span>规格：10kg/箱 | 库存：100箱</span>
+                  <div class="ri-price">¥26.00/箱</div>
+                </div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>紫甘蓝</b>
+                  <span>规格：20kg/箱 | 库存：80箱</span>
+                  <div class="ri-price">¥30.00/箱</div>
+                </div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>胡萝卜</b>
+                  <span>规格：15kg/箱 | 库存：120箱</span>
+                  <div class="ri-price">¥22.00/箱</div>
+                </div>
+              </div>
+            </div>
+            <div class="rc-ft">
+              <div style="font-size:13px;color:#999;">审核说明：该供应商为金牌供应商，提交商品符合平台标准可快速审核。</div>
+              <div class="ops">
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+                <a href="#" class="btn btn-success btn-sm">全部通过</a>
+                <a href="#" class="btn btn-danger btn-sm">全部驳回</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 待审核商品卡片2 -->
+          <div class="review-card">
+            <div class="rc-hd">
+              <div>
+                <div class="rc-title">海滨水产直供</div>
+                <div class="rc-sup">供应商编号：S20003 | 提交时间：2026-06-25 10:00</div>
+              </div>
+              <span class="tag tag-orange">待审核</span>
+            </div>
+            <div class="rc-info">
+              <div>品类：<b>水产海鲜</b></div>
+              <div>本次提交：<b>3件商品</b></div>
+            </div>
+            <div class="rc-items">
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>活冻白虾（厄瓜多尔）</b>
+                  <span>规格：5kg/箱 | 库存：500箱</span>
+                  <div class="ri-price">¥155.00/箱</div>
+                </div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>冰鲜鲈鱼</b>
+                  <span>规格：8kg/箱 | 库存：200箱</span>
+                  <div class="ri-price">¥220.00/箱</div>
+                </div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info">
+                  <b>鲜活大闸蟹（母蟹）</b>
+                  <span>规格：10只/箱 | 库存：100箱</span>
+                  <div class="ri-price">¥380.00/箱</div>
+                </div>
+              </div>
+            </div>
+            <div class="rc-ft">
+              <div style="font-size:13px;color:#999;">提示：新入驻供应商首批商品，请严格审核资质与定价。</div>
+              <div class="ops">
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+                <a href="#" class="btn btn-success btn-sm">全部通过</a>
+                <a href="#" class="btn btn-danger btn-sm">全部驳回</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 待审核商品卡片3 -->
+          <div class="review-card">
+            <div class="rc-hd">
+              <div>
+                <div class="rc-title">东北粮仓直供基地</div>
+                <div class="rc-sup">供应商编号：S20004 | 提交时间：2026-06-24 14:20</div>
+              </div>
+              <span class="tag tag-orange">待审核</span>
+            </div>
+            <div class="rc-info">
+              <div>品类：<b>米面粮油</b></div>
+              <div>本次提交：<b>4件商品</b></div>
+            </div>
+            <div class="rc-items">
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info"><b>东北珍珠米</b><span>规格：25kg/袋 | 库存：300袋</span><div class="ri-price">¥95.00/袋</div></div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info"><b>中筋面粉</b><span>规格：25kg/袋 | 库存：200袋</span><div class="ri-price">¥78.00/袋</div></div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info"><b>一级大豆油</b><span>规格：20L/桶 | 库存：150桶</span><div class="ri-price">¥168.00/桶</div></div>
+              </div>
+              <div class="rc-item">
+                <div class="ri-img" style="width:50px;height:50px;background:#eee;border-radius:4px;"></div>
+                <div class="ri-info"><b>东北玉米糁</b><span>规格：10kg/袋 | 库存：100袋</span><div class="ri-price">¥48.00/袋</div></div>
+              </div>
+            </div>
+            <div class="rc-ft">
+              <div style="font-size:13px;color:#999;">提示：供应商资质待审核，商品价格偏高，建议与市场均价对比。</div>
+              <div class="ops">
+                <a href="#" class="btn btn-line btn-sm">查看详情</a>
+                <a href="#" class="btn btn-success btn-sm">全部通过</a>
+                <a href="#" class="btn btn-danger btn-sm">全部驳回</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

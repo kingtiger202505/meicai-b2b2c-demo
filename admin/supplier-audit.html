@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>入驻审核 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html" class="active">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">供应商管理 / <b>入驻审核</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1"><div class="s-icon">📋</div><div><div class="s-num">386</div><div class="s-label">申请总数</div></div></div>
+        <div class="s-card s2"><div class="s-icon">⏳</div><div><div class="s-num">12</div><div class="s-label">待审核</div></div></div>
+        <div class="s-card s3"><div class="s-icon">✅</div><div><div class="s-num">348</div><div class="s-label">已通过</div></div></div>
+        <div class="s-card s4"><div class="s-icon">❌</div><div><div class="s-num">26</div><div class="s-label">已驳回</div></div></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="u-tabs">
+        <a href="#" class="on">全部</a>
+        <a href="#">待审核 (12)</a>
+        <a href="#">审核中 (4)</a>
+        <a href="#">已通过 (348)</a>
+        <a href="#">已驳回 (26)</a>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="企业名称/统一社会信用代码">
+            <select class="a-select">
+              <option>全部主营品类</option>
+              <option>新鲜蔬菜</option>
+              <option>肉禽蛋品</option>
+              <option>水产海鲜</option>
+              <option>米面粮油</option>
+              <option>调味干货</option>
+            </select>
+            <select class="a-select">
+              <option>全部申请时间</option>
+              <option>近7天</option>
+              <option>近30天</option>
+              <option>近90天</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-line">导出</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>申请编号</th>
+                <th>企业名称</th>
+                <th>信用代码</th>
+                <th>主营品类</th>
+                <th>联系人</th>
+                <th>联系电话</th>
+                <th>申请时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>AP20260626001</td>
+                <td>寿光蔬菜专业合作社</td>
+                <td>91370783MA3**X</td>
+                <td>新鲜蔬菜</td>
+                <td>张经理</td>
+                <td>138****8801</td>
+                <td>2026-06-26 09:20</td>
+                <td><span class="tag tag-orange">待审核</span></td>
+                <td class="ops"><a href="#" class="edit">审核</a><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>AP20260625005</td>
+                <td>蓝海水产养殖基地</td>
+                <td>91370602MA2**Y</td>
+                <td>水产海鲜</td>
+                <td>李老板</td>
+                <td>139****8802</td>
+                <td>2026-06-25 14:30</td>
+                <td><span class="tag tag-blue">审核中</span></td>
+                <td class="ops"><a href="#" class="edit">继续审核</a><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>AP20260624008</td>
+                <td>鲁西黄牛养殖场</td>
+                <td>91371500MA4**Z</td>
+                <td>肉禽蛋品</td>
+                <td>王场长</td>
+                <td>137****8803</td>
+                <td>2026-06-24 10:00</td>
+                <td><span class="tag tag-orange">待审核</span></td>
+                <td class="ops"><a href="#" class="edit">审核</a><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>AP20260622012</td>
+                <td>五常大米直供中心</td>
+                <td>91230103MA5**A</td>
+                <td>米面粮油</td>
+                <td>赵总</td>
+                <td>136****8804</td>
+                <td>2026-06-22 16:45</td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>AP20260620003</td>
+                <td>某调味品有限公司</td>
+                <td>91330106MA6**B</td>
+                <td>调味干货</td>
+                <td>孙经理</td>
+                <td>135****8805</td>
+                <td>2026-06-20 11:20</td>
+                <td><span class="tag tag-red">已驳回</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>AP20260618006</td>
+                <td>有机蔬菜种植基地</td>
+                <td>91370112MA7**C</td>
+                <td>新鲜蔬菜</td>
+                <td>周老板</td>
+                <td>134****8806</td>
+                <td>2026-06-18 09:30</td>
+                <td><span class="tag tag-green">已通过</span></td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 审核详情示例 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>审核详情 - 寿光蔬菜专业合作社（AP20260626001）</h3>
+        </div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <tbody>
+              <tr><th style="width:160px;">企业名称</th><td>寿光蔬菜专业合作社</td><th style="width:160px;">统一社会信用代码</th><td>91370783MA3**XYZ12</td></tr>
+              <tr><th>法定代表人</th><td>张经理</td><th>注册资本</th><td>500万元</td></tr>
+              <tr><th>联系人</th><td>张经理</td><th>联系电话</th><td>138****8801</td></tr>
+              <tr><th>主营品类</th><td>新鲜蔬菜</td><th>年供货能力</th><td>2,000吨/年</td></tr>
+              <tr><th>供应区域</th><td>山东省 潍坊市 寿光市</td><th>申请时间</th><td>2026-06-26 09:20</td></tr>
+              <tr><th>营业执照</th><td colspan="3"><a href="#" style="color:var(--mc-green);">查看营业执照.jpg</a> &nbsp; <a href="#" style="color:var(--mc-green);">查看食品经营许可证.jpg</a></td></tr>
+              <tr><th>企业简介</th><td colspan="3">寿光本地蔬菜合作社，占地200亩，主营叶菜类、瓜果类蔬菜，日供货能力5吨以上，可覆盖华北地区。</td></tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:20px;padding:16px;background:#fafafa;border-radius:4px;">
+            <h4 style="margin-bottom:12px;">审核意见</h4>
+            <textarea style="width:100%;height:80px;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:13px;" placeholder="请填写审核意见（如通过/驳回原因）"></textarea>
+            <div style="margin-top:12px;">
+              <button class="btn btn-primary">通过审核</button>
+              <button class="btn btn-line" style="margin-left:10px;color:var(--mc-red);border-color:var(--mc-red);">驳回申请</button>
+              <button class="btn btn-line" style="margin-left:10px;">要求补充材料</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

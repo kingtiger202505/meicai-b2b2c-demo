@@ -1,0 +1,30 @@
+# 依赖
+node_modules/
+.pai/
+
+# 构建产物
+dist/
+build/
+.miniapp/
+
+# 日志
+*.log
+logs/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 环境变量
+.env
+.env.local
+
+# Taro 缓存
+.taro4.0/
+.taro3/
+.cache/

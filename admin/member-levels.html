@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>会员等级 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html" class="active">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">用户管理 / <b>会员等级</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>会员等级配置</h3>
+          <button class="btn btn-primary btn-sm">+ 新增等级</button>
+        </div>
+        <div class="a-panel-bd">
+          <div style="margin-bottom:16px;padding:12px;background:#fff8e1;border-radius:4px;font-size:13px;color:#666;">
+            提示：会员等级按累计消费金额自动升级，等级越高享受的折扣和权益越多。等级降级规则可单独配置。
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>等级</th>
+                <th>等级标识</th>
+                <th>升级门槛（累计消费）</th>
+                <th>采购折扣</th>
+                <th>专属权益</th>
+                <th>商户数</th>
+                <th>保级要求（年消费）</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="tag tag-gray">普通商户</span>
+                </td>
+                <td><code>LV1</code></td>
+                <td>¥0</td>
+                <td>无折扣</td>
+                <td>基础采购、发布询价</td>
+                <td>1,260</td>
+                <td>—</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="tag tag-blue">银牌商户</span>
+                </td>
+                <td><code>LV2</code></td>
+                <td>¥5,000</td>
+                <td>98折</td>
+                <td>+ 专属客服、优先报价</td>
+                <td>328</td>
+                <td>¥3,000/年</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="tag tag-orange">金牌商户</span>
+                </td>
+                <td><code>LV3</code></td>
+                <td>¥30,000</td>
+                <td>95折</td>
+                <td>+ 月结30天、免运费</td>
+                <td>186</td>
+                <td>¥20,000/年</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="tag tag-purple">VIP商户</span>
+                </td>
+                <td><code>LV4</code></td>
+                <td>¥100,000</td>
+                <td>92折</td>
+                <td>+ 大客户经理、定制采购、账期60天</td>
+                <td>86</td>
+                <td>¥80,000/年</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 等级变动记录 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>近期等级变动记录</h3>
+        </div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>商户名称</th>
+                <th>原等级</th>
+                <th>新等级</th>
+                <th>变动类型</th>
+                <th>触发条件</th>
+                <th>变动时间</th>
+                <th>操作人</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>川香食府</td>
+                <td><span class="tag tag-blue">银牌</span></td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td><span style="color:var(--mc-green);">升级</span></td>
+                <td>累计消费达 ¥30,200</td>
+                <td>2026-06-25 10:30</td>
+                <td>系统自动</td>
+              </tr>
+              <tr>
+                <td>聚友海鲜大排档</td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td><span class="tag tag-purple">VIP</span></td>
+                <td><span style="color:var(--mc-green);">升级</span></td>
+                <td>累计消费达 ¥100,500</td>
+                <td>2026-06-22 14:00</td>
+                <td>系统自动</td>
+              </tr>
+              <tr>
+                <td>东北饺子馆</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td><span class="tag tag-blue">银牌</span></td>
+                <td><span style="color:var(--mc-green);">升级</span></td>
+                <td>累计消费达 ¥5,200</td>
+                <td>2026-06-20 09:00</td>
+                <td>系统自动</td>
+              </tr>
+              <tr>
+                <td>老王烧烤</td>
+                <td><span class="tag tag-blue">银牌</span></td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td><span style="color:var(--mc-red);">降级</span></td>
+                <td>年度消费不足 ¥3,000</td>
+                <td>2026-06-01 00:00</td>
+                <td>系统自动</td>
+              </tr>
+              <tr>
+                <td>阳光快餐</td>
+                <td><span class="tag tag-purple">VIP</span></td>
+                <td><span class="tag tag-orange">金牌</span></td>
+                <td><span style="color:var(--mc-red);">降级</span></td>
+                <td>年度消费不足 ¥80,000</td>
+                <td>2026-06-01 00:00</td>
+                <td>系统自动</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

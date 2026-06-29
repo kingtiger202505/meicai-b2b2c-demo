@@ -1,0 +1,214 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  background: $color-bg-page;
+  min-height: 100vh;
+}
+
+.empty {
+  text-align: center;
+  padding: 200rpx 0;
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+}
+
+// 状态头部
+.statusHero {
+  padding: 60rpx $page-padding 80rpx;
+  color: #fff;
+}
+
+.statusText {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+}
+
+.statusHint {
+  display: block;
+  margin-top: 12rpx;
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+// 进度时间线卡片
+.flowCard {
+  margin: -40rpx $page-padding 0;
+  padding: $spacing-xl $spacing-lg;
+  background: #fff;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  position: relative;
+  z-index: 2;
+}
+
+.flowItem {
+  display: flex;
+  gap: $spacing-md;
+  padding-bottom: $spacing-lg;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.flowLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32rpx;
+  flex-shrink: 0;
+}
+
+.flowDot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: #ddd;
+  transition: all $transition-base;
+}
+
+.flowLine {
+  flex: 1;
+  width: 4rpx;
+  background: #ddd;
+  margin: 4rpx 0;
+  min-height: 32rpx;
+}
+
+.flowRight {
+  flex: 1;
+  padding-bottom: 8rpx;
+}
+
+.flowStatus {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.flowTime {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+// 订单信息卡
+.infoCard {
+  margin: $spacing-lg $page-padding 0;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12rpx 0;
+  font-size: $font-size-sm;
+}
+
+.infoLabel {
+  color: $color-text-tertiary;
+}
+
+.infoValue {
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+// 菜品明细卡
+.dishesCard {
+  margin: $spacing-lg $page-padding;
+  padding: $spacing-lg;
+  background: #fff;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.cardTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+  margin-bottom: $spacing-sm;
+}
+
+.dishRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: $spacing-sm 0;
+}
+
+.dishInfo {
+  flex: 1;
+}
+
+.dishName {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.dishPrice {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.dishTotal {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  margin-top: $spacing-sm;
+  border-top: 1rpx solid $color-divider;
+  font-size: $font-size-md;
+}
+
+.totalAmount {
+  font-size: $font-size-xl;
+  color: $color-error;
+  font-weight: $font-weight-bold;
+}
+
+// 底部操作栏
+.actionBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  padding: $spacing-md $page-padding;
+  background: #fff;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  gap: $spacing-sm;
+}
+
+.cancelAction {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+  background: #f0f0f0;
+  color: $color-text-secondary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+}
+
+.payAction {
+  flex: 2;
+  text-align: center;
+  padding: $spacing-md 0;
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  color: #fff;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桌台管理 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+
+  /* 区域切换 */
+  .area-tabs { display: flex; gap: 6px; margin-bottom: 16px; background: #fff; padding: 6px; border-radius: 6px; width: fit-content; }
+  .area-tabs a { padding: 8px 18px; border-radius: 4px; font-size: 13px; color: #666; cursor: pointer; }
+  .area-tabs a.on { background: var(--mc-orange); color: #fff; font-weight: bold; }
+
+  /* 桌台网格 */
+  .tables-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .table-card { background: #fff; border-radius: 8px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all .2s; border: 2px solid transparent; position: relative; }
+  .table-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.1); }
+  .table-card .t-num { font-size: 20px; font-weight: bold; color: #333; }
+  .table-card .t-seat { font-size: 12px; color: #999; margin-top: 4px; }
+  .table-card .t-status { font-size: 12px; margin-top: 6px; padding: 2px 8px; border-radius: 10px; display: inline-block; }
+  .table-card .t-time { font-size: 11px; color: #999; margin-top: 6px; }
+  .table-card .t-amount { font-size: 14px; color: var(--mc-red); font-weight: bold; margin-top: 4px; }
+
+  /* 状态颜色 */
+  .t-free { background: #f0faf0; border-color: #d8efd8; }
+  .t-free .t-status { background: var(--mc-green-light); color: var(--mc-green); }
+  .t-dining { background: #fff8f0; border-color: #ffe0bf; }
+  .t-dining .t-status { background: #fff5e6; color: var(--mc-orange); }
+  .t-cleaning { background: #f7f7f7; border-color: #e0e0e0; }
+  .t-cleaning .t-status { background: #f0f0f0; color: #999; }
+  .t-reserved { background: #f0f6ff; border-color: #cce4ff; }
+  .t-reserved .t-status { background: #e6f2ff; color: #2a9fd6; }
+  .t-urgent { border-color: var(--mc-red) !important; }
+  .t-urgent::after { content: "超时"; position: absolute; top: -8px; right: -8px; background: var(--mc-red); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 8px; }
+
+  /* 图例 */
+  .legend { display: flex; gap: 20px; font-size: 13px; color: #666; margin-bottom: 16px; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  /* 桌台详情弹窗 */
+  .td-modal { width: 520px; }
+  .td-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; padding: 12px 0; border-bottom: 1px dashed #eee; margin-bottom: 16px; }
+  .td-info .it { display: flex; justify-content: space-between; font-size: 13px; }
+  .td-info .it label { color: #999; }
+  .td-info .it b { color: #333; }
+  .td-order-list { max-height: 220px; overflow-y: auto; }
+  .td-order-list .oi { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px; }
+  .td-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
+  .td-actions button { padding: 10px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <!-- 侧边栏 -->
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html" class="active">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <!-- 主区 -->
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">营业收银 / <b>桌台管理</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 收银员：小王</span>
+        <div class="avatar" style="background:var(--mc-orange);">王</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">🪑</div><div><div class="s-num">24</div><div class="s-label">总桌数</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">✓</div><div><div class="s-num">12</div><div class="s-label">空闲</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">🍽️</div><div><div class="s-num">9</div><div class="s-label">用餐中</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#e4393c,#d12e31);">!</div><div><div class="s-num">3</div><div class="s-label">待清台/超时</div></div></div>
+      </div>
+
+      <!-- 区域切换 + 图例 -->
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div class="area-tabs">
+              <a class="on" data-area="hall">大厅 (12)</a>
+              <a data-area="box">包间 (6)</a>
+              <a data-area="terrace">露台 (6)</a>
+            </div>
+            <div class="legend">
+              <span><i style="background:#d8efd8;"></i>空闲</span>
+              <span><i style="background:#ffe0bf;"></i>用餐中</span>
+              <span><i style="background:#e0e0e0;"></i>待清台</span>
+              <span><i style="background:#cce4ff;"></i>预留</span>
+            </div>
+          </div>
+
+          <!-- 桌台网格 -->
+          <div class="tables-grid" id="tablesGrid">
+            <!-- JS 动态渲染 -->
+          </div>
+
+          <div style="margin-top:16px;padding:10px;background:#fff5e6;border-radius:4px;font-size:13px;color:#8a5a00;">
+            💡 <b>操作提示</b>：点击桌台卡片可查看详情并执行开台/换桌/并桌/清台。客人扫码点餐后自动关联桌号，订单实时同步至收银主界面与后厨 KDS。
+          </div>
+        </div>
+      </div>
+
+      <!-- 待清台提醒 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>🧹 待清台列表（客人已结账离席，需服务员收拾）</h3>
+          <button class="btn btn-line" style="height:28px;padding:0 12px;font-size:12px;">批量标记已清</button>
+        </div>
+        <div class="a-panel-bd" style="padding:0;">
+          <table class="a-table">
+            <thead><tr><th>桌号</th><th>区域</th><th>结账时间</th><th>待清时长</th><th>结账金额</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td><b>3号桌</b></td><td>大厅</td><td>13:42</td><td style="color:var(--mc-red);">18 分钟</td><td>¥186.00</td><td><a href="#" class="edit">已清台</a></td></tr>
+              <tr><td><b>7号桌</b></td><td>大厅</td><td>13:15</td><td style="color:var(--mc-red);">45 分钟</td><td>¥98.00</td><td><a href="#" class="edit">已清台</a></td></tr>
+              <tr><td><b>包间B</b></td><td>包间</td><td>12:50</td><td>70 分钟</td><td>¥1,260.00</td><td><a href="#" class="edit">已清台</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 桌台详情弹窗 -->
+<div id="tableModal" class="mc-mask">
+  <div class="mc-modal td-modal">
+    <div class="mc-modal-hd">
+      <h3 id="tdTitle">桌台详情</h3>
+      <span class="x" data-close="tableModal">×</span>
+    </div>
+    <div class="mc-modal-bd">
+      <div class="td-info">
+        <div class="it"><label>桌号</label><b id="tdNum">—</b></div>
+        <div class="it"><label>区域</label><b id="tdArea">—</b></div>
+        <div class="it"><label>状态</label><b id="tdStatus">—</b></div>
+        <div class="it"><label>人数</label><b id="tdSeats">—</b></div>
+        <div class="it"><label>开台时间</label><b id="tdStart">—</b></div>
+        <div class="it"><label>用餐时长</label><b id="tdDur">—</b></div>
+      </div>
+      <div style="font-size:14px;font-weight:bold;margin-bottom:8px;">订单明细</div>
+      <div class="td-order-list" id="tdOrders"></div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid var(--mc-orange);margin-top:12px;font-size:16px;">
+        <b>合计</b><b style="color:var(--mc-red);" id="tdAmount">¥0.00</b>
+      </div>
+      <div class="td-actions">
+        <button class="btn btn-primary" id="actCheckout">💳 结账</button>
+        <button class="btn btn-orange" id="actAddDish">➕ 加菜</button>
+        <button class="btn btn-line" id="actChange">🔄 换桌</button>
+        <button class="btn btn-danger" id="actClear" style="display:none;">🧹 清台</button>
+        <button class="btn btn-primary" id="actOpen" style="display:none;">🔓 开台</button>
+        <button class="btn btn-line" id="actReserve" style="display:none;">📅 预留</button>
+        <button class="btn btn-line" id="actMerge">🔗 并桌</button>
+        <button class="btn btn-line" id="actPrint">🖨️ 打印</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // 桌台数据
+  var tables = [
+    { num:'1号桌', area:'大厅', seats:4, status:'free' },
+    { num:'2号桌', area:'大厅', seats:4, status:'free' },
+    { num:'3号桌', area:'大厅', seats:4, status:'cleaning', amount:186, start:'11:30', dur:'2小时12分' },
+    { num:'4号桌', area:'大厅', seats:6, status:'dining', amount:268, start:'12:15', dur:'1小时27分', orders:[
+      { name:'番茄炒蛋', qty:2, price:38 },
+      { name:'鱼香肉丝', qty:1, price:48 },
+      { name:'米饭', qty:4, price:8 }
+    ]},
+    { num:'5号桌', area:'大厅', seats:4, status:'dining', amount:98, start:'12:40', dur:'1小时02分', orders:[
+      { name:'西红柿鸡蛋面', qty:2, price:42 },
+      { name:'凉拌黄瓜', qty:1, price:16 }
+    ]},
+    { num:'6号桌', area:'大厅', seats:2, status:'free' },
+    { num:'7号桌', area:'大厅', seats:4, status:'cleaning', amount:98, start:'11:00', dur:'2小时42分' },
+    { num:'8号桌', area:'大厅', seats:4, status:'dining', amount:186, start:'13:05', dur:'37分', orders:[
+      { name:'番茄炒蛋', qty:1, price:38 },
+      { name:'麻婆豆腐', qty:1, price:32 },
+      { name:'紫菜蛋花汤', qty:1, price:18 },
+      { name:'米饭', qty:2, price:4 }
+    ]},
+    { num:'9号桌', area:'大厅', seats:6, status:'reserved', reserveTime:'18:30', reserveName:'李先生 6人' },
+    { num:'10号桌', area:'大厅', seats:4, status:'free' },
+    { num:'11号桌', area:'大厅', seats:2, status:'free' },
+    { num:'12号桌', area:'大厅', seats:8, status:'dining', amount:1260, start:'11:45', dur:'1小时57分', urgent:true, orders:[
+      { name:'番茄炒蛋', qty:3, price:38 },
+      { name:'红烧排骨', qty:2, price:88 },
+      { name:'清蒸鲈鱼', qty:1, price:168 },
+      { name:'白切鸡', qty:1, price:88 },
+      { name:'蒜蓉粉丝蒸扇贝', qty:6, price:18 }
+    ]},
+    { num:'包间A', area:'包间', seats:10, status:'dining', amount:880, start:'11:20', dur:'2小时22分', urgent:true, orders:[
+      { name:'红烧排骨', qty:2, price:88 },
+      { name:'清蒸鲈鱼', qty:2, price:168 }
+    ]},
+    { num:'包间B', area:'包间', seats:8, status:'cleaning', amount:1260, start:'10:50', dur:'2小时52分' },
+    { num:'包间C', area:'包间', seats:8, status:'free' },
+    { num:'露台1', area:'露台', seats:4, status:'free' },
+    { num:'露台2', area:'露台', seats:4, status:'dining', amount:128, start:'12:30', dur:'1小时12分', orders:[
+      { name:'西红柿鸡蛋面', qty:2, price:42 },
+      { name:'凉拌木耳', qty:1, price:22 }
+    ]}
+  ];
+
+  var statusMap = {
+    free:    { cls:'t-free',     text:'空闲',   icon:'✓' },
+    dining:  { cls:'t-dining',   text:'用餐中', icon:'🍽️' },
+    cleaning:{ cls:'t-cleaning', text:'待清台', icon:'🧹' },
+    reserved:{ cls:'t-reserved', text:'预留',   icon:'📅' }
+  };
+
+  // 渲染桌台
+  function render(area){
+    var grid = $('tablesGrid');
+    grid.innerHTML = '';
+    tables.filter(function(t){ return !area || area==='all' || t.area===area; }).forEach(function(t){
+      var s = statusMap[t.status];
+      var card = document.createElement('div');
+      card.className = 'table-card ' + s.cls + (t.urgent ? ' t-urgent' : '');
+      var html = '<div class="t-num">'+t.num+'</div>';
+      html += '<div class="t-seat">'+t.seats+'人桌</div>';
+      html += '<div class="t-status">'+s.icon+' '+s.text+'</div>';
+      if(t.status === 'dining'){
+        html += '<div class="t-time">⏱ '+t.dur+'</div>';
+        html += '<div class="t-amount">¥'+t.amount.toFixed(0)+'</div>';
+      } else if(t.status === 'cleaning'){
+        html += '<div class="t-time">⏱ '+t.dur+'</div>';
+        html += '<div class="t-amount" style="color:#999;">¥'+t.amount.toFixed(0)+'</div>';
+      } else if(t.status === 'reserved'){
+        html += '<div class="t-time">'+t.reserveTime+'</div>';
+        html += '<div class="t-amount" style="color:#2a9fd6;font-size:12px;">'+t.reserveName+'</div>';
+      }
+      card.innerHTML = html;
+      card.onclick = function(){ openTable(t); };
+      grid.appendChild(card);
+    });
+  }
+  render('hall');
+
+  // 区域切换
+  document.querySelectorAll('.area-tabs a').forEach(function(a){
+    a.onclick = function(){
+      document.querySelectorAll('.area-tabs a').forEach(function(x){ x.classList.remove('on'); });
+      this.classList.add('on');
+      render(this.getAttribute('data-area'));
+    };
+  });
+
+  // 弹窗开关
+  function openModal(id){ $(id).classList.add('show'); }
+  function closeModal(id){ $(id).classList.remove('show'); }
+  document.querySelectorAll('[data-close]').forEach(function(el){
+    el.addEventListener('click', function(){ closeModal(el.getAttribute('data-close')); });
+  });
+  document.querySelectorAll('.mc-mask').forEach(function(m){
+    m.addEventListener('click', function(e){ if(e.target === m) m.classList.remove('show'); });
+  });
+
+  // 打开桌台详情
+  function openTable(t){
+    var s = statusMap[t.status];
+    $('tdTitle').textContent = t.num + ' · ' + s.text;
+    $('tdNum').textContent = t.num;
+    $('tdArea').textContent = t.area;
+    $('tdStatus').textContent = s.icon + ' ' + s.text;
+    $('tdSeats').textContent = (t.seats || '-') + ' 人桌';
+    $('tdStart').textContent = t.start || '—';
+    $('tdDur').textContent = t.dur || (t.reserveTime ? '预留 '+t.reserveTime : '—');
+
+    // 订单列表
+    var ol = $('tdOrders');
+    if(t.orders && t.orders.length){
+      ol.innerHTML = t.orders.map(function(o){
+        return '<div class="oi"><span>'+o.name+' ×'+o.qty+'</span><b>¥'+(o.price*o.qty).toFixed(0)+'</b></div>';
+      }).join('');
+      $('tdAmount').textContent = '¥' + (t.amount || 0).toFixed(2);
+    } else {
+      ol.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无订单</div>';
+      $('tdAmount').textContent = '¥0.00';
+    }
+
+    // 按状态显示按钮
+    $('actCheckout').style.display = (t.status === 'dining') ? '' : 'none';
+    $('actAddDish').style.display = (t.status === 'dining') ? '' : 'none';
+    $('actChange').style.display = (t.status === 'dining') ? '' : 'none';
+    $('actClear').style.display = (t.status === 'cleaning') ? '' : 'none';
+    $('actOpen').style.display = (t.status === 'free') ? '' : 'none';
+    $('actReserve').style.display = (t.status === 'free') ? '' : 'none';
+    $('actMerge').style.display = (t.status === 'dining' || t.status === 'free') ? '' : 'none';
+
+    openModal('tableModal');
+  }
+
+  // 按钮事件
+  $('actCheckout').onclick = function(){ closeModal('tableModal'); alert('跳转支付结算页 → payment.html'); window.location.href='payment.html'; };
+  $('actAddDish').onclick = function(){ closeModal('tableModal'); alert('跳转点餐页加菜 → menu'); window.location.href='index.html'; };
+  $('actChange').onclick = function(){ var n = prompt('换到哪一桌？(输入桌号，如：6号桌)'); if(n) alert('已换桌至 '+n+'，原桌释放为待清台'); closeModal('tableModal'); };
+  $('actClear').onclick = function(){ if(confirm('确认 '+$('tdNum').textContent+' 已清台完毕？')){ alert('已标记清台，桌台释放为空闲'); closeModal('tableModal'); } };
+  $('actOpen').onclick = function(){ var n = prompt('就餐人数？', '4'); if(n) alert('已开台 '+n+' 人就餐'); closeModal('tableModal'); };
+  $('actReserve').onclick = function(){ var t = prompt('预留时间？(如 18:30)'); if(t) alert('已预留至 '+t); closeModal('tableModal'); };
+  $('actMerge').onclick = function(){ var n = prompt('并到哪一桌？'); if(n) alert('已与 '+n+' 并桌，账单合并'); closeModal('tableModal'); };
+  $('actPrint').onclick = function(){ alert('已发送打印指令（小票）'); };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>询价单管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html" class="active">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">交易管理 / <b>询价单管理</b></div>
+      <div class="u-info">
+        <span>管理员：张三</span>
+        <div class="avatar">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 统计 -->
+      <div class="a-stat">
+        <div class="s-card s1">
+          <div class="s-icon">📋</div>
+          <div><div class="s-num">3,860</div><div class="s-label">询价单总数</div></div>
+        </div>
+        <div class="s-card s2">
+          <div class="s-icon">⏳</div>
+          <div><div class="s-num">126</div><div class="s-label">报价中</div></div>
+        </div>
+        <div class="s-card s3">
+          <div class="s-icon">✅</div>
+          <div><div class="s-num">2,980</div><div class="s-label">已采纳</div></div>
+        </div>
+        <div class="s-card s4">
+          <div class="s-icon">💰</div>
+          <div><div class="s-num">¥1.2亿</div><div class="s-label">询价成交额</div></div>
+        </div>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd" style="padding:12px 20px;display:flex;gap:24px;font-size:14px;border-bottom:1px solid #eee;">
+          <a href="#" style="padding:6px 0;border-bottom:2px solid var(--mc-green);color:var(--mc-green);font-weight:bold;">全部 (3860)</a>
+          <a href="#" style="padding:6px 0;color:#666;">报价中 (126)</a>
+          <a href="#" style="padding:6px 0;color:#666;">待采纳 (86)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已采纳 (2980)</a>
+          <a href="#" style="padding:6px 0;color:#666;">已关闭 (668)</a>
+        </div>
+      </div>
+
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="询价单号">
+            <input type="text" class="a-input" placeholder="采购商名称">
+            <select class="a-select">
+              <option>全部品类</option>
+              <option>新鲜蔬菜</option>
+              <option>肉禽蛋品</option>
+              <option>水产海鲜</option>
+              <option>米面粮油</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>报价中</option>
+              <option>待采纳</option>
+              <option>已采纳</option>
+              <option>已关闭</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <button class="btn btn-line">导出Excel</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>询价单号</th>
+                <th>询价名称</th>
+                <th>采购商</th>
+                <th>品类</th>
+                <th>采购项数</th>
+                <th>报价数</th>
+                <th>报价截止</th>
+                <th>状态</th>
+                <th>采纳供应商</th>
+                <th>成交额</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>INQ20260625001</td>
+                <td>6月食堂蔬菜批量采购</td>
+                <td>湘味楼餐饮</td>
+                <td>新鲜蔬菜</td>
+                <td>3项</td>
+                <td>5家</td>
+                <td>2026-06-27 18:00</td>
+                <td><span class="tag tag-orange">报价中</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260623002</td>
+                <td>餐厅肉类周采购询价</td>
+                <td>川香食府</td>
+                <td>肉禽蛋品</td>
+                <td>3项</td>
+                <td>4家</td>
+                <td>2026-06-25 12:00</td>
+                <td><span class="tag tag-green">待采纳</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">报价</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260620003</td>
+                <td>水产海鲜节日备货采购</td>
+                <td>聚友海鲜大排档</td>
+                <td>水产海鲜</td>
+                <td>2项</td>
+                <td>6家</td>
+                <td>2026-06-22 18:00</td>
+                <td><span class="tag tag-gray">已采纳</span></td>
+                <td>海滨水产直供</td>
+                <td style="color:var(--mc-red);">¥7,950</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260624006</td>
+                <td>粮油大批量采购</td>
+                <td>东北饺子馆</td>
+                <td>米面粮油</td>
+                <td>3项</td>
+                <td>8家</td>
+                <td>2026-06-26 18:00</td>
+                <td><span class="tag tag-orange">报价中</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260618004</td>
+                <td>调料干货补货询价</td>
+                <td>阳光快餐</td>
+                <td>调味干货</td>
+                <td>5项</td>
+                <td>3家</td>
+                <td>2026-06-19 18:00</td>
+                <td><span class="tag tag-gray">已关闭</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260615005</td>
+                <td>蔬菜日采询价</td>
+                <td>好再来快餐</td>
+                <td>新鲜蔬菜</td>
+                <td>4项</td>
+                <td>5家</td>
+                <td>2026-06-16 18:00</td>
+                <td><span class="tag tag-gray">已采纳</span></td>
+                <td>绿源农产品</td>
+                <td style="color:var(--mc-red);">¥2,270</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260612007</td>
+                <td>烧烤食材大批量采购</td>
+                <td>老王烧烤店</td>
+                <td>肉禽蛋品</td>
+                <td>6项</td>
+                <td>10家</td>
+                <td>2026-06-14 18:00</td>
+                <td><span class="tag tag-gray">已采纳</span></td>
+                <td>顺发肉业合作社</td>
+                <td style="color:var(--mc-red);">¥18,600</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+              <tr>
+                <td>INQ20260610008</td>
+                <td>酒店综合食材采购</td>
+                <td>顺兴大酒店</td>
+                <td>综合采购</td>
+                <td>12项</td>
+                <td>15家</td>
+                <td>2026-06-12 18:00</td>
+                <td><span class="tag tag-gray">已采纳</span></td>
+                <td>多供应商</td>
+                <td style="color:var(--mc-red);">¥56,800</td>
+                <td class="ops"><a href="#" class="edit">详情</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <a href="#">‹ 上一页</a>
+            <span class="cur">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <span>...</span>
+            <a href="#">386</a>
+            <a href="#">下一页 ›</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

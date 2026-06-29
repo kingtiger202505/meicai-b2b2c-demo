@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>供应商入驻 - 美菜B2B</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+
+<div class="u-top">
+  <div class="container">
+    <div>欢迎来到美菜B2B（供应商入口）</div>
+    <div>
+      <a href="#">登录</a> | <a href="#">注册</a>
+      <a href="my-quotes.html">询价大厅</a>
+      <a href="product-publish.html">我的商品</a>
+      <a href="#">帮助中心</a>
+    </div>
+  </div>
+</div>
+
+<div class="u-header">
+  <div class="container">
+    <div class="u-logo">美菜<span>B2B</span></div>
+    <div class="u-search">
+      <input type="text" placeholder="搜索询价单、商品...">
+      <button>搜索</button>
+    </div>
+    <a href="#" class="u-cart">消息 <span class="badge">2</span></a>
+  </div>
+</div>
+
+<div class="nav-supplier">
+  <div class="container">
+    <a href="../user/index.html">← 返回首页</a>
+    <a href="my-quotes.html">询价大厅</a>
+    <a href="my-quotes.html">我的报价</a>
+    <a href="product-publish.html">发布商品</a>
+    <a href="product-publish.html">我的商品</a>
+    <a href="orders.html">订单管理</a>
+    <a href="supplier-join.html" class="active">商家入驻</a>
+    <span style="float:right;color:#c8e6c9;font-size:13px;line-height:44px;">供应商中心</span>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="join-hero">
+  <div class="container">
+    <h1>供应商入驻美菜B2B</h1>
+    <p>对接全国餐饮商户 · 源头直供 · 稳定订单 · 结账有保障</p>
+    <a href="#joinForm" class="btn btn-orange btn-lg">立即申请入驻</a>
+    <div class="join-stats">
+      <div class="st"><b>1,860+</b><span>入驻供应商</span></div>
+      <div class="st"><b>28万+</b><span>采购商户</span></div>
+      <div class="st"><b>¥6.8亿</b><span>年交易额</span></div>
+      <div class="st"><b>T+1</b><span>结算周期</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 流程 -->
+  <div class="join-flow">
+    <div class="jf-step">
+      <div class="jf-num">1</div>
+      <h4>提交申请</h4>
+      <p>填写企业信息<br>上传资质材料</p>
+    </div>
+    <div class="jf-step">
+      <div class="jf-num">2</div>
+      <h4>平台审核</h4>
+      <p>资质审核<br>1-3个工作日</p>
+    </div>
+    <div class="jf-step">
+      <div class="jf-num">3</div>
+      <h4>签订协议</h4>
+      <p>在线签署<br>供应商协议</p>
+    </div>
+    <div class="jf-step">
+      <div class="jf-num">4</div>
+      <h4>开店上线</h4>
+      <p>发布商品<br>接单报价</p>
+    </div>
+  </div>
+
+  <!-- 入驻表单 -->
+  <div class="u-form-wrap" id="joinForm">
+    <h2>供应商入驻申请</h2>
+    <div class="u-form">
+      <div class="f-item">
+        <label>企业名称 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="请输入营业执照上的企业全称">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>统一社会信用代码 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="18位社会信用代码">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>法定代表人 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="法人姓名">
+        </div>
+      </div>
+      <div class="f-item">
+        <label>联系电话 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <input type="text" placeholder="联系人姓名">
+            <input type="text" placeholder="手机号码">
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>主营品类 <span class="req">*</span></label>
+        <div class="ctrl">
+          <select>
+            <option>请选择主营品类</option>
+            <option>新鲜蔬菜</option>
+            <option>肉禽蛋品</option>
+            <option>水产海鲜</option>
+            <option>米面粮油</option>
+            <option>调味干货</option>
+            <option>餐厨用品</option>
+            <option>酒水饮料</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>供应区域 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="row">
+            <select><option>省</option></select>
+            <select><option>市</option></select>
+            <select><option>区/县</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>年供货能力 <span class="req">*</span></label>
+        <div class="ctrl">
+          <input type="text" placeholder="如：500吨/年">
+          <div class="hint">填写大致年供货量，便于平台评估</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>企业简介</label>
+        <div class="ctrl">
+          <textarea placeholder="简要介绍企业规模、产地、优势等"></textarea>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>营业执照 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="upload-box">点击上传营业执照（jpg/png，≤5MB）</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>食品经营许可证 <span class="req">*</span></label>
+        <div class="ctrl">
+          <div class="upload-box">点击上传食品经营许可证</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>其他资质</label>
+        <div class="ctrl">
+          <div class="upload-box">可上传多项资质（检验报告、绿色食品证等）</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <label>&nbsp;</label>
+        <div class="ctrl">
+          <label style="float:none;width:auto;text-align:left;line-height:1.6;font-size:13px;">
+            <input type="checkbox" style="vertical-align:middle;"> 我已阅读并同意《美菜B2B供应商入驻协议》《平台服务条款》
+          </label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary btn-lg">提交申请</button>
+        <button class="btn btn-line btn-lg" style="margin-left:10px;">暂存草稿</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B食材采购平台 | 餐饮商户一站式采购</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>权限设置 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html" class="active">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">系统设置 / <b>权限设置</b></div>
+      <div class="u-info"><span>管理员：张三</span><div class="avatar">张</div></div>
+    </div>
+
+    <div class="a-content">
+      <!-- 角色列表 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>角色列表</h3>
+          <button class="btn btn-primary btn-sm">+ 新增角色</button>
+        </div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>角色名称</th>
+                <th>角色标识</th>
+                <th>描述</th>
+                <th>员工数</th>
+                <th>创建时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>超级管理员</td>
+                <td><code>super_admin</code></td>
+                <td>拥有系统全部权限，不可删除</td>
+                <td>2</td>
+                <td>2026-01-01</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">查看权限</a></td>
+              </tr>
+              <tr>
+                <td>运营专员</td>
+                <td><code>operator</code></td>
+                <td>商品、订单、询价单日常管理</td>
+                <td>8</td>
+                <td>2026-01-05</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑权限</a><a href="#" class="edit">分配员工</a></td>
+              </tr>
+              <tr>
+                <td>审核员</td>
+                <td><code>auditor</code></td>
+                <td>商品审核、入驻审核</td>
+                <td>6</td>
+                <td>2026-01-05</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑权限</a><a href="#" class="edit">分配员工</a></td>
+              </tr>
+              <tr>
+                <td>客服</td>
+                <td><code>service</code></td>
+                <td>纠纷处理、评价查看、订单查询</td>
+                <td>10</td>
+                <td>2026-01-10</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑权限</a><a href="#" class="edit">分配员工</a></td>
+              </tr>
+              <tr>
+                <td>财务</td>
+                <td><code>finance</code></td>
+                <td>退款管理、订单结算、对账</td>
+                <td>4</td>
+                <td>2026-01-10</td>
+                <td><span class="tag tag-green">启用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑权限</a><a href="#" class="edit">分配员工</a></td>
+              </tr>
+              <tr>
+                <td>数据分析</td>
+                <td><code>analyst</code></td>
+                <td>仅查看数据看板与导出报表</td>
+                <td>3</td>
+                <td>2026-02-01</td>
+                <td><span class="tag tag-gray">已停用</span></td>
+                <td class="ops"><a href="#" class="edit">编辑权限</a><a href="#" class="del">删除</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 权限矩阵 -->
+      <div class="a-panel">
+        <div class="a-panel-hd">
+          <h3>权限矩阵 - 运营专员（operator）</h3>
+          <div>
+            <button class="btn btn-primary btn-sm">保存权限</button>
+            <button class="btn btn-line btn-sm">全选</button>
+            <button class="btn btn-line btn-sm">清空</button>
+          </div>
+        </div>
+        <div class="a-panel-bd">
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th>功能模块</th>
+                <th>查看</th>
+                <th>新增</th>
+                <th>编辑</th>
+                <th>删除</th>
+                <th>审核</th>
+                <th>导出</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>订单管理</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox" checked></td>
+              </tr>
+              <tr>
+                <td>询价单管理</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox" checked></td>
+              </tr>
+              <tr>
+                <td>商品列表</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+              </tr>
+              <tr>
+                <td>商品审核</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+              </tr>
+              <tr>
+                <td>供应商管理</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+              </tr>
+              <tr>
+                <td>商户管理</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+              </tr>
+              <tr>
+                <td>退款管理</td>
+                <td><input type="checkbox" checked></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+                <td><input type="checkbox"></td>
+              </tr>
+              <tr style="background:#fafafa;">
+                <td><b>系统设置</b></td>
+                <td colspan="6" style="color:#999;">运营专员无系统设置权限</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="u-footer">
+  <p>美菜B2B管理后台 | 内部管理系统</p>
+  <p>Copyright © 2026 meicai-b2b.com All Rights Reserved</p>
+</div>
+
+</body>
+</html>

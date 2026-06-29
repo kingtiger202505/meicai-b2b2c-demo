@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员与营销 - 美菜POS</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+<style>
+  .a-side { background: #3a2a1a; }
+  .a-logo { background: #2a1d10; }
+  .a-logo span { color: var(--mc-orange); }
+
+  /* 模块切换 */
+  .mod-tabs { display: flex; gap: 6px; margin-bottom: 16px; background: #fff; padding: 6px; border-radius: 6px; width: fit-content; }
+  .mod-tabs a { padding: 8px 18px; border-radius: 4px; font-size: 13px; cursor: pointer; color: #666; }
+  .mod-tabs a.on { background: var(--mc-orange); color: #fff; font-weight: bold; }
+
+  /* 会员等级卡 */
+  .level-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .level-card { border-radius: 8px; padding: 20px; color: #fff; position: relative; overflow: hidden; }
+  .level-card .lv-name { font-size: 18px; font-weight: bold; }
+  .level-card .lv-count { font-size: 28px; font-weight: bold; margin: 8px 0; }
+  .level-card .lv-desc { font-size: 12px; opacity: .9; }
+  .lv-1 { background: linear-gradient(135deg, #b0b0b0, #888); }
+  .lv-2 { background: linear-gradient(135deg, #b0bec5, #78909c); }
+  .lv-3 { background: linear-gradient(135deg, #ffd54f, #ff9500); }
+  .lv-4 { background: linear-gradient(135deg, #b36ae0, #8e44ad); }
+
+  /* 会员卡片 */
+  .member-row td { padding: 14px; }
+  .member-avatar { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; margin-right: 8px; vertical-align: middle; }
+
+  /* 优惠券 */
+  .coupon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .coupon-card { background: #fff; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+  .coupon-card .cc-hd { padding: 18px; color: #fff; position: relative; }
+  .coupon-card .cc-amount { font-size: 32px; font-weight: bold; }
+  .coupon-card .cc-amount small { font-size: 14px; font-weight: normal; }
+  .coupon-card .cc-name { font-size: 13px; opacity: .9; margin-top: 4px; }
+  .coupon-card .cc-bd { padding: 12px; font-size: 12px; color: #666; }
+  .coupon-card .cc-bd .cr { display: flex; justify-content: space-between; padding: 4px 0; }
+  .coupon-card .cc-ft { padding: 10px 12px; border-top: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+  .cc-orange .cc-hd { background: linear-gradient(135deg, #ff9500, #ff6b00); }
+  .cc-green .cc-hd { background: linear-gradient(135deg, #4cb050, #3a9b3e); }
+  .cc-purple .cc-hd { background: linear-gradient(135deg, #b36ae0, #8e44ad); }
+  .cc-blue .cc-hd { background: linear-gradient(135deg, #5ec0e0, #2a9fd6); }
+
+  /* 营销活动 */
+  .campaign-card { background: #fff; border-radius: 8px; padding: 16px; border-left: 4px solid var(--mc-orange); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .campaign-card .cm-info { flex: 1; }
+  .campaign-card .cm-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
+  .campaign-card .cm-desc { font-size: 13px; color: #666; }
+  .campaign-card .cm-meta { font-size: 12px; color: #999; margin-top: 6px; }
+  .campaign-card .cm-toggle { display: flex; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>POS</span></div>
+    <div class="a-menu">
+      <div class="m-group">营业收银</div>
+      <a href="index.html">收银主界面</a>
+      <a href="tables.html">桌台管理</a>
+      <a href="payment.html">支付结算</a>
+      <a href="kitchen.html">后厨 KDS</a>
+      <div class="m-group">菜品管理</div>
+      <a href="dishes.html">菜品与配方</a>
+      <div class="m-group">库存与采购</div>
+      <a href="inventory.html">食材库存</a>
+      <a href="purchase.html">向美菜采购</a>
+      <div class="m-group">财务管理</div>
+      <a href="refund.html">退单退款</a>
+      <a href="daily.html">营业日结</a>
+      <div class="m-group">会员营销</div>
+      <a href="member.html" class="active">会员与营销</a>
+      <div class="m-group">经营报表</div>
+      <a href="orders.html">营业报表</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">会员营销 / <b>会员与营销</b></div>
+      <div class="u-info">
+        <span>餐厅：湘味楼 · 店长：张总</span>
+        <div class="avatar" style="background:var(--mc-orange);">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <!-- 模块切换 -->
+      <div class="mod-tabs">
+        <a class="on" data-mod="member">👥 会员管理</a>
+        <a data-mod="coupon">🎫 优惠券</a>
+        <a data-mod="campaign">🎯 营销活动</a>
+        <a data-mod="point">⭐ 积分商城</a>
+      </div>
+
+      <!-- 会员统计 -->
+      <div class="a-stat">
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#b36ae0,#8e44ad);">👥</div><div><div class="s-num">1,286</div><div class="s-label">总会员数</div><div class="s-trend up">↑ 38 本月新增</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">💰</div><div><div class="s-num">¥38,260</div><div class="s-label">会员储值余额</div><div class="s-trend">沉淀资金</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#4cb050,#3a9b3e);">⭐</div><div><div class="s-num">86,420</div><div class="s-label">发放积分</div><div class="s-trend up">↑ 12,580</div></div></div>
+        <div class="s-card"><div class="s-icon" style="background:linear-gradient(135deg,#5ec0e0,#2a9fd6);">💳</div><div><div class="s-num">¥4,820</div><div class="s-label">本月储值消费</div><div class="s-trend up">↑ 8.2%</div></div></div>
+      </div>
+
+      <!-- 会员等级 -->
+      <div class="a-panel">
+        <div class="a-panel-hd"><h3>🏅 会员等级分布</h3></div>
+        <div class="a-panel-bd">
+          <div class="level-grid">
+            <div class="level-card lv-1">
+              <div class="lv-name">普通会员</div>
+              <div class="lv-count">820</div>
+              <div class="lv-desc">注册即得 · 无折扣</div>
+            </div>
+            <div class="level-card lv-2">
+              <div class="lv-name">银卡会员</div>
+              <div class="lv-count">326</div>
+              <div class="lv-desc">消费满 ¥500 · 95折</div>
+            </div>
+            <div class="level-card lv-3">
+              <div class="lv-name">金卡会员</div>
+              <div class="lv-count">128</div>
+              <div class="lv-desc">消费满 ¥3000 · 9折</div>
+            </div>
+            <div class="level-card lv-4">
+              <div class="lv-name">钻石会员</div>
+              <div class="lv-count">12</div>
+              <div class="lv-desc">消费满 ¥10000 · 85折</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 会员列表 -->
+      <div class="a-panel" id="modMember">
+        <div class="a-panel-hd">
+          <h3>👥 会员列表</h3>
+          <div>
+            <input type="text" class="a-input" placeholder="手机号/姓名搜索" style="margin-right:6px;">
+            <button class="btn btn-orange btn-sm">+ 新增会员</button>
+            <button class="btn btn-primary btn-sm">储值充值</button>
+          </div>
+        </div>
+        <div class="a-panel-bd" style="padding:0;">
+          <table class="a-table">
+            <thead>
+              <tr><th>会员</th><th>手机号</th><th>等级</th><th>余额</th><th>积分</th><th>累计消费</th><th>注册时间</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="member-avatar" style="background:linear-gradient(135deg,#b36ae0,#8e44ad);">钻</span>张先生</td>
+                <td>138****8888</td>
+                <td><span class="tag" style="background:#f3e8ff;color:#8e44ad;">钻石</span></td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥3,820.00</td>
+                <td>12,860</td>
+                <td>¥18,260</td>
+                <td>2024-03-15</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">充值</a></td>
+              </tr>
+              <tr>
+                <td><span class="member-avatar" style="background:linear-gradient(135deg,#ffd54f,#ff9500);">金</span>李女士</td>
+                <td>139****6666</td>
+                <td><span class="tag tag-orange">金卡</span></td>
+                <td style="color:var(--mc-red);font-weight:bold;">¥1,260.00</td>
+                <td>5,820</td>
+                <td>¥6,820</td>
+                <td>2024-06-20</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">充值</a></td>
+              </tr>
+              <tr>
+                <td><span class="member-avatar" style="background:linear-gradient(135deg,#b0bec5,#78909c);">银</span>王先生</td>
+                <td>136****1234</td>
+                <td><span class="tag" style="background:#e0e0e0;color:#666;">银卡</span></td>
+                <td>¥320.00</td>
+                <td>1,860</td>
+                <td>¥820</td>
+                <td>2025-01-10</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">充值</a></td>
+              </tr>
+              <tr>
+                <td><span class="member-avatar" style="background:linear-gradient(135deg,#b0b0b0,#888);">普</span>陈小姐</td>
+                <td>135****5678</td>
+                <td><span class="tag tag-gray">普通</span></td>
+                <td>¥0.00</td>
+                <td>120</td>
+                <td>¥120</td>
+                <td>2026-06-25</td>
+                <td class="ops"><a href="#" class="edit">详情</a><a href="#" class="edit">充值</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 优惠券 -->
+      <div class="a-panel" id="modCoupon" style="display:none;">
+        <div class="a-panel-hd">
+          <h3>🎫 优惠券管理</h3>
+          <button class="btn btn-orange btn-sm">+ 新建优惠券</button>
+        </div>
+        <div class="a-panel-bd">
+          <div class="coupon-grid">
+            <div class="coupon-card cc-orange">
+              <div class="cc-hd">
+                <div class="cc-amount">¥20<small> 满100可用</small></div>
+                <div class="cc-name">新人专享券</div>
+              </div>
+              <div class="cc-bd">
+                <div class="cr"><span>类型</span><b>满减券</b></div>
+                <div class="cr"><span>有效期</span><b>2026-06-25 ~ 07-25</b></div>
+                <div class="cr"><span>已领/总量</span><b>238 / 500</b></div>
+                <div class="cr"><span>已核销</span><b>156</b></div>
+              </div>
+              <div class="cc-ft">
+                <span class="tag tag-green">进行中</span>
+                <a href="#" class="edit">数据</a>
+              </div>
+            </div>
+
+            <div class="coupon-card cc-green">
+              <div class="cc-hd">
+                <div class="cc-amount">8.8<small> 折</small></div>
+                <div class="cc-name">会员日折扣</div>
+              </div>
+              <div class="cc-bd">
+                <div class="cr"><span>类型</span><b>折扣券</b></div>
+                <div class="cr"><span>有效期</span><b>每周三</b></div>
+                <div class="cr"><span>适用</span><b>金卡及以上</b></div>
+                <div class="cr"><span>本月核销</span><b>86</b></div>
+              </div>
+              <div class="cc-ft">
+                <span class="tag tag-green">进行中</span>
+                <a href="#" class="edit">数据</a>
+              </div>
+            </div>
+
+            <div class="coupon-card cc-purple">
+              <div class="cc-hd">
+                <div class="cc-amount">¥50<small> 满300可用</small></div>
+                <div class="cc-name">生日月专享</div>
+              </div>
+              <div class="cc-bd">
+                <div class="cr"><span>类型</span><b>满减券</b></div>
+                <div class="cr"><span>有效期</span><b>生日当月</b></div>
+                <div class="cr"><span>适用</span><b>所有会员</b></div>
+                <div class="cr"><span>本月核销</span><b>42</b></div>
+              </div>
+              <div class="cc-ft">
+                <span class="tag tag-green">进行中</span>
+                <a href="#" class="edit">数据</a>
+              </div>
+            </div>
+
+            <div class="coupon-card cc-blue">
+              <div class="cc-hd">
+                <div class="cc-amount">¥10<small> 无门槛</small></div>
+                <div class="cc-name">好评返券</div>
+              </div>
+              <div class="cc-bd">
+                <div class="cr"><span>类型</span><b>代金券</b></div>
+                <div class="cr"><span>有效期</span><b>领取后7天</b></div>
+                <div class="cr"><span>已领/总量</span><b>620 / 不限</b></div>
+                <div class="cr"><span>已核销</span><b>486</b></div>
+              </div>
+              <div class="cc-ft">
+                <span class="tag tag-green">进行中</span>
+                <a href="#" class="edit">数据</a>
+              </div>
+            </div>
+
+            <div class="coupon-card cc-orange">
+              <div class="cc-hd">
+                <div class="cc-amount">¥30<small> 满150可用</small></div>
+                <div class="cc-name">周末家庭聚餐</div>
+              </div>
+              <div class="cc-bd">
+                <div class="cr"><span>类型</span><b>满减券</b></div>
+                <div class="cr"><span>有效期</span><b>周末两天</b></div>
+                <div class="cr"><span>已领/总量</span><b>180 / 300</b></div>
+                <div class="cr"><span>已核销</span><b>98</b></div>
+              </div>
+              <div class="cc-ft">
+                <span class="tag tag-orange">即将结束</span>
+                <a href="#" class="edit">数据</a>
+              </div>
+            </div>
+
+            <div class="coupon-card cc-green">
+              <div class="cc-hd">
+                <div class="cc-amount">¥15<small> 满80可用</small></div>
+                <div class="cc-name">工作日午餐</div>
+              </div>
+              <div class="cc-bd">
+                <div class="cr"><span>类型</span><b>满减券</b></div>
+                <div class="cr"><span>有效期</span><b>工作日11-14点</b></div>
+                <div class="cr"><span>已领/总量</span><b>320 / 500</b></div>
+                <div class="cr"><span>已核销</span><b>268</b></div>
+              </div>
+              <div class="cc-ft">
+                <span class="tag tag-gray">已结束</span>
+                <a href="#" class="edit">数据</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 营销活动 -->
+      <div class="a-panel" id="modCampaign" style="display:none;">
+        <div class="a-panel-hd">
+          <h3>🎯 营销活动</h3>
+          <button class="btn btn-orange btn-sm">+ 新建活动</button>
+        </div>
+        <div class="a-panel-bd">
+          <div class="campaign-card">
+            <div class="cm-info">
+              <div class="cm-title">🎊 双人套餐 ¥128（原价 ¥168）</div>
+              <div class="cm-desc">番茄炒蛋 + 鱼香肉丝 + 米饭×2 + 紫菜蛋花汤，限堂食</div>
+              <div class="cm-meta">有效期：长期 · 已售 386 份 · 平均提升客单价 ¥32</div>
+            </div>
+            <div class="cm-toggle">
+              <span class="tag tag-green">进行中</span>
+              <button class="btn btn-line btn-sm">编辑</button>
+              <button class="btn btn-danger btn-sm">停用</button>
+            </div>
+          </div>
+
+          <div class="campaign-card">
+            <div class="cm-info">
+              <div class="cm-title">🎉 充值 ¥500 送 ¥50</div>
+              <div class="cm-desc">储值满 ¥500 送 ¥50 余额，多充多送（满1000送120）</div>
+              <div class="cm-meta">有效期：2026-06-01 ~ 06-30 · 已充值 86 笔 · 沉淀资金 ¥4.3万</div>
+            </div>
+            <div class="cm-toggle">
+              <span class="tag tag-green">进行中</span>
+              <button class="btn btn-line btn-sm">编辑</button>
+              <button class="btn btn-danger btn-sm">停用</button>
+            </div>
+          </div>
+
+          <div class="campaign-card">
+            <div class="cm-info">
+              <div class="cm-title">🍽️ 招牌菜限时 5 折</div>
+              <div class="cm-desc">每日 14:00-17:00 下午茶时段，番茄炒蛋/麻婆豆腐 5 折</div>
+              <div class="cm-meta">有效期：工作日 · 已售 128 份 · 时段客流 ↑23%</div>
+            </div>
+            <div class="cm-toggle">
+              <span class="tag tag-green">进行中</span>
+              <button class="btn btn-line btn-sm">编辑</button>
+              <button class="btn btn-danger btn-sm">停用</button>
+            </div>
+          </div>
+
+          <div class="campaign-card">
+            <div class="cm-info">
+              <div class="cm-title">👥 老带新，双方各得 ¥30 券</div>
+              <div class="cm-desc">老会员邀请新会员注册并首单，双方各得 ¥30 无门槛券</div>
+              <div class="cm-meta">有效期：2026-06-15 ~ 07-15 · 已邀新 38 人 · 转化率 62%</div>
+            </div>
+            <div class="cm-toggle">
+              <span class="tag tag-green">进行中</span>
+              <button class="btn btn-line btn-sm">编辑</button>
+              <button class="btn btn-danger btn-sm">停用</button>
+            </div>
+          </div>
+
+          <div class="campaign-card" style="border-left-color:#999;opacity:.7;">
+            <div class="cm-info">
+              <div class="cm-title">💝 母亲节套餐 ¥299</div>
+              <div class="cm-desc">5月12日限定家庭套餐，含白切鸡+清蒸鲈鱼+红烧排骨+汤</div>
+              <div class="cm-meta">已结束 · 售出 86 份 · 营业额 ¥2.6万</div>
+            </div>
+            <div class="cm-toggle">
+              <span class="tag tag-gray">已结束</span>
+              <button class="btn btn-line btn-sm">复盘</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 积分商城 -->
+      <div class="a-panel" id="modPoint" style="display:none;">
+        <div class="a-panel-hd">
+          <h3>⭐ 积分商城（积分兑换）</h3>
+          <button class="btn btn-orange btn-sm">+ 新增兑换项</button>
+        </div>
+        <div class="a-panel-bd" style="padding:0;">
+          <table class="a-table">
+            <thead><tr><th>兑换项</th><th>类型</th><th>所需积分</th><th>库存/总量</th><th>已兑换</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td><b>¥5 代金券</b></td><td>电子券</td><td>500 分</td><td>不限</td><td>128</td><td><span class="tag tag-green">上架</span></td><td class="ops"><a href="#" class="edit">编辑</a></td></tr>
+              <tr><td><b>¥20 代金券</b></td><td>电子券</td><td>1,800 分</td><td>不限</td><td>86</td><td><span class="tag tag-green">上架</span></td><td class="ops"><a href="#" class="edit">编辑</a></td></tr>
+              <tr><td><b>免费加菜券（任选一道≤¥38）</b></td><td>电子券</td><td>800 分</td><td>不限</td><td>62</td><td><span class="tag tag-green">上架</span></td><td class="ops"><a href="#" class="edit">编辑</a></td></tr>
+              <tr><td><b>定制马克杯</b></td><td>实物</td><td>3,000 分</td><td>50 / 100</td><td>48</td><td><span class="tag tag-orange">库存预警</span></td><td class="ops"><a href="#" class="edit">编辑</a></td></tr>
+              <tr><td><b>会员升级券（直升金卡）</b></td><td>权益</td><td>5,000 分</td><td>10 / 10</td><td>10</td><td><span class="tag tag-red">已兑完</span></td><td class="ops"><a href="#" class="edit">编辑</a></td></tr>
+            </tbody>
+          </table>
+          <div style="padding:12px 16px;background:#fff5e6;font-size:13px;color:#8a5a00;">
+            💡 <b>积分规则</b>：消费 1 元 = 1 积分 · 生日月双倍 · 评价 +20 分 · 邀请新会员 +500 分
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 模块切换
+  var mods = { member:'modMember', coupon:'modCoupon', campaign:'modCampaign', point:'modPoint' };
+  document.querySelectorAll('.mod-tabs a').forEach(function(a){
+    a.onclick = function(){
+      document.querySelectorAll('.mod-tabs a').forEach(function(x){ x.classList.remove('on'); });
+      a.classList.add('on');
+      var key = a.getAttribute('data-mod');
+      Object.keys(mods).forEach(function(k){
+        document.getElementById(mods[k]).style.display = (k === key) ? '' : 'none';
+      });
+    };
+  });
+})();
+</script>
+</body>
+</html>

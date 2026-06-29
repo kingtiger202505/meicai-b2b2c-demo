@@ -1,0 +1,222 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: $spacing-lg;
+}
+
+// 订单统计条
+.statStrip {
+  display: flex;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $page-padding;
+  color: #fff;
+}
+
+.statItem {
+  flex: 1;
+  text-align: center;
+
+  .num {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+  }
+
+  .label {
+    font-size: $font-size-xs;
+    opacity: 0.85;
+    margin-top: 4rpx;
+  }
+}
+
+// tab
+.tabs {
+  display: flex;
+  background: #fff;
+  padding: 0 $page-padding;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md 0;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  position: relative;
+
+  &.active {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48rpx;
+      height: 4rpx;
+      background: $color-primary;
+      border-radius: $radius-xs;
+    }
+  }
+}
+
+// 订单卡片
+.orderList {
+  padding: $spacing-md $page-padding;
+}
+
+.orderCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.orderHd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.orderNo {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.statusTag {
+  font-size: $font-size-xs;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+
+  &.pending {
+    background: #fdeaea;
+    color: $color-error;
+  }
+
+  &.cooking {
+    background: $color-bg-hover;
+    color: $color-primary;
+  }
+
+  &.serving {
+    background: #fff5e6;
+    color: $color-tag-text;
+  }
+
+  &.done {
+    background: #eaf7ea;
+    color: $color-success;
+  }
+
+  &.cancelled {
+    background: #f0f0f0;
+    color: $color-text-tertiary;
+  }
+
+  &.pendingPayment {
+    background: #fdeaea;
+    color: $color-error;
+    animation: pulseRed 1.8s infinite;
+  }
+}
+
+@keyframes pulseRed {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+// 订单操作按钮
+.orderActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.actionBtn {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  &.cancelBtn {
+    background: #f0f0f0;
+    color: $color-text-secondary;
+  }
+
+  &.payBtn {
+    flex: 2;
+    background: linear-gradient(135deg, $color-primary, $color-primary-light);
+    color: #fff;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.orderMeta {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-md 0;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.orderItems {
+  background: $color-bg-page;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+}
+
+.orderItemRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 6rpx 0;
+  font-size: $font-size-sm;
+}
+
+.itemName {
+  color: $color-text-primary;
+}
+
+.itemPrice {
+  color: $color-text-secondary;
+}
+
+.orderFt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.totalPrice {
+  color: $color-price;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+.payInfo {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.empty {
+  text-align: center;
+  padding: 120rpx 0;
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+}

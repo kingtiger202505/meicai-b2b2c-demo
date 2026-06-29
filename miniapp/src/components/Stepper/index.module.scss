@@ -1,0 +1,50 @@
+@use '@/styles/variables.scss' as *;
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.btnAdd,
+.btnMinus {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.92);
+  }
+}
+
+.btnAdd {
+  background: $color-primary;
+}
+
+.btnMinus {
+  background: #fff;
+  border: 2rpx solid $color-primary;
+}
+
+.icon {
+  color: #fff;
+  font-size: 36rpx;
+  line-height: 1;
+}
+
+.btnMinus .icon {
+  color: $color-primary;
+}
+
+.count {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  min-width: 40rpx;
+  text-align: center;
+  font-weight: $font-weight-semibold;
+}

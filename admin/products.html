@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>商品管理 - 美菜B2B管理后台</title>
+<link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+<div class="a-layout">
+  <div class="a-side">
+    <div class="a-logo">美菜<span>管理</span></div>
+    <div class="a-menu">
+      <div class="m-group">数据概览</div>
+      <a href="index.html">数据看板</a>
+      <div class="m-group">交易管理</div>
+      <a href="orders.html">订单管理</a>
+      <a href="inquiries.html">询价单管理</a>
+      <a href="refunds.html">退款管理</a>
+      <div class="m-group">商品管理</div>
+      <a href="products.html" class="active">商品列表</a>
+      <a href="product-review.html">商品审核</a>
+      <a href="categories.html">商品分类</a>
+      <a href="inventory.html">库存管理</a>
+      <div class="m-group">供应商管理</div>
+      <a href="suppliers.html">供应商列表</a>
+      <a href="supplier-audit.html">入驻审核</a>
+      <div class="m-group">运营管理</div>
+      <a href="disputes.html">纠纷管理</a>
+      <a href="ratings.html">评价信誉</a>
+      <div class="m-group">用户管理</div>
+      <a href="users.html">商户管理</a>
+      <a href="member-levels.html">会员等级</a>
+      <div class="m-group">系统设置</div>
+      <a href="staff.html">员工管理</a>
+      <a href="permissions.html">权限设置</a>
+      <a href="operation-logs.html">操作日志</a>
+    </div>
+  </div>
+
+  <div class="a-main">
+    <div class="a-header">
+      <div class="crumb">商品管理 / <b>商品列表</b></div>
+      <div class="u-info">
+        <span>管理员：张三</span>
+        <div class="avatar">张</div>
+      </div>
+    </div>
+
+    <div class="a-content">
+      <div class="a-panel">
+        <div class="a-panel-bd">
+          <div class="a-toolbar">
+            <input type="text" class="a-input" placeholder="商品名称/编号">
+            <select class="a-select">
+              <option>全部分类</option>
+              <option>蔬菜</option>
+              <option>肉禽蛋</option>
+              <option>水产海鲜</option>
+              <option>米面粮油</option>
+              <option>调料干货</option>
+            </select>
+            <select class="a-select">
+              <option>全部状态</option>
+              <option>在售</option>
+              <option>下架</option>
+              <option>缺货</option>
+            </select>
+            <button class="btn btn-primary">搜索</button>
+            <button class="btn btn-line">重置</button>
+            <div style="flex:1;"></div>
+            <button class="btn btn-primary">+ 新增商品</button>
+            <button class="btn btn-line">批量导入</button>
+            <button class="btn btn-line">导出</button>
+          </div>
+
+          <table class="a-table">
+            <thead>
+              <tr>
+                <th style="width:30px;"><input type="checkbox"></th>
+                <th>商品编号</th>
+                <th>商品名称</th>
+                <th>分类</th>
+                <th>规格</th>
+                <th>单价</th>
+                <th>库存</th>
+                <th>销量</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10001</td>
+                <td>山东大白菜 新鲜净菜</td>
+                <td>蔬菜</td>
+                <td>25kg/箱</td>
+                <td>¥18.90</td>
+                <td>5,200</td>
+                <td>12,580</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10002</td>
+                <td>冷鲜猪前腿肉 肉质紧实</td>
+                <td>肉禽蛋</td>
+                <td>10kg/箱</td>
+                <td>¥189.00</td>
+                <td>1,800</td>
+                <td>5,240</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10003</td>
+                <td>活冻白虾 海捕大虾 去线虾</td>
+                <td>水产海鲜</td>
+                <td>5kg/箱</td>
+                <td>¥158.00</td>
+                <td><span style="color:var(--mc-red);">86</span></td>
+                <td>3,860</td>
+                <td><span class="tag tag-orange">库存预警</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="edit">补货</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10004</td>
+                <td>东北珍珠米 一级大米</td>
+                <td>米面粮油</td>
+                <td>25kg/袋</td>
+                <td>¥98.00</td>
+                <td>3,500</td>
+                <td>8,920</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10005</td>
+                <td>海天金标生抽 酿造酱油</td>
+                <td>调料干货</td>
+                <td>1.9L×6瓶</td>
+                <td>¥72.00</td>
+                <td>2,600</td>
+                <td>7,360</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10006</td>
+                <td>冷鲜牛腩 进口牛肉</td>
+                <td>肉禽蛋</td>
+                <td>15kg/箱</td>
+                <td>¥398.00</td>
+                <td>0</td>
+                <td>2,100</td>
+                <td><span class="tag tag-red">缺货</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="edit">补货</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10007</td>
+                <td>鲜鸡蛋 农场直供 大码</td>
+                <td>肉禽蛋</td>
+                <td>360枚/箱</td>
+                <td>¥186.00</td>
+                <td>1,200</td>
+                <td>4,860</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10008</td>
+                <td>有机西红柿 沙瓤多汁</td>
+                <td>蔬菜</td>
+                <td>15kg/箱</td>
+                <td>¥45.00</td>
+                <td>800</td>
+                <td>2,540</td>
+                <td><span class="tag tag-gray">已下架</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="edit">上架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10009</td>
+                <td>金针菇白玉菇 菌菇组合装</td>
+                <td>蔬菜</td>
+                <td>5kg/箱</td>
+                <td>¥42.00</td>
+                <td>1,500</td>
+                <td>3,320</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>SP10010</td>
+                <td>紫茄子 长条茄子</td>
+                <td>蔬菜</td>
+                <td>10kg/箱</td>
+                <td>¥35.00</td>
+                <td>980</td>
+                <td>1,680</td>
+                <td><span class="tag tag-green">在售</span></td>
+                <td class="ops">
+                  <a href="#" class="edit">编辑</a>
+                  <a href="#" class="del">下架</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+            <div style="font-size:13px;color:#999;">
+              <label><input type="checkbox"> 全选</label>
+              <a href="#" class="btn btn-sm btn-line" style="margin-left:12px;">批量下架</a>
+              <a href="#" class="btn btn-sm btn-line" style="margin-left:8px;">批量删除</a>
+            </div>
+            <div class="pagination" style="margin:0;">
+              <a href="#">‹ 上一页</a>
+              <span class="cur">1</span>
+              <a href="#">2</a>
+              <a href="#">3</a>
+              <a href="#">4</a>
+              <a href="#">5</a>
+              <a href="#">下一页 ›</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
