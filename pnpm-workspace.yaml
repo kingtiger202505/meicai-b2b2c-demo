@@ -1,0 +1,4 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+  - 'miniapp'   # 现有 Taro 应用（P1 起接入 @meicai/shared + Supabase）
