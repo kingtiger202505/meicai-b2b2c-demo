@@ -9,10 +9,23 @@
 | `migrations/0001_core.sql` | 表结构 + 枚举 + 索引 + RLS（锁全表，仅开放 anon 只读 store/point/category/item）+ Realtime 发布 orders |
 | `migrations/0002_rpc.sql` | RPC：顾客 `place_order`/`pay_order`/`query_order`/`list_my_orders`；门店 `accept_order`/`complete_order`/`cancel_order`/`set_item_status`/`clear_table`。全部 `security definer`，金额/单号服务端算，沽清服务端校验 |
 | `migrations/0003_seed.sql` | 餐饮示例门店「川小灶·望京店」：6 桌 + 7 分类 + 15 菜（幂等，重跑即重置） |
+| `migrations/0004_member_stored_value.sql` | 会员/储值/券三表 + RLS（锁全表，仅经 RPC 读写）；`orders` 加 `member_id` |
+| `migrations/0005_member_rpc.sql` | 会员/储值 RPC：`get_or_create_member`/`get_member`/`topup_member`(幂等)/`pay_with_balance`(原子扣减)/`issue_coupon` |
+| `migrations/0006_pay_by_id.sql` | `pay_order_by_id`（微信支付回调按订单ID置 paid，幂等，仅 service_role） |
+
+## Edge Functions（微信支付，第一步：普通商户直连）
+
+| 目录 | 作用 |
+|---|---|
+| `functions/wxpay-create` | JSAPI 统一下单（金额以库为准）；`WXPAY_MODE=sandbox` 可未接商户先空跑联调 |
+| `functions/wxpay-notify` | 支付结果回调：验签解密 → `pay_order_by_id` 置 paid + 无感沉淀会员；储值单改调 `topup_member` |
+
+> 部署：`supabase functions deploy wxpay-create` / `... wxpay-notify --no-verify-jwt`。
+> 机密（`WXPAY_MCHID`/`WXPAY_APIV3_KEY`/商户证书/`WX_APPID`/`NOTIFY_URL`）放 **Supabase Function Secrets**，绝不进前端/入库。拿到普通商户号后把 `WXPAY_MODE` 切 `live` 并补齐签名实现（源码内 TODO 已标注）。
 
 ## 应用方式（任选）
 
-**A. Dashboard SQL Editor**：把三个文件内容依次粘贴运行。最省事、无需密钥。
+**A. Dashboard SQL Editor**：把迁移文件依次粘贴运行。最省事、无需密钥。
 
 **B. psql / 迁移脚本**（需数据库密码，走 IPv4 连接池 pooler；直连 `db.<ref>.supabase.co` 是 IPv6，很多环境不通）：
 ```
