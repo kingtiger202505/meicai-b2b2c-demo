@@ -78,6 +78,7 @@ jobs:
           docker image prune -f || true
           sleep 4
           echo "=== docker compose ps ==="; docker compose ps || docker ps
+          echo "=== restart policy / health ==="; docker inspect -f 'name={{.Name}} status={{.State.Status}} restart_policy={{.HostConfig.RestartPolicy.Name}} restarts={{.RestartCount}}' meicai-miniapp 2>/dev/null || echo "inspect failed"
           echo "=== listening on 8080 ==="; (ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | grep ':8080' || echo "NOT LISTENING on 8080"
           echo "=== local curl ==="; curl -fsS -m 10 -o /dev/null -w 'localhost:8080 => HTTP %{http_code}\n' http://localhost:8080 || echo "LOCAL CURL FAILED"
           REMOTE
