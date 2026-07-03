@@ -54,3 +54,10 @@ docker compose up -d --build
 curl -fsSI http://127.0.0.1:8080     # 期望 200
 ```
 访问 `http://150.158.236.166.nip.io:8080`。带桌号：`?point=T01`（或 `?table=3`）。
+
+## 触发 / 重跑部署
+
+- 本 workflow 监听 push 到 `001`（`miniapp/**`、`Dockerfile`、`docker-compose.yml`、`deploy/**`、workflow 本身），也支持 `workflow_dispatch`。
+- 全部 6 个 Secrets（`DEPLOY_HOST` / `DEPLOY_USER` / `DEPLOY_SSH_KEY` / `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `STORE_ID`）已在仓库配好。
+- 前置：部署公钥需先加到 `150.158.236.166` 的 `/root/.ssh/authorized_keys`，且机器已装 Docker、放行入站 8080。
+- 加好公钥后：在 GitHub Actions 页面对最近一次运行点 **Re-run**，或向 `001` 推任意改动即可重跑。
