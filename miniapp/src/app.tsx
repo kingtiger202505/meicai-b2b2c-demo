@@ -1,3 +1,4 @@
+import './polyfill';   // 必须第一位：为 H5 兜底 process 全局，早于任何读 process.env 的模块
 import React, { useEffect } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
 import Taro from '@tarojs/taro';

@@ -5,6 +5,16 @@ import prodConfig from './prod';
 import vitePluginImp from 'vite-plugin-imp';
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
+  // 显式把 TARO_APP_* 从构建环境(Docker ENV / shell)内联进产物。
+  // 不能只依赖 Taro 的 .env 自动加载：Docker 构建期这些值来自 build-arg→ENV，
+  // 若不显式 define，产物里会残留裸 process.env.TARO_APP_*，浏览器无 process 全局 → 白屏。
+  // defineConstants 保证这三处一定被替换成字符串常量(缺失则替换成 '')，从根上杜绝崩溃。
+  const APP_ENV_KEYS = ['TARO_APP_SUPABASE_URL', 'TARO_APP_SUPABASE_ANON_KEY', 'TARO_APP_STORE_ID'];
+  const appEnvConstants: Record<string, string> = {};
+  for (const k of APP_ENV_KEYS) {
+    appEnvConstants[`process.env.${k}`] = JSON.stringify(process.env[k] || '');
+  }
+
   const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'taro_template',
     date: '2025-12-10',
@@ -18,7 +28,9 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     sourceRoot: 'src',
     outputRoot: process.env.TARO_OUTPUT_DIR || 'dist',
     plugins: ['@tarojs/plugin-html'],
-    defineConstants: {},
+    defineConstants: {
+      ...appEnvConstants,
+    },
     copy: {
       patterns: [],
       options: {},

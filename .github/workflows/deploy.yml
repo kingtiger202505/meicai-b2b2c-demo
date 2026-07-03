@@ -82,15 +82,31 @@ jobs:
           echo "=== local curl ==="; curl -fsS -m 10 -o /dev/null -w 'localhost:8080 => HTTP %{http_code}\n' http://localhost:8080 || echo "LOCAL CURL FAILED"
           REMOTE
 
-      - name: Smoke check (external reachability)
+      - name: Smoke check (reachability + 产物内联校验)
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
           sleep 3
-          code=$(curl -s -m 25 -o /dev/null -w '%{http_code}' "http://$DEPLOY_HOST:8080" || echo 000)
-          echo "external http://$DEPLOY_HOST:8080 => HTTP $code"
+          base="http://$DEPLOY_HOST:8080"
+          code=$(curl -s -m 25 -o /dev/null -w '%{http_code}' "$base/" || echo 000)
+          echo "external $base => HTTP $code"
           if [ "$code" != "200" ]; then
-            echo "::warning::从 GitHub runner 访问 :8080 失败 (HTTP $code)。若上一步远端 local curl 为 200，则大概率是云安全组未放行入站 8080/tcp —— 需在云控制台开放。"
+            echo "::warning::从 GitHub runner 访问 :8080 失败 (HTTP $code)。若远端 local curl 为 200，则多为云安全组未放行 8080/tcp。"
             exit 1
           fi
           echo "external 8080 reachable ✓"
+          # 200 只证明静态外壳在；再校验主 JS 里 TARO_APP_* 已内联(否则浏览器会白屏)
+          html=$(curl -s -m 20 "$base/")
+          appjs=$(printf '%s' "$html" | grep -oE 'js/app\.[0-9a-f]+\.js' | head -1)
+          if [ -z "$appjs" ]; then echo "::warning::未从首页解析到主 JS，跳过内联校验"; exit 0; fi
+          js=$(curl -s -m 30 "$base/$appjs")
+          if printf '%s' "$js" | grep -qF 'process.env.TARO_APP_'; then
+            echo "::error::线上产物残留未内联的 process.env.TARO_APP_* —— 浏览器会白屏(ReferenceError: process is not defined)"
+            exit 1
+          fi
+          echo "no bare process.env.TARO_APP_ in $appjs ✓"
+          if printf '%s' "$js" | grep -qF 'supabase.co'; then
+            echo "supabase URL inlined ✓"
+          else
+            echo "::warning::主 JS 未见 supabase 域名——菜单可能读不到后端(检查 SUPABASE_URL secret)"
+          fi

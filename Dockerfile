@@ -23,7 +23,13 @@ RUN npm install --legacy-peer-deps --no-audit --no-fund
 
 # 再拷源码并构建 H5（dist/）
 COPY miniapp/ ./
+RUN test -n "$TARO_APP_SUPABASE_URL" && echo "build: TARO_APP_SUPABASE_URL present ✓" || echo "build WARN: TARO_APP_SUPABASE_URL 为空(菜单将读不到后端)"
 RUN NODE_ENV=production npm run build:h5
+# 硬校验：产物里不得残留未内联的 process.env.TARO_APP_*（否则浏览器无 process 全局 → 白屏）
+RUN if grep -rlF "process.env.TARO_APP_" dist >/dev/null 2>&1; then \
+      echo "BUILD FAIL: dist 残留未内联的 process.env.TARO_APP_*：" ; \
+      grep -rnF "process.env.TARO_APP_" dist | head ; exit 1 ; \
+    else echo "inline-check OK: 产物无裸 process.env.TARO_APP_*" ; fi
 
 # ---------- serve stage ----------
 FROM nginx:1.27-alpine
