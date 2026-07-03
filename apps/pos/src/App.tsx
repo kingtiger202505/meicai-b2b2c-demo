@@ -1,13 +1,27 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { buildTickets, resolveTerminology } from '@meicai/shared';
 import type { Item, ServicePoint, Store } from '@meicai/shared';
 import { supabase } from './supabase';
 import {
   getStoreId, getStore, listActiveOrders, listItems, listOccupiedPoints,
-  acceptOrder, completeOrder, cancelOrder, setItemStatus, clearTable,
+  acceptOrder, completeOrder, cancelOrder, reprintOrder, setItemStatus, clearTable,
   toOrderDetail, type OrderRow,
 } from './api';
+import { getPrintService, receiptStyles, receiptBodyHtml, type ReceiptPair } from './print';
+
+// 由订单行构造两联小票（接单副作用打印与预览/重打共用同一逻辑）
+function pairFor(row: OrderRow, store: Store): ReceiptPair {
+  const term = resolveTerminology(store.industry_type, store.terminology);
+  const { kitchen, customer } = buildTickets(
+    toOrderDetail(row),
+    store,
+    row.service_point ? { name: row.service_point.name } : null,
+    term,
+    { memberBalance: row.member?.balance ?? null },
+  );
+  return { kitchen, customer };
+}
 
 export function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -84,6 +98,17 @@ function Board() {
     if (storeId) reload(storeId);
   };
 
+  // 接单：paid→processing + 首次写 printed_at；接单副作用仅首次自动打印一次
+  const accept = async (o: OrderRow) => {
+    const { data, error } = await acceptOrder(o.id);
+    if (error) { alert('接单失败：' + JSON.stringify(error)); return; }
+    if (store && (data as { first_print?: boolean } | null)?.first_print) {
+      try { await getPrintService().print(pairFor(o, store)); }
+      catch (e) { console.error('接单自动打印失败', e); }
+    }
+    if (storeId) reload(storeId);
+  };
+
   const pending = orders.filter((o) => o.status === 'paid');
   const cooking = orders.filter((o) => o.status === 'processing');
 
@@ -104,7 +129,7 @@ function Board() {
             {pending.map((o) => (
               <OrderCard key={o.id} o={o}
                 actions={<>
-                  <button className="primary" onClick={() => act(acceptOrder(o.id))}>接单 · 打印</button>
+                  <button className="primary" onClick={() => accept(o)}>接单 · 打印</button>
                   <button onClick={() => setTicket(o)}>预览/重打</button>
                   <button className="danger" onClick={() => act(cancelOrder(o.id, '前台取消'))}>退款</button>
                 </>} />
@@ -174,32 +199,30 @@ function OrderCard({ o, actions }: { o: OrderRow; actions: React.ReactNode }) {
 }
 
 function TicketModal({ row, store, onClose }: { row: OrderRow; store: Store; onClose: () => void }) {
-  const term = resolveTerminology(store.industry_type, store.terminology);
-  const { kitchen, customer } = buildTickets(toOrderDetail(row), store, { name: row.service_point?.name ?? '' }, term);
+  const pairRef = useRef<ReceiptPair>(pairFor(row, store));
+  const [busy, setBusy] = useState(false);
+  const printed = row.printed_at != null; // 已首次打印过 → 本次为重打
+
+  const doPrint = async () => {
+    setBusy(true);
+    // 已打印过的订单：记录一次重打审计（不改写首次 printed_at）；未打印则为预览，RPC 自动跳过
+    try { await reprintOrder(row.id); } catch (e) { console.error('重打记录失败', e); }
+    try { await getPrintService().print(pairRef.current); } finally { setBusy(false); }
+  };
+
   return (
     <div className="modal" onClick={onClose}>
       <div className="modal-body" onClick={(e) => e.stopPropagation()}>
-        <div className="ticket-sheet">
-          <div className="ticket">
-            <h3>{kitchen.title}{kitchen.addon ? ` · 加菜${kitchen.addon_seq}` : ''}</h3>
-            <div className="big">{kitchen.point_name} · {kitchen.order_no}</div>
-            <hr />
-            {kitchen.lines.map((l, i) => <div className="line" key={i}><span>{l.name}</span><span>×{l.qty}</span></div>)}
-            {kitchen.lines.some((l) => l.note) && <div className="note">备注：{kitchen.lines.filter((l) => l.note).map((l) => l.note).join('；')}</div>}
-          </div>
-          <div className="ticket">
-            <h3>{customer.title}</h3>
-            <div>{customer.store_name}</div>
-            <div>{customer.point_name} · {customer.order_no}</div>
-            <hr />
-            {customer.lines.map((l, i) => <div className="line" key={i}><span>{l.name} ×{l.qty}</span><span>¥{((l.price ?? 0) * l.qty).toFixed(2)}</span></div>)}
-            <hr />
-            <div className="line total"><span>合计</span><span>¥{customer.total.toFixed(2)}</span></div>
-            <div className="pay">{customer.pay_method ?? ''}</div>
-          </div>
-        </div>
+        <div className="modal-title">{printed ? '重打小票（两联）' : '小票预览（两联）'}</div>
+        <style>{receiptStyles()}</style>
+        <div className="ticket-preview" dangerouslySetInnerHTML={{ __html: receiptBodyHtml(pairRef.current) }} />
+        {printed && row.reprint_count > 0 && (
+          <div className="reprint-hint">已重打 {row.reprint_count} 次</div>
+        )}
         <div className="modal-acts">
-          <button className="primary" onClick={() => window.print()}>打印两联</button>
+          <button className="primary" disabled={busy} onClick={doPrint}>
+            {busy ? '打印中…' : printed ? '重打两联' : '打印两联'}
+          </button>
           <button onClick={onClose}>关闭</button>
         </div>
       </div>

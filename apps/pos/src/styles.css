@@ -34,21 +34,11 @@ header nav { display: flex; gap: 8px; }
 .itemrow.soldout { background: #f7f8fa; color: #c9cdd4; }
 
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; }
-.modal-body { background: #fff; border-radius: 12px; padding: 16px; }
+.modal-body { background: #fff; border-radius: 12px; padding: 16px; max-height: 88vh; overflow: auto; }
+.modal-title { font-size: 15px; margin: 0 0 10px; color: #4e5969; }
 .modal-acts { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
-.ticket-sheet { display: flex; gap: 16px; }
-.ticket { width: 240px; padding: 10px; border: 1px dashed #c9cdd4; font-family: "Courier New", monospace; }
-.ticket h3 { text-align: center; margin: 0 0 6px; font-size: 15px; }
-.ticket .big { text-align: center; font-size: 22px; font-weight: 700; }
-.ticket hr { border: none; border-top: 1px dashed #c9cdd4; }
-.ticket .line { display: flex; justify-content: space-between; font-size: 13px; padding: 2px 0; }
-.ticket .line.total { font-weight: 700; }
-.ticket .note { font-size: 12px; color: #4e5969; margin-top: 4px; }
-.ticket .pay { text-align: right; font-size: 12px; color: #86909c; }
 
-@media print {
-  body * { visibility: hidden; }
-  .ticket-sheet, .ticket-sheet * { visibility: visible; }
-  .ticket-sheet { position: absolute; left: 0; top: 0; display: block; }
-  .ticket { width: 58mm; border: none; page-break-after: always; }
-}
+/* 小票预览：内部版式由 print/receipt.ts 的 receiptStyles() 注入（与打印一致） */
+.ticket-preview { display: flex; justify-content: center; background: #f2f3f5; padding: 14px; border-radius: 8px; }
+.ticket-preview .rcpt-sheet { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+.reprint-hint { text-align: center; font-size: 12px; color: #86909c; margin-top: 8px; }
