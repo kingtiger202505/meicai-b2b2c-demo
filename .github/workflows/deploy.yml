@@ -42,7 +42,7 @@ jobs:
             -e "ssh -i ~/.ssh/id_ed25519 -p $DEPLOY_PORT" \
             ./ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
 
-      - name: Build & start on server
+      - name: Build & start on server (+ open host firewall + diagnostics)
         env:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -52,17 +52,45 @@ jobs:
           TARO_APP_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           TARO_APP_STORE_ID: ${{ secrets.STORE_ID }}
         run: |
+          # 写构建期配置到 .env（docker compose 自动读取），避免把密钥内联进远端脚本
           ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cd '$DEPLOY_PATH' && \
-             export TARO_APP_SUPABASE_URL='$TARO_APP_SUPABASE_URL' && \
-             export TARO_APP_SUPABASE_ANON_KEY='$TARO_APP_SUPABASE_ANON_KEY' && \
-             export TARO_APP_STORE_ID='$TARO_APP_STORE_ID' && \
-             docker compose up -d --build && \
-             docker image prune -f"
+            "cat > '$DEPLOY_PATH/.env' <<EOF
+          TARO_APP_SUPABASE_URL=$TARO_APP_SUPABASE_URL
+          TARO_APP_SUPABASE_ANON_KEY=$TARO_APP_SUPABASE_ANON_KEY
+          TARO_APP_STORE_ID=$TARO_APP_STORE_ID
+          EOF"
+          # 远端：开放宿主防火墙 8080（不 reload，避免冲掉其它容器的 iptables）+ 重建本服务 + 自检
+          ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" DEPLOY_PATH="$DEPLOY_PATH" bash -s <<'REMOTE'
+          set -e
+          cd "$DEPLOY_PATH"
+          echo "=== open host firewall 8080 (best-effort, no reload) ==="
+          if command -v firewall-cmd >/dev/null 2>&1 && firewall-cmd --state >/dev/null 2>&1; then
+            firewall-cmd --add-port=8080/tcp || true            # 运行时立即生效
+            firewall-cmd --permanent --add-port=8080/tcp || true # 持久化（不 --reload）
+            echo "firewalld ports: $(firewall-cmd --list-ports 2>/dev/null)"
+          elif command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -qi active; then
+            ufw allow 8080/tcp || true
+          else
+            echo "no active firewalld/ufw detected"
+          fi
+          echo "=== docker compose up (force-recreate only this service) ==="
+          docker compose up -d --build --force-recreate
+          docker image prune -f || true
+          sleep 4
+          echo "=== docker compose ps ==="; docker compose ps || docker ps
+          echo "=== listening on 8080 ==="; (ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | grep ':8080' || echo "NOT LISTENING on 8080"
+          echo "=== local curl ==="; curl -fsS -m 10 -o /dev/null -w 'localhost:8080 => HTTP %{http_code}\n' http://localhost:8080 || echo "LOCAL CURL FAILED"
+          REMOTE
 
-      - name: Smoke check
+      - name: Smoke check (external reachability)
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          sleep 5
-          curl -fsSI "http://$DEPLOY_HOST:8080" | head -n 1 || (echo "smoke check failed" && exit 1)
+          sleep 3
+          code=$(curl -s -m 25 -o /dev/null -w '%{http_code}' "http://$DEPLOY_HOST:8080" || echo 000)
+          echo "external http://$DEPLOY_HOST:8080 => HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::warning::从 GitHub runner 访问 :8080 失败 (HTTP $code)。若上一步远端 local curl 为 200，则大概率是云安全组未放行入站 8080/tcp —— 需在云控制台开放。"
+            exit 1
+          fi
+          echo "external 8080 reachable ✓"
