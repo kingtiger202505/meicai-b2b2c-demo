@@ -29,8 +29,9 @@ function mapOrderError(raw: string): string {
 
 const MenuPage: React.FC = () => {
   const [activeCat, setActiveCat] = useState('');
-  // 右侧受控 scrollTop：点分类时按实测偏移精确定位（不依赖 scrollIntoView，H5 上其对齐会欠滚一截）
-  const [dishScrollTop, setDishScrollTop] = useState(0);
+  // 点分类时把该分类锚点写进 scrollIntoView（非受控 scrollTop —— 受控值会在手动滚动的重渲染里被 Taro
+  // 重新贴回、把列表拽回旧位置，导致标准②回归）。配合 scrollIntoViewAlignment="start" 让锚点组头贴顶。
+  const [scrollIntoCat, setScrollIntoCat] = useState('');
   const [showCart, setShowCart] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [dishes, setDishes] = useState<Dish[]>([]);
@@ -94,37 +95,20 @@ const MenuPage: React.FC = () => {
 
   // 点分类后短暂锁住「滚动反向高亮」，避免程序化滚动动画途中把高亮闪到中间分类
   const catLockUntil = useRef(0);
-  // 亚像素抖动：保证重复点同一分类时 scrollTop 值也会变化，从而再次触发滚动
-  const jitterRef = useRef(0);
-  // 右侧实时 scrollTop（由 onScroll 持续写入），供点分类时精确换算目标位置
-  const curScrollTop = useRef(0);
 
-  // 左侧分类点击 → 右侧把该分类首个菜品滚到容器顶
-  // 用 SelectorQuery 实测锚点相对容器的偏移，直接设 scrollTop（H5 的 scrollIntoView 默认 block:center 会欠滚，弃用）
+  // 左侧分类点击 → 用 scrollIntoView 把该分类锚点滚到容器顶（配合 alignment="start" 贴顶；非受控，不干扰手动滚动）
   const handleCatTap = useCallback((catId: string) => {
     setActiveCat(catId);
-    // 滚动动画 easeOutScroll 固定 500ms，锁久一点确保动画尾帧不把高亮反算回中间/上一分类
+    // 滚动动画期间锁住反向高亮，确保动画尾帧不把高亮反算回中间/上一分类
     catLockUntil.current = Date.now() + 700;
-    const q = Taro.createSelectorQuery();
-    q.select('#dish-scroll').boundingClientRect();
-    q.select(`#cat-anchor-${catId}`).boundingClientRect();
-    q.exec((res: any[]) => {
-      const container = res && res[0];
-      const anchor = res && res[1];
-      if (!container || !anchor) return;
-      // 目标 scrollTop = 当前 scrollTop + (锚点顶 - 容器顶)，使锚点组头精确贴容器顶
-      const target = Math.max(0, curScrollTop.current + (anchor.top - container.top));
-      jitterRef.current = jitterRef.current === 0 ? 0.5 : 0;
-      setDishScrollTop(target + jitterRef.current);
-    });
+    // 先清空再置：保证重复点同一分类时 scrollIntoView 值也会变化，从而再次触发滚动
+    setScrollIntoCat('');
+    setTimeout(() => setScrollIntoCat(`cat-anchor-${catId}`), 0);
   }, []);
 
   // 右侧滚动 → 同步高亮左侧分类（throttle + SelectorQuery，weapp/H5 通用）
   const scrollLock = useRef(false);
-  const handleDishScroll = useCallback((e?: any) => {
-    // 每次滚动都记录真实 scrollTop（不受 throttle 影响），供点分类换算
-    const st = e?.detail?.scrollTop;
-    if (typeof st === 'number') curScrollTop.current = st;
+  const handleDishScroll = useCallback(() => {
     if (Date.now() < catLockUntil.current) return; // 程序化定位动画期间不反向改高亮
     if (scrollLock.current) return;
     scrollLock.current = true;
@@ -345,7 +329,8 @@ const MenuPage: React.FC = () => {
           scrollY
           id="dish-scroll"
           className={styles.dishList}
-          scrollTop={dishScrollTop}
+          scrollIntoView={scrollIntoCat}
+          scrollIntoViewAlignment="start"
           scrollWithAnimation
           onScroll={handleDishScroll}
         >
