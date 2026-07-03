@@ -1,6 +1,7 @@
 # 单机部署：docker compose up -d --build
-# 对外端口 8080（80 已被占用）；测试访问 http://150.158.236.166.nip.io:8080
-# 构建期通过环境变量注入 Supabase 前端配置（见 miniapp/.env.example）
+# 对外端口：miniapp H5 → :8080，门店 POS → :8081（80 已被占用）
+# 测试访问 http://150.158.236.166.nip.io:8080（miniapp） / :8081（POS）
+# 构建期通过环境变量注入 Supabase 前端配置（miniapp 用 TARO_APP_*，POS 用 VITE_*）
 services:
   miniapp:
     build:
@@ -14,4 +15,19 @@ services:
     container_name: meicai-miniapp
     ports:
       - "8080:8080"
+    restart: unless-stopped
+
+  # 门店 POS（Vite+React SPA）→ nginx :8081；构建期注入 Supabase 前端配置
+  pos:
+    build:
+      context: .
+      dockerfile: Dockerfile.pos
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+        VITE_STORE_ID: ${VITE_STORE_ID:-}
+    image: meicai-pos:001
+    container_name: meicai-pos
+    ports:
+      - "8081:8081"
     restart: unless-stopped
