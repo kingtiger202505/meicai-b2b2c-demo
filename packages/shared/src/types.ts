@@ -59,9 +59,12 @@ export interface Order {
   is_addon: boolean;          // 加菜单
   addon_seq: number | null;   // 第 N 单
   cancel_reason: string | null;
+  member_id: string | null;   // 会员订单时非空（余额支付/绑定会员）
   created_at: string;
   paid_at: string | null;
-  printed_at: string | null;
+  printed_at: string | null;        // 首次打印锚点，一经写入不可覆盖（幂等）
+  reprint_count: number;            // 重打次数（审计，不影响 printed_at）
+  last_reprinted_at: string | null; // 最后一次重打时间
   completed_at: string | null;
   // order_token 永不下发到前端（query_order 已剥离）
 }
