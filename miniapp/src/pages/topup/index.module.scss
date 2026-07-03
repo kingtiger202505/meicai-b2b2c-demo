@@ -1,0 +1,128 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+// 余额头
+.balanceCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $page-padding;
+  color: #fff;
+}
+
+.balanceLabel {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.balanceNum {
+  font-size: 64rpx;
+  font-weight: $font-weight-bold;
+  margin-top: $spacing-xs;
+}
+
+.section {
+  margin: $spacing-lg $page-padding 0;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.amountItem {
+  width: calc((100% - #{$spacing-md} * 2) / 3);
+  box-sizing: border-box;
+  background: #fff;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-md 0;
+  text-align: center;
+
+  &.active {
+    border-color: $color-primary;
+    background: $color-bg-hover;
+  }
+}
+
+.amountValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.amountGift {
+  font-size: $font-size-xs;
+  color: $color-success;
+  margin-top: 4rpx;
+}
+
+.rule {
+  margin: $spacing-md 0 0;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+}
+
+// 底部支付栏
+.payBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  box-shadow: $shadow-float;
+  padding: $spacing-md $page-padding;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.paySummary {
+  flex: 1;
+}
+
+.payMain {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.paySub {
+  font-size: $font-size-xs;
+  color: $color-success;
+  margin-top: 2rpx;
+}
+
+.payBtn {
+  min-width: 240rpx;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  background: $color-primary;
+  color: #fff;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  @include flex-center;
+
+  &.disabled {
+    background: $color-text-disabled;
+  }
+}
+
+.mockTag {
+  display: inline-block;
+  margin-left: $spacing-sm;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

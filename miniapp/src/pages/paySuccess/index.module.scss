@@ -1,0 +1,180 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: $spacing-xl;
+}
+
+// 成功头
+.hero {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $page-padding calc(#{$spacing-xl} + 40rpx);
+  text-align: center;
+  color: #fff;
+}
+
+.check {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: $radius-round;
+  background: rgba(255, 255, 255, 0.22);
+  margin: 0 auto $spacing-md;
+  @include flex-center;
+  font-size: 56rpx;
+}
+
+.heroText {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+}
+
+.heroAmount {
+  font-size: 56rpx;
+  font-weight: $font-weight-bold;
+  margin-top: $spacing-xs;
+}
+
+// 卡片
+.card {
+  margin: -32rpx $page-padding 0;
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  position: relative;
+  z-index: 2;
+
+  & + & {
+    margin-top: $spacing-lg;
+  }
+}
+
+.cardHd {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.cardIcon {
+  font-size: 40rpx;
+}
+
+.cardTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.cardTag {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  background: $color-tag-bg;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-xs;
+}
+
+.cardDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-md;
+}
+
+.highlight {
+  color: $color-price;
+  font-weight: $font-weight-semibold;
+}
+
+// 主按钮
+.btn {
+  height: $button-height-md;
+  border-radius: $radius-button;
+  background: $color-primary;
+  color: #fff;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  @include flex-center;
+  border: none;
+
+  &::after { border: none; }
+
+  &:active { background: $color-primary-dark; }
+}
+
+.btnGhost {
+  background: #fff;
+  color: $color-primary;
+  border: 2rpx solid $color-primary;
+}
+
+.btnDisabled {
+  background: $color-text-disabled;
+  color: #fff;
+
+  &:active { background: $color-text-disabled; }
+}
+
+.memberDone {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+}
+
+.balanceNum {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.balanceUnit {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+// 关注公众号引导
+.qr {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: $radius-md;
+  background: repeating-conic-gradient(#1d2129 0 25%, #fff 0 50%) 0 0 / 36rpx 36rpx;
+  margin: 0 auto $spacing-sm;
+  border: 8rpx solid #fff;
+  box-shadow: $shadow-card;
+}
+
+.qrHint {
+  text-align: center;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+// 底部操作
+.footer {
+  margin: $spacing-xl $page-padding 0;
+  display: flex;
+  gap: $spacing-md;
+
+  .btn { flex: 1; }
+}
+
+.topupRow {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+}
+
+.topupPay {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.topupGet {
+  font-size: $font-size-md;
+  color: $color-success;
+  font-weight: $font-weight-semibold;
+}

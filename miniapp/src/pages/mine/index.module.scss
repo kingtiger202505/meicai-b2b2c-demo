@@ -88,6 +88,38 @@
   }
 }
 
+// 储值充值入口
+.rechargeCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: $spacing-lg $page-padding 0;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe9cc 100%);
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+
+  &:active { opacity: 0.9; }
+}
+
+.rechargeTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #8a5a00;
+}
+
+.rechargeDesc {
+  font-size: $font-size-xs;
+  color: #b88a3a;
+  margin-top: 4rpx;
+}
+
+.rechargeBtn {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
 // 菜单组
 .menuGroup {
   margin: $spacing-lg $page-padding 0;

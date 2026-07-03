@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, Image, Button } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
+import { useMemberStore } from '@/store/member';
+import { isBackendConfigured } from '@/services/supabase';
 
 const LEVEL_TEXT = {
   normal: '普通会员',
@@ -15,6 +17,13 @@ const LEVEL_TEXT = {
 const MinePage: React.FC = () => {
   const orders = useCartStore((s) => s.orders);
   const { user, loggedIn, login, bindPhone, logout } = useUserStore();
+  const { member, refresh: refreshMember } = useMemberStore();
+
+  // 每次进入「我的」拉最新会员/余额（后端权威）
+  useDidShow(() => { if (isBackendConfigured()) refreshMember(); });
+
+  const balance = member?.balance ?? user?.balance ?? 0;
+  const goTopup = () => Taro.navigateTo({ url: '/pages/topup/index' });
 
   // 微信登录
   const handleLogin = async () => {
@@ -109,10 +118,19 @@ const MinePage: React.FC = () => {
           <Text className={styles.num}>{user?.points ?? 0}</Text>
           <Text className={styles.label}>积分</Text>
         </View>
-        <View className={styles.dataItem}>
-          <Text className={styles.num}>{user ? '¥' + (user.balance.toFixed(2)) : '—'}</Text>
-          <Text className={styles.label}>储值余额</Text>
+        <View className={styles.dataItem} onClick={goTopup}>
+          <Text className={styles.num}>¥{balance.toFixed(2)}</Text>
+          <Text className={styles.label}>储值余额 ›</Text>
         </View>
+      </View>
+
+      {/* 储值充值入口 */}
+      <View className={styles.rechargeCard} onClick={goTopup}>
+        <View>
+          <Text className={styles.rechargeTitle}>储值充值 · 充100送20</Text>
+          <Text className={styles.rechargeDesc}>余额下单直接抵扣，多充多送</Text>
+        </View>
+        <Text className={styles.rechargeBtn}>去充值 ›</Text>
       </View>
 
       {/* 绑定手机号（未绑定时显示） */}

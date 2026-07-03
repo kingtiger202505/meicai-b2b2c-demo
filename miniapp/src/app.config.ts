@@ -4,7 +4,9 @@ export default defineAppConfig({
     'pages/order/index',
     'pages/mine/index',
     'pages/detail/index',
-    'pages/orderDetail/index'
+    'pages/orderDetail/index',
+    'pages/paySuccess/index',
+    'pages/topup/index'
   ],
   window: {
     backgroundTextStyle: 'light',

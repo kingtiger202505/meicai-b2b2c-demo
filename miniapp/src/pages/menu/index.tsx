@@ -7,9 +7,11 @@ import { Category, Dish } from '@/types';
 import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
 import { fetchCategories, fetchDishes, resolvePoint } from '@/services/catalog';
-import { placeOrder as placeOrderApi, mockPay } from '@/services/order';
+import { placeOrder as placeOrderApi, mockPay, PlaceOrderResult } from '@/services/order';
+import { payWithBalance } from '@/services/member';
 import { ensureDevOpenId } from '@/services/identity';
 import { isBackendConfigured } from '@/services/supabase';
+import { useMemberStore } from '@/store/member';
 import Stepper from '@/components/Stepper';
 
 // 后端错误 → 用户可读文案
@@ -41,6 +43,12 @@ const MenuPage: React.FC = () => {
     placeOrder: recordLocalOrder, updateOrderStatus,
   } = useCartStore();
   const { user } = useUserStore();
+  const { member, refresh: refreshMember, ensure: ensureMember } = useMemberStore();
+
+  // 进入点餐页拉一次会员/余额（供结算时展示可用余额）
+  useEffect(() => {
+    if (isBackendConfigured()) refreshMember();
+  }, [refreshMember]);
 
   // 拉后端真实分类 + 菜品
   const loadCatalog = useCallback(async () => {
@@ -141,29 +149,70 @@ const MenuPage: React.FC = () => {
     const openid = ensureDevOpenId();
     setSubmitting(true);
     Taro.showLoading({ title: '提交中...', mask: true });
+    let placed: PlaceOrderResult;
     try {
-      const placed = await placeOrderApi({
+      placed = await placeOrderApi({
         storeId,
         pointId: orderType === 'dineIn' ? (pointId || null) : null,
         items: items.map((i) => ({ item_id: i.dish.id, qty: i.count })),
         customerRef: openid,
         payMethod: 'mock',
       });
-      // mock 支付：支付成功 + 无感建会员（openid 主键、附手机号）
-      await mockPay(placed.order_token, openid, user?.phone || null);
       Taro.hideLoading();
-
-      // 本地订单记录（供订单页展示；后端为权威）
-      const orderId = recordLocalOrder('微信支付');
-      updateOrderStatus(orderId, 'pending');
-      Taro.showToast({ title: '下单成功', icon: 'success' });
-      setTimeout(() => Taro.switchTab({ url: '/pages/order/index' }), 1000);
     } catch (e: any) {
       Taro.hideLoading();
-      const msg = mapOrderError(e?.message || '');
-      Taro.showModal({ title: '下单失败', content: msg, showCancel: false });
-      // 沽清导致失败 → 刷新菜单以同步置灰
+      Taro.showModal({ title: '下单失败', content: mapOrderError(e?.message || ''), showCancel: false });
       if (String(e?.message).indexOf('item_unavailable') >= 0) loadCatalog();
+      setSubmitting(false);
+      return;
+    }
+
+    // 选择支付方式：微信支付(mock) / 余额支付
+    const bal = member?.balance ?? 0;
+    Taro.showActionSheet({
+      itemList: ['微信支付', `余额支付（¥${bal.toFixed(2)}）`],
+      success: (r) => settleOrder(placed, r.tapIndex === 1 ? 'balance' : 'wx', openid),
+      fail: () => {
+        // 取消支付：订单已创建但未支付，稍后可在订单页继续（demo 简化：提示即可）
+        Taro.showToast({ title: '已取消支付', icon: 'none' });
+        setSubmitting(false);
+      },
+    });
+  };
+
+  // 支付并跳转支付成功页（私域转化）
+  const settleOrder = async (placed: PlaceOrderResult, method: 'wx' | 'balance', openid: string) => {
+    Taro.showLoading({ title: '支付中...', mask: true });
+    try {
+      if (method === 'balance') {
+        const m = await ensureMember(user?.phone ?? null);
+        if (!m?.id) throw new Error('会员开通失败，请重试');
+        await payWithBalance(placed.order_token, m.id);
+      } else {
+        // mock 支付：支付成功 + 无感建会员（openid 主键、附手机号）
+        await mockPay(placed.order_token, openid, user?.phone || null);
+      }
+      Taro.hideLoading();
+      const label = method === 'balance' ? '余额支付' : '微信支付';
+      const orderId = recordLocalOrder(label);
+      updateOrderStatus(orderId, 'pending');
+      refreshMember();
+      Taro.navigateTo({
+        url: `/pages/paySuccess/index?amount=${placed.total}&method=${encodeURIComponent(label)}&orderId=${placed.order_id}`,
+      });
+    } catch (e: any) {
+      Taro.hideLoading();
+      const raw = String(e?.message || '');
+      if (raw.indexOf('insufficient_balance') >= 0) {
+        Taro.showModal({
+          title: '余额不足',
+          content: '储值余额不足以支付本单，去充值后再用余额支付？',
+          confirmText: '去充值',
+          success: (rr) => { if (rr.confirm) Taro.navigateTo({ url: '/pages/topup/index' }); },
+        });
+      } else {
+        Taro.showModal({ title: '支付失败', content: mapOrderError(raw), showCancel: false });
+      }
     } finally {
       setSubmitting(false);
     }
