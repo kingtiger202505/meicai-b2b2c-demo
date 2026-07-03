@@ -391,3 +391,44 @@
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
 }
+
+// 沽清置灰
+.soldOut {
+  .dishImg {
+    filter: grayscale(1);
+    opacity: 0.55;
+  }
+  .dishName,
+  .dishDesc,
+  .price,
+  .sales {
+    color: #bbb !important;
+  }
+}
+
+.soldOutBadge {
+  display: inline-block;
+  padding: 6rpx 20rpx;
+  border-radius: $radius-button;
+  background: #f0f0f0;
+  color: #999;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+// 加载 / 错误占位
+.stateTip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+  padding: 120rpx $page-padding;
+  color: #999;
+  font-size: $font-size-md;
+  text-align: center;
+}
+
+.retryBtn {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}

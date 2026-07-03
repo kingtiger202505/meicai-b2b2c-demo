@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import { Dish, CartItem, Order, OrderType, OrderStatus } from '@/types';
-import { orders as mockOrders } from '@/data/order';
+import { STORE_ID } from '@/services/supabase';
 
 interface CartState {
   items: CartItem[];
   orderType: OrderType;
   tableNo: string;
+  storeId: string;          // 门店（默认 seed 店，可被扫码/URL 覆盖）
+  pointId: string;          // 已解析的点位 uuid（下单用）；空=非堂食/未绑桌
+  pointRef: string;         // 扫码/URL 原始点位标识（code 或 uuid），待解析
   orders: Order[];
   add: (dish: Dish) => void;
   minus: (dishId: string) => void;
@@ -15,6 +18,9 @@ interface CartState {
   clear: () => void;
   setOrderType: (t: OrderType) => void;
   setTableNo: (t: string) => void;
+  setStoreId: (id: string) => void;
+  setPointRef: (ref: string) => void;
+  setPoint: (id: string) => void;
   placeOrder: (payMethod: string) => string;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   getOrder: (orderId: string) => Order | undefined;
@@ -24,7 +30,10 @@ export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   orderType: 'dineIn',
   tableNo: '',
-  orders: mockOrders,
+  storeId: STORE_ID,
+  pointId: '',
+  pointRef: '',
+  orders: [],
 
   add: (dish) => {
     const items = [...get().items];
@@ -61,6 +70,9 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   setOrderType: (t) => set({ orderType: t }),
   setTableNo: (t) => set({ tableNo: t }),
+  setStoreId: (id) => set({ storeId: id }),
+  setPointRef: (ref) => set({ pointRef: ref }),
+  setPoint: (id) => set({ pointId: id }),
 
   placeOrder: (payMethod) => {
     const { items, orderType, tableNo, orders } = get();

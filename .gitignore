@@ -28,3 +28,6 @@ Thumbs.db
 .taro4.0/
 .taro3/
 .cache/
+
+# SWC 缓存
+.swc/

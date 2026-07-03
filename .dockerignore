@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/build
+.git
+.github
+*.log
+.DS_Store
+admin
+supplier
+user
+pos
+docs

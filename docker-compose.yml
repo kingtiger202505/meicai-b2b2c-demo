@@ -1,0 +1,17 @@
+# 单机部署：docker compose up -d --build
+# 对外端口 8080（80 已被占用）；测试访问 http://150.158.236.166.nip.io:8080
+# 构建期通过环境变量注入 Supabase 前端配置（见 miniapp/.env.example）
+services:
+  miniapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TARO_APP_SUPABASE_URL: ${TARO_APP_SUPABASE_URL:-}
+        TARO_APP_SUPABASE_ANON_KEY: ${TARO_APP_SUPABASE_ANON_KEY:-}
+        TARO_APP_STORE_ID: ${TARO_APP_STORE_ID:-}
+    image: meicai-miniapp:001
+    container_name: meicai-miniapp
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

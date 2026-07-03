@@ -1,52 +1,104 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
-import { categories, dishes } from '@/data/dish';
+import { Category, Dish } from '@/types';
 import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
-import { payOrder } from '@/services/pay';
+import { fetchCategories, fetchDishes, resolvePoint } from '@/services/catalog';
+import { placeOrder as placeOrderApi, mockPay } from '@/services/order';
+import { ensureDevOpenId } from '@/services/identity';
+import { isBackendConfigured } from '@/services/supabase';
 import Stepper from '@/components/Stepper';
 
-const MenuPage: React.FC = () => {
-  const [activeCat, setActiveCat] = useState('hot');
-  const [showCart, setShowCart] = useState(false);
+// 后端错误 → 用户可读文案
+function mapOrderError(raw: string): string {
+  if (!raw) return '下单失败，请重试';
+  if (raw.indexOf('item_unavailable') >= 0) {
+    const name = raw.split(':')[1] || '';
+    return `「${name}」已沽清，请移除后重试`;
+  }
+  if (raw.indexOf('empty_cart') >= 0) return '购物车为空';
+  if (raw.indexOf('store_not_found') >= 0) return '门店不存在，请重新扫码';
+  if (raw.indexOf('后端未配置') >= 0) return raw;
+  return raw;
+}
 
-  const { items, add, minus, getCount, getTotalCount, getTotalPrice, clear, orderType, setOrderType, placeOrder, tableNo, setTableNo, updateOrderStatus } = useCartStore();
-  const { user, loggedIn } = useUserStore();
+const MenuPage: React.FC = () => {
+  const [activeCat, setActiveCat] = useState('');
+  const [showCart, setShowCart] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [dishes, setDishes] = useState<Dish[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const {
+    items, add, minus, getCount, getTotalCount, getTotalPrice, clear,
+    orderType, setOrderType, tableNo, setTableNo,
+    storeId, pointId, pointRef, setPoint,
+    placeOrder: recordLocalOrder, updateOrderStatus,
+  } = useCartStore();
+  const { user } = useUserStore();
+
+  // 拉后端真实分类 + 菜品
+  const loadCatalog = useCallback(async () => {
+    setLoading(true);
+    setLoadError('');
+    try {
+      const [cats, ds] = await Promise.all([fetchCategories(storeId), fetchDishes(storeId)]);
+      setCategories(cats);
+      setDishes(ds);
+      if (cats.length) setActiveCat((prev) => prev || cats[0].id);
+    } catch (e: any) {
+      setLoadError(mapOrderError(e?.message || '菜单加载失败'));
+    } finally {
+      setLoading(false);
+    }
+  }, [storeId]);
+
+  useEffect(() => {
+    loadCatalog();
+  }, [loadCatalog]);
+
+  // 扫码点位 code → 解析为 uuid + 桌号显示
+  useEffect(() => {
+    if (!pointRef || pointId || !isBackendConfigured()) return;
+    resolvePoint(pointRef, storeId)
+      .then((p) => {
+        if (p) {
+          setPoint(p.id);
+          setTableNo(p.name);
+        }
+      })
+      .catch(() => {});
+  }, [pointRef, pointId, storeId, setPoint, setTableNo]);
 
   const groupedDishes = useMemo(() => {
     return categories.map((cat) => ({
       ...cat,
-      list: dishes.filter((d) => d.categoryId === cat.id)
+      list: dishes.filter((d) => d.categoryId === cat.id),
     }));
-  }, []);
+  }, [categories, dishes]);
 
   const totalCount = getTotalCount();
   const totalPrice = getTotalPrice();
 
-  // 扫码绑定桌号
+  // 扫码绑定桌号（weapp 有相机；H5 无相机会走 fail）
   const handleScanTable = () => {
     Taro.scanCode({
       onlyFromCamera: false,
       scanType: ['qrCode'],
       success: (res) => {
-        // 兼容多种二维码内容：
-        // 1. 直接是数字 "5"
-        // 2. URL 带 query: https://xxx?tableNo=5
-        // 3. scene 字符串: table=5
         const raw = res.result || '';
         let table = '';
-        // 从 URL query 提取
         const m = raw.match(/[?&]table(?:No)?=([^&#]+)/i);
         if (m) {
           table = m[1];
         } else if (/^\d+$/.test(raw)) {
-          // 纯数字
           table = raw;
         } else {
-          // scene 风格
           const m2 = raw.match(/table(?:No)?=([^&]+)/i);
           if (m2) table = m2[1];
         }
@@ -60,94 +112,71 @@ const MenuPage: React.FC = () => {
       },
       fail: () => {
         Taro.showToast({ title: '已取消扫码', icon: 'none' });
-      }
+      },
     });
   };
 
+  const handleAdd = (dish: Dish) => {
+    if (dish.soldOut) {
+      Taro.showToast({ title: '该菜品已沽清', icon: 'none' });
+      return;
+    }
+    add(dish);
+  };
+
   const handleSubmit = async () => {
-    if (totalCount === 0) return;
-    // 堂食必须先绑桌号
-    if (orderType === 'dineIn' && !tableNo) {
+    if (totalCount === 0 || submitting) return;
+
+    // 堂食未绑桌：weapp 引导扫码；H5 用 URL 参数绑桌，直接放行
+    if (orderType === 'dineIn' && !tableNo && process.env.TARO_ENV === 'weapp') {
       Taro.showModal({
         title: '请先绑定桌号',
         content: '堂食下单前请扫描桌角的二维码绑定桌号',
         confirmText: '去扫码',
-        success: (r) => { if (r.confirm) handleScanTable(); }
-      });
-      return;
-    }
-    // 必须先登录
-    if (!loggedIn || !user) {
-      Taro.showModal({
-        title: '请先登录',
-        content: '下单前请先登录',
-        confirmText: '去登录',
-        success: (r) => {
-          if (r.confirm) Taro.switchTab({ url: '/pages/mine/index' });
-        }
+        success: (r) => { if (r.confirm) handleScanTable(); },
       });
       return;
     }
 
-    // 选择支付方式
-    let payMethod: '微信支付' | '会员卡' = '微信支付';
+    const openid = ensureDevOpenId();
+    setSubmitting(true);
+    Taro.showLoading({ title: '提交中...', mask: true });
     try {
-      const res = await Taro.showActionSheet({
-        itemList: ['💚 微信支付', '💳 会员卡储值（余额 ¥' + user.balance.toFixed(2) + '）']
+      const placed = await placeOrderApi({
+        storeId,
+        pointId: orderType === 'dineIn' ? (pointId || null) : null,
+        items: items.map((i) => ({ item_id: i.dish.id, qty: i.count })),
+        customerRef: openid,
+        payMethod: 'mock',
       });
-      payMethod = res.tapIndex === 1 ? '会员卡' : '微信支付';
-    } catch (e) {
-      // 用户取消选择
-      return;
-    }
+      // mock 支付：支付成功 + 无感建会员（openid 主键、附手机号）
+      await mockPay(placed.order_token, openid, user?.phone || null);
+      Taro.hideLoading();
 
-    // 创建订单（状态为待支付）
-    const orderId = placeOrder(payMethod);
-    const order = useCartStore.getState().getOrder(orderId);
-    if (!order) return;
-
-    Taro.showLoading({ title: '支付中...', mask: true });
-    const result = await payOrder({
-      orderId,
-      amount: order.totalPrice,
-      openId: user.openId,
-      method: payMethod
-    });
-    Taro.hideLoading();
-
-    if (result.success) {
-      // 支付成功 → 更新订单状态为待制作
+      // 本地订单记录（供订单页展示；后端为权威）
+      const orderId = recordLocalOrder('微信支付');
       updateOrderStatus(orderId, 'pending');
       Taro.showToast({ title: '下单成功', icon: 'success' });
-      setTimeout(() => {
-        Taro.switchTab({ url: '/pages/order/index' });
-      }, 1000);
-    } else {
-      // 支付失败/取消 → 订单留在待支付状态，用户可去订单页重试
-      Taro.showModal({
-        title: '支付未完成',
-        content: result.reason || '支付失败，订单已保留在待支付状态',
-        confirmText: '去订单',
-        cancelText: '取消',
-        success: (r) => {
-          if (r.confirm) Taro.switchTab({ url: '/pages/order/index' });
-        }
-      });
+      setTimeout(() => Taro.switchTab({ url: '/pages/order/index' }), 1000);
+    } catch (e: any) {
+      Taro.hideLoading();
+      const msg = mapOrderError(e?.message || '');
+      Taro.showModal({ title: '下单失败', content: msg, showCancel: false });
+      // 沽清导致失败 → 刷新菜单以同步置灰
+      if (String(e?.message).indexOf('item_unavailable') >= 0) loadCatalog();
+    } finally {
+      setSubmitting(false);
     }
-  };
-
-  const onCatTap = (catId: string) => {
-    setActiveCat(catId);
   };
 
   return (
     <View className={styles.page}>
       {/* 餐厅信息 */}
       <View className={styles.restBar}>
-        <View className={styles.restLogo}>湘</View>
+        <View className={styles.restLogo}>川</View>
         <View className={styles.restInfo}>
-          <Text className={styles.restName}>湘味楼</Text>
-          <Text className={styles.restDesc}>营业中 · 人均 ¥67 · 月售 3200+ 单</Text>
+          <Text className={styles.restName}>川小灶·望京店</Text>
+          <Text className={styles.restDesc}>营业中 · 川味家常 · 扫码点餐</Text>
         </View>
         <View className={styles.typeSwitch}>
           <Text
@@ -195,7 +224,7 @@ const MenuPage: React.FC = () => {
             <View
               key={cat.id}
               className={classnames(styles.catItem, activeCat === cat.id && styles.active)}
-              onClick={() => onCatTap(cat.id)}
+              onClick={() => setActiveCat(cat.id)}
             >
               {cat.name}
             </View>
@@ -204,11 +233,18 @@ const MenuPage: React.FC = () => {
 
         {/* 右侧菜品 */}
         <ScrollView scrollY className={styles.dishList}>
-          {groupedDishes.map((group) => (
+          {loading && <View className={styles.stateTip}>菜单加载中…</View>}
+          {!loading && loadError && (
+            <View className={styles.stateTip}>
+              {loadError}
+              <Text className={styles.retryBtn} onClick={loadCatalog}>点击重试</Text>
+            </View>
+          )}
+          {!loading && !loadError && groupedDishes.map((group) => (
             <View key={group.id} className={styles.dishGroup}>
               <Text className={styles.groupTitle}>{group.name}</Text>
               {group.list.map((dish) => (
-                <View key={dish.id} className={styles.dishCard}>
+                <View key={dish.id} className={classnames(styles.dishCard, dish.soldOut && styles.soldOut)}>
                   <Image className={styles.dishImg} src={dish.img} mode="aspectFill" />
                   <View className={styles.dishBody}>
                     <View>
@@ -227,11 +263,15 @@ const MenuPage: React.FC = () => {
                         <Text className={styles.price}>¥{dish.price}</Text>
                         <Text className={styles.sales}>  · 月售{dish.sales}</Text>
                       </View>
-                      <Stepper
-                        count={getCount(dish.id)}
-                        onAdd={() => add(dish)}
-                        onMinus={() => minus(dish.id)}
-                      />
+                      {dish.soldOut ? (
+                        <Text className={styles.soldOutBadge}>沽清</Text>
+                      ) : (
+                        <Stepper
+                          count={getCount(dish.id)}
+                          onAdd={() => handleAdd(dish)}
+                          onMinus={() => minus(dish.id)}
+                        />
+                      )}
                     </View>
                   </View>
                 </View>
@@ -257,7 +297,7 @@ const MenuPage: React.FC = () => {
                   <Text className={styles.cartRowName}>{item.dish.name}</Text>
                   <Stepper
                     count={item.count}
-                    onAdd={() => add(item.dish)}
+                    onAdd={() => handleAdd(item.dish)}
                     onMinus={() => minus(item.dish.id)}
                   />
                   <Text className={styles.cartRowPrice}>¥{item.dish.price * item.count}</Text>
@@ -279,10 +319,10 @@ const MenuPage: React.FC = () => {
           {totalCount === 0 && <Text className={styles.cartHint}>购物车是空的</Text>}
         </View>
         <View
-          className={classnames(styles.submitBtn, totalCount === 0 && styles.disabled)}
+          className={classnames(styles.submitBtn, (totalCount === 0 || submitting) && styles.disabled)}
           onClick={handleSubmit}
         >
-          {totalCount === 0 ? '未选购' : '去结算'}
+          {totalCount === 0 ? '未选购' : submitting ? '提交中...' : '去结算'}
         </View>
       </View>
     </View>

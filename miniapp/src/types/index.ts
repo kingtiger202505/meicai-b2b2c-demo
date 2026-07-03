@@ -14,6 +14,7 @@ export interface Dish {
   img: string;
   sales: number;
   tags: string[];
+  soldOut?: boolean;   // 沽清：后端 item.status = 'sold_out'（置灰 + 下单拦截）
 }
 
 // 购物车项

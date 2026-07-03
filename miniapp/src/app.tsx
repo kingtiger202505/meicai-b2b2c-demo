@@ -6,45 +6,70 @@ import { useUserStore } from '@/store/user';
 // 全局样式
 import './app.scss';
 
-// 解析小程序码 scene 参数，提取桌号
-// 支持格式：table=5  或  tableNo=5号桌  或  纯数字 5
-function parseTableFromScene(scene: string): string {
-  if (!scene) return '';
-  const decoded = decodeURIComponent(scene);
-  // table=5
-  const m1 = decoded.match(/table(?:No)?=([^&]+)/i);
-  if (m1) return m1[1];
-  // 纯数字
-  if (/^\d+$/.test(decoded)) return decoded;
-  return '';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// 把 "store=..&point=T01&table=3号桌" 解析成对象
+function parseKV(raw: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!raw) return out;
+  const decoded = decodeURIComponent(raw).replace(/^\?/, '');
+  decoded.split('&').forEach((pair) => {
+    const [k, v] = pair.split('=');
+    if (k && v) out[k.trim()] = v.trim();
+  });
+  return out;
+}
+
+/**
+ * 解析扫码进店参数（门店 + 点位/桌号）
+ * - 小程序码 scene：`store=<uuid>&point=T01` 或裸 `T01` / 裸数字
+ * - 普通二维码 / H5(nip.io) URL query：`?store=<uuid>&point=T01&table=3号桌`
+ */
+function applyEntryParams() {
+  const cart = useCartStore.getState();
+  const params: Record<string, string> = {};
+
+  try {
+    const launch = Taro.getLaunchOptionsSync();
+    Object.assign(params, launch.query || {});
+    if (launch.scene) {
+      const raw = String(launch.scene);
+      const kv = parseKV(raw);
+      if (Object.keys(kv).length) {
+        Object.assign(params, kv);
+      } else if (/^\d+$/.test(raw)) {
+        params.table = raw;                 // 裸数字 = 桌号
+      } else {
+        params.point = raw;                 // 裸字符串 = 点位 code
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // H5：补读浏览器地址栏 query（nip.io 访问场景）
+  if (typeof window !== 'undefined' && window.location && window.location.search) {
+    Object.assign(params, parseKV(window.location.search));
+  }
+
+  if (params.store && UUID_RE.test(params.store)) cart.setStoreId(params.store);
+
+  const pointRef = params.point || params.pointId || '';
+  if (pointRef) cart.setPointRef(pointRef);
+
+  const table = params.tableNo || params.table || '';
+  if (table) {
+    const display = /^\d+$/.test(table) ? `${table}号桌` : table;
+    cart.setTableNo(display);
+  }
 }
 
 function App(props) {
   useEffect(() => {
     // 恢复本地登录态
     useUserStore.getState().restore();
-
-    // 启动时解析场景参数，自动绑定桌号
-    try {
-      const launchOpts = Taro.getLaunchOptionsSync();
-      // 普通二维码：query.tableNo 或 query.table
-      const fromQuery = launchOpts.query?.tableNo || launchOpts.query?.table;
-      if (fromQuery) {
-        useCartStore.getState().setTableNo(String(fromQuery));
-        return;
-      }
-      // 小程序码 scene
-      if (launchOpts.scene) {
-        const table = parseTableFromScene(String(launchOpts.scene));
-        if (table) {
-          // 标准化桌号显示
-          const display = /^\d+$/.test(table) ? `${table}号桌` : table;
-          useCartStore.getState().setTableNo(display);
-        }
-      }
-    } catch (e) {
-      console.warn('解析启动参数失败', e);
-    }
+    // 解析扫码进店参数（门店 + 桌号），点位 code 由菜单页解析成 uuid
+    applyEntryParams();
   });
 
   useDidShow(() => {});
