@@ -3,7 +3,7 @@ import type { Session } from '@supabase/supabase-js';
 import type { Category, Item, ItemStatus, Store } from '@meicai/shared';
 import { supabase } from './supabase';
 import {
-  listMyStores, listCategories, listItems,
+  listMyStores, createStore, listCategories, listItems,
   upsertItem, deleteItem, setItemStatus, setItemShelf, reorderItems,
   upsertCategory, deleteCategory, reorderCategories,
   type ItemInput,
@@ -54,18 +54,30 @@ function Admin() {
   const [storeId, setStoreId] = useState('');
   const [loadErr, setLoadErr] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const s = await listMyStores();
-        setStores(s);
-        if (s.length > 0) setStoreId((prev) => prev || s[0].id);
-      } catch (e) {
-        setLoadErr(errText(e));
-        setStores([]);
-      }
-    })();
+  const loadStores = useCallback(async (selectId?: string) => {
+    try {
+      const s = await listMyStores();
+      setStores(s);
+      if (selectId) setStoreId(selectId);
+      else if (s.length > 0) setStoreId((prev) => prev || s[0].id);
+    } catch (e) {
+      setLoadErr(errText(e));
+      setStores([]);
+    }
   }, []);
+
+  useEffect(() => { loadStores(); }, [loadStores]);
+
+  const addStore = async () => {
+    const name = prompt('新增门店名称');
+    if (!name?.trim()) return;
+    try {
+      const newId = await createStore(name.trim());
+      await loadStores(newId);
+    } catch (e) {
+      setLoadErr(errText(e));
+    }
+  };
 
   if (stores === null && !loadErr) return <div className="center">加载门店…</div>;
 
@@ -94,6 +106,7 @@ function Admin() {
               {stores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           )}
+          <button className="add-store" onClick={addStore}>+ 新增门店</button>
         </div>
         <button onClick={() => supabase.auth.signOut()}>退出</button>
       </header>

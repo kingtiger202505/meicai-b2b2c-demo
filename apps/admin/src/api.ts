@@ -8,6 +8,16 @@ export async function listMyStores(): Promise<Store[]> {
   return (data ?? []) as Store[];
 }
 
+// 老板自助加分店(create_store SECURITY DEFINER RPC,谁建谁拥有;服务端校验已登录且为 owner)
+export async function createStore(name: string, industryType = 'restaurant'): Promise<string> {
+  const { data, error } = await supabase.rpc('create_store', {
+    p_name: name,
+    p_industry_type: industryType,
+  });
+  if (error) throw error;
+  return (data as { store_id: string }).store_id;
+}
+
 // ---------- 读取(owner 读策略, 含 off_shelf) ----------
 export async function listCategories(storeId: string): Promise<Category[]> {
   const { data, error } = await supabase
