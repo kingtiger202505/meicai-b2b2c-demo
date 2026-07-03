@@ -16,7 +16,7 @@
 //     [--industry restaurant]
 //
 // 幂等:相同 (email, name) 重复执行不会重复建店/重复绑定;重复时打印 status=already_exists。
-// 前置:先在目标 Supabase 上应用 supabase/migrations/0010_store_provisioning.sql。
+// 前置:先在目标 Supabase 上应用 supabase/migrations/0011_store_provisioning.sql。
 // ============================================================
 
 function parseArgs(argv) {
@@ -108,7 +108,7 @@ async function main() {
   if (!rpcRes.ok) {
     console.error(`provision_store 调用失败 (HTTP ${rpcRes.status}): ${rpcText}`);
     console.error(
-      '若报 function ... does not exist,请先在目标 Supabase 应用 0010_store_provisioning.sql。'
+      '若报 function ... does not exist,请先在目标 Supabase 应用 0011_store_provisioning.sql。'
     );
     process.exit(1);
   }
