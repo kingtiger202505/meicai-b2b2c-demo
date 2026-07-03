@@ -1,0 +1,316 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
+import type { Category, Item, ItemStatus, Store } from '@meicai/shared';
+import { supabase } from './supabase';
+import {
+  listMyStores, listCategories, listItems,
+  upsertItem, deleteItem, setItemStatus, setItemShelf, reorderItems,
+  upsertCategory, deleteCategory, reorderCategories,
+  type ItemInput,
+} from './api';
+
+export function App() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setReady(true); });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  if (!ready) return <div className="center">加载中…</div>;
+  return session ? <Admin /> : <Login />;
+}
+
+function Login() {
+  const [email, setEmail] = useState('owner@chuanxiaozao.local');
+  const [password, setPassword] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true); setErr('');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) setErr(error.message);
+    setBusy(false);
+  };
+  return (
+    <div className="center">
+      <form className="login" onSubmit={submit}>
+        <h1>菜品管理后台</h1>
+        <p className="sub">老板登录 · 维护多门店菜单</p>
+        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="老板账号" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="密码" />
+        {err && <div className="err">{err}</div>}
+        <button className="primary" disabled={busy}>{busy ? '登录中…' : '登录'}</button>
+      </form>
+    </div>
+  );
+}
+
+function Admin() {
+  const [stores, setStores] = useState<Store[] | null>(null);
+  const [storeId, setStoreId] = useState('');
+  const [loadErr, setLoadErr] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const s = await listMyStores();
+        setStores(s);
+        if (s.length > 0) setStoreId((prev) => prev || s[0].id);
+      } catch (e) {
+        setLoadErr(errText(e));
+        setStores([]);
+      }
+    })();
+  }, []);
+
+  if (stores === null && !loadErr) return <div className="center">加载门店…</div>;
+
+  // 非 owner（例如店员登录）→ 无门店可管，拒绝进入
+  if (stores !== null && stores.length === 0) {
+    return (
+      <div className="center">
+        <div className="denied">
+          <h1>无菜品管理权限</h1>
+          <p>此账号未绑定任何门店的老板权限。菜品管理仅限门店老板；店员请使用 POS。</p>
+          <button onClick={() => supabase.auth.signOut()}>退出登录</button>
+        </div>
+      </div>
+    );
+  }
+
+  const current = stores?.find((s) => s.id === storeId) ?? null;
+
+  return (
+    <div className="app">
+      <header>
+        <div className="brand">
+          <b>菜品管理后台</b>
+          {stores && stores.length > 0 && (
+            <select value={storeId} onChange={(e) => setStoreId(e.target.value)} className="store-switch">
+              {stores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          )}
+        </div>
+        <button onClick={() => supabase.auth.signOut()}>退出</button>
+      </header>
+      {loadErr && <div className="banner err">加载失败：{loadErr}</div>}
+      {current && <MenuManager key={current.id} store={current} />}
+    </div>
+  );
+}
+
+function MenuManager({ store }: { store: Store }) {
+  const [cats, setCats] = useState<Category[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [busy, setBusy] = useState(true);
+  const [editing, setEditing] = useState<Item | 'new' | null>(null);
+  const [msg, setMsg] = useState('');
+
+  const reload = useCallback(async () => {
+    setBusy(true);
+    try {
+      const [c, i] = await Promise.all([listCategories(store.id), listItems(store.id)]);
+      setCats(c); setItems(i);
+    } catch (e) {
+      setMsg('读取失败：' + errText(e));
+    } finally {
+      setBusy(false);
+    }
+  }, [store.id]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  const run = async (p: PromiseLike<{ error: unknown }>, ok?: string) => {
+    const { error } = await p;
+    if (error) { setMsg('操作失败：' + errText(error)); return false; }
+    if (ok) setMsg(ok);
+    await reload();
+    return true;
+  };
+
+  // 按分类分组展示（未分类置底）
+  const grouped = useMemo(() => {
+    const groups: { cat: Category | null; items: Item[] }[] = [];
+    for (const c of cats) groups.push({ cat: c, items: items.filter((it) => it.category_id === c.id) });
+    const uncategorized = items.filter((it) => !it.category_id || !cats.some((c) => c.id === it.category_id));
+    if (uncategorized.length) groups.push({ cat: null, items: uncategorized });
+    return groups;
+  }, [cats, items]);
+
+  const moveItem = async (list: Item[], idx: number, dir: -1 | 1) => {
+    const j = idx + dir;
+    if (j < 0 || j >= list.length) return;
+    const a = list[idx], b = list[j];
+    await run(reorderItems([{ item_id: a.id, sort: b.sort }, { item_id: b.id, sort: a.sort }]));
+  };
+  const moveCat = async (idx: number, dir: -1 | 1) => {
+    const j = idx + dir;
+    if (j < 0 || j >= cats.length) return;
+    const a = cats[idx], b = cats[j];
+    await run(reorderCategories([{ category_id: a.id, sort: b.sort }, { category_id: b.id, sort: a.sort }]));
+  };
+
+  return (
+    <div className="wrap">
+      {msg && <div className="banner" onClick={() => setMsg('')}>{msg}（点击关闭）</div>}
+
+      <section className="panel">
+        <div className="panel-head">
+          <h2>分类</h2>
+          <button onClick={async () => {
+            const name = prompt('新增分类名称');
+            if (name?.trim()) await run(upsertCategory({ store_id: store.id, name: name.trim(), sort: cats.length }), '已新增分类');
+          }}>+ 新增分类</button>
+        </div>
+        <div className="cat-list">
+          {cats.map((c, i) => (
+            <div className="cat-row" key={c.id}>
+              <span className="cat-name">{c.name}</span>
+              <span className="cat-count">{items.filter((it) => it.category_id === c.id).length} 项</span>
+              <div className="row-acts">
+                <button onClick={() => moveCat(i, -1)} disabled={i === 0}>↑</button>
+                <button onClick={() => moveCat(i, 1)} disabled={i === cats.length - 1}>↓</button>
+                <button onClick={async () => {
+                  const name = prompt('修改分类名称', c.name);
+                  if (name?.trim() && name.trim() !== c.name) await run(upsertCategory({ id: c.id, store_id: store.id, name: name.trim() }), '已改名');
+                }}>改名</button>
+                <button className="danger" onClick={async () => {
+                  if (confirm(`删除分类「${c.name}」？其菜品将移到「未分类」，不会被删除。`)) await run(deleteCategory(c.id), '已删除分类');
+                }}>删除</button>
+              </div>
+            </div>
+          ))}
+          {cats.length === 0 && <div className="empty">暂无分类</div>}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-head">
+          <h2>菜品{busy ? ' · 加载中…' : ''}</h2>
+          <button className="primary" onClick={() => setEditing('new')}>+ 新增菜品</button>
+        </div>
+        {grouped.map((g) => (
+          <div className="group" key={g.cat?.id ?? '__none'}>
+            <h3>{g.cat?.name ?? '未分类'}</h3>
+            {g.items.map((it, i) => (
+              <div className={'item-row ' + it.status} key={it.id}>
+                {it.img && <img src={it.img} alt="" className="thumb" />}
+                <div className="item-main">
+                  <div className="item-name">{it.name} <span className="price">¥{it.price}</span> {it.unit && <span className="unit">/ {it.unit}</span>}</div>
+                  <div className="item-sub">
+                    <StatusBadge status={it.status} />
+                    {it.descr && <span className="descr">{it.descr}</span>}
+                  </div>
+                </div>
+                <div className="row-acts">
+                  <button onClick={() => moveItem(g.items, i, -1)} disabled={i === 0}>↑</button>
+                  <button onClick={() => moveItem(g.items, i, 1)} disabled={i === g.items.length - 1}>↓</button>
+                  <button onClick={() => setEditing(it)}>编辑</button>
+                  {it.status === 'off_shelf'
+                    ? <button className="primary" onClick={() => run(setItemShelf(it.id, true), '已上架')}>上架</button>
+                    : <button onClick={() => run(setItemShelf(it.id, false), '已下架')}>下架</button>}
+                  {it.status === 'sold_out'
+                    ? <button onClick={() => run(setItemStatus(it.id, 'on_sale'), '已恢复在售')}>恢复</button>
+                    : it.status === 'on_sale' && <button className="danger" onClick={() => run(setItemStatus(it.id, 'sold_out'), '已沽清')}>沽清</button>}
+                  <button className="danger" onClick={async () => {
+                    if (confirm(`删除菜品「${it.name}」？此操作不可撤销（历史订单不受影响）。`)) await run(deleteItem(it.id), '已删除菜品');
+                  }}>删除</button>
+                </div>
+              </div>
+            ))}
+            {g.items.length === 0 && <div className="empty">该分类暂无菜品</div>}
+          </div>
+        ))}
+        {items.length === 0 && !busy && <div className="empty">本店暂无菜品，点右上「新增菜品」开始</div>}
+      </section>
+
+      {editing && (
+        <ItemModal
+          store={store}
+          cats={cats}
+          item={editing === 'new' ? null : editing}
+          onClose={() => setEditing(null)}
+          onSave={async (input) => {
+            const okDone = await run(upsertItem(input), input.id ? '已保存修改' : '已新增菜品');
+            if (okDone) setEditing(null);
+          }}
+        />
+      )}
+      <div className="foot">当前门店：<b>{store.name}</b> · 所有增删改仅作用于此门店（<code>{store.id}</code>）</div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: ItemStatus }) {
+  const map: Record<ItemStatus, string> = { on_sale: '在售', sold_out: '沽清', off_shelf: '已下架' };
+  return <span className={'badge ' + status}>{map[status]}</span>;
+}
+
+function ItemModal({ store, cats, item, onClose, onSave }: {
+  store: Store; cats: Category[]; item: Item | null;
+  onClose: () => void; onSave: (i: ItemInput) => void;
+}) {
+  const [name, setName] = useState(item?.name ?? '');
+  const [price, setPrice] = useState(String(item?.price ?? ''));
+  const [categoryId, setCategoryId] = useState(item?.category_id ?? '');
+  const [unit, setUnit] = useState(item?.unit ?? '');
+  const [img, setImg] = useState(item?.img ?? '');
+  const [descr, setDescr] = useState(item?.descr ?? '');
+  const [err, setErr] = useState('');
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) { setErr('请填写菜品名称'); return; }
+    const p = Number(price);
+    if (Number.isNaN(p) || p < 0) { setErr('价格需为 ≥0 的数字'); return; }
+    onSave({
+      id: item?.id ?? null,
+      store_id: store.id,
+      name: name.trim(),
+      price: p,
+      category_id: categoryId || null,
+      unit: unit.trim() || null,
+      img: img.trim() || null,
+      descr: descr.trim() || null,
+    });
+  };
+
+  return (
+    <div className="modal" onClick={onClose}>
+      <form className="modal-body form" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+        <h3>{item ? '编辑菜品' : '新增菜品'}</h3>
+        <label>名称<input value={name} onChange={(e) => setName(e.target.value)} placeholder="如 番茄炒蛋" /></label>
+        <div className="two">
+          <label>价格(¥)<input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" inputMode="decimal" /></label>
+          <label>单位<input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="份 / 杯" /></label>
+        </div>
+        <label>分类
+          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+            <option value="">未分类</option>
+            {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </label>
+        <label>图片 URL<input value={img} onChange={(e) => setImg(e.target.value)} placeholder="https://…（仅填链接，暂不支持上传）" /></label>
+        {img && <img src={img} alt="" className="preview" />}
+        <label>描述<textarea value={descr} onChange={(e) => setDescr(e.target.value)} placeholder="简短卖点" rows={2} /></label>
+        {err && <div className="err">{err}</div>}
+        <div className="modal-acts">
+          <button type="button" onClick={onClose}>取消</button>
+          <button className="primary" type="submit">保存</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function errText(e: unknown): string {
+  if (e && typeof e === 'object') {
+    const o = e as { message?: string; error_description?: string; details?: string };
+    return o.message || o.error_description || o.details || JSON.stringify(e);
+  }
+  return String(e);
+}

@@ -1,7 +1,7 @@
 # 单机部署：docker compose up -d --build
-# 对外端口：miniapp H5 → :8080，门店 POS → :8081（80 已被占用）
-# 测试访问 http://150.158.236.166.nip.io:8080（miniapp） / :8081（POS）
-# 构建期通过环境变量注入 Supabase 前端配置（miniapp 用 TARO_APP_*，POS 用 VITE_*）
+# 对外端口：miniapp H5 → :8080，门店 POS → :8081，菜品管理后台(admin) → :8082（80 已被占用）
+# 测试访问 http://150.158.236.166.nip.io:8080（miniapp） / :8081（POS） / :8082（admin）
+# 构建期通过环境变量注入 Supabase 前端配置（miniapp 用 TARO_APP_*，POS/admin 用 VITE_*）
 services:
   miniapp:
     build:
@@ -30,4 +30,19 @@ services:
     container_name: meicai-pos
     ports:
       - "8081:8081"
+    restart: unless-stopped
+
+  # 菜品管理后台 admin（Vite+React SPA）→ nginx :8082；构建期注入 Supabase 前端配置
+  # 门店由登录后 list_my_stores() 解析并由老板切换，故不注入 VITE_STORE_ID
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+    image: meicai-admin:001
+    container_name: meicai-admin
+    ports:
+      - "8082:8082"
     restart: unless-stopped

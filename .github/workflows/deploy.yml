@@ -1,15 +1,17 @@
-name: Deploy miniapp (H5) + POS to test
+name: Deploy miniapp (H5) + POS + admin to test
 
-# 推到 001 分支即自动部署到测试机（miniapp → :8080，POS → :8081，QA 走 nip.io）
+# 推到 001 分支即自动部署到测试机（miniapp → :8080，POS → :8081，admin → :8082，QA 走 nip.io）
 on:
   push:
     branches: [ '001' ]
     paths:
       - 'miniapp/**'
       - 'apps/pos/**'
+      - 'apps/admin/**'
       - 'packages/**'
       - 'Dockerfile'
       - 'Dockerfile.pos'
+      - 'Dockerfile.admin'
       - 'docker-compose.yml'
       - 'deploy/**'
       - '.github/workflows/deploy.yml'
@@ -72,31 +74,32 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" DEPLOY_PATH="$DEPLOY_PATH" bash -s <<'REMOTE'
           set -e
           cd "$DEPLOY_PATH"
-          echo "=== open host firewall 8080/8081 (best-effort, no reload) ==="
+          echo "=== open host firewall 8080/8081/8082 (best-effort, no reload) ==="
           if command -v firewall-cmd >/dev/null 2>&1 && firewall-cmd --state >/dev/null 2>&1; then
-            for p in 8080 8081; do
+            for p in 8080 8081 8082; do
               firewall-cmd --add-port=$p/tcp || true            # 运行时立即生效
               firewall-cmd --permanent --add-port=$p/tcp || true # 持久化（不 --reload）
             done
             echo "firewalld ports: $(firewall-cmd --list-ports 2>/dev/null)"
           elif command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -qi active; then
-            ufw allow 8080/tcp || true; ufw allow 8081/tcp || true
+            ufw allow 8080/tcp || true; ufw allow 8081/tcp || true; ufw allow 8082/tcp || true
           else
             echo "no active firewalld/ufw detected"
           fi
-          echo "=== docker compose up (build+recreate miniapp & pos) ==="
+          echo "=== docker compose up (build+recreate miniapp & pos & admin) ==="
           docker compose up -d --build --force-recreate
           docker image prune -f || true
           sleep 4
           echo "=== docker compose ps ==="; docker compose ps || docker ps
           echo "=== restart policy / health ==="
-          for c in meicai-miniapp meicai-pos; do
+          for c in meicai-miniapp meicai-pos meicai-admin; do
             docker inspect -f 'name={{.Name}} status={{.State.Status}} restart_policy={{.HostConfig.RestartPolicy.Name}} restarts={{.RestartCount}}' "$c" 2>/dev/null || echo "inspect $c failed"
           done
-          echo "=== listening on 8080/8081 ==="; (ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | grep -E ':8080|:8081' || echo "NOT LISTENING on 8080/8081"
+          echo "=== listening on 8080/8081/8082 ==="; (ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | grep -E ':8080|:8081|:8082' || echo "NOT LISTENING on 8080/8081/8082"
           echo "=== local curl ==="
           curl -fsS -m 10 -o /dev/null -w 'localhost:8080 => HTTP %{http_code}\n' http://localhost:8080 || echo "LOCAL CURL 8080 FAILED"
           curl -fsS -m 10 -o /dev/null -w 'localhost:8081 => HTTP %{http_code}\n' http://localhost:8081 || echo "LOCAL CURL 8081 FAILED"
+          curl -fsS -m 10 -o /dev/null -w 'localhost:8082 => HTTP %{http_code}\n' http://localhost:8082 || echo "LOCAL CURL 8082 FAILED"
           REMOTE
 
       - name: Smoke check (reachability + 产物内联校验)
@@ -149,5 +152,29 @@ jobs:
             echo "POS supabase URL inlined ✓"
           else
             echo "::error::POS 主 JS 未见 supabase 域名——demo 账号将无法登录(检查 VITE_SUPABASE_URL 构建参数)"
+            exit 1
+          fi
+
+      - name: Smoke check admin (:8082)
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          base="http://$DEPLOY_HOST:8082"
+          code=$(curl -s -m 25 -o /dev/null -w '%{http_code}' "$base/" || echo 000)
+          echo "external $base => HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::warning::从 GitHub runner 访问 admin :8082 失败 (HTTP $code)。若远端 local curl 为 200，则多为云安全组未放行 8082/tcp。"
+            exit 1
+          fi
+          echo "external 8082 reachable ✓"
+          # 校验 admin 主 JS 里已内联 supabase 域名（否则 owner demo 账号登录会失败）
+          html=$(curl -s -m 20 "$base/")
+          appjs=$(printf '%s' "$html" | grep -oE 'assets/index-[0-9A-Za-z_-]+\.js' | head -1)
+          if [ -z "$appjs" ]; then echo "::warning::未从 admin 首页解析到主 JS，跳过内联校验"; exit 0; fi
+          js=$(curl -s -m 30 "$base/$appjs")
+          if printf '%s' "$js" | grep -qF 'supabase.co'; then
+            echo "admin supabase URL inlined ✓"
+          else
+            echo "::error::admin 主 JS 未见 supabase 域名——owner demo 账号将无法登录(检查 VITE_SUPABASE_URL 构建参数)"
             exit 1
           fi
