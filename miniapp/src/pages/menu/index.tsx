@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
@@ -29,6 +29,7 @@ function mapOrderError(raw: string): string {
 
 const MenuPage: React.FC = () => {
   const [activeCat, setActiveCat] = useState('');
+  const [scrollIntoCat, setScrollIntoCat] = useState('');
   const [showCart, setShowCart] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [dishes, setDishes] = useState<Dish[]>([]);
@@ -89,6 +90,39 @@ const MenuPage: React.FC = () => {
       list: dishes.filter((d) => d.categoryId === cat.id),
     }));
   }, [categories, dishes]);
+
+  // 左侧分类点击 → 右侧滚动定位到该分类锚点（scrollIntoView，weapp/H5 通用）
+  const handleCatTap = useCallback((catId: string) => {
+    setActiveCat(catId);
+    setScrollIntoCat(`cat-anchor-${catId}`);
+  }, []);
+
+  // 右侧滚动 → 同步高亮左侧分类（throttle + SelectorQuery，weapp/H5 通用）
+  const scrollLock = useRef(false);
+  const handleDishScroll = useCallback(() => {
+    if (scrollLock.current) return;
+    scrollLock.current = true;
+    setTimeout(() => { scrollLock.current = false; }, 120);
+    const groups = groupedDishes;
+    if (!groups.length) return;
+    const q = Taro.createSelectorQuery();
+    q.select('#dish-scroll').boundingClientRect();
+    groups.forEach((g) => q.select(`#cat-anchor-${g.id}`).boundingClientRect());
+    q.exec((res: any[]) => {
+      const container = res && res[0];
+      if (!container) return;
+      const rects = res.slice(1);
+      let current = '';
+      for (let i = 0; i < rects.length; i++) {
+        const r = rects[i];
+        if (!r) continue;
+        // 组顶部越过（或贴近）容器顶部即视为当前分类
+        if (r.top - container.top <= 12) current = groups[i].id;
+        else break;
+      }
+      if (current) setActiveCat((prev) => (prev === current ? prev : current));
+    });
+  }, [groupedDishes]);
 
   const totalCount = getTotalCount();
   const totalPrice = getTotalPrice();
@@ -273,7 +307,7 @@ const MenuPage: React.FC = () => {
             <View
               key={cat.id}
               className={classnames(styles.catItem, activeCat === cat.id && styles.active)}
-              onClick={() => setActiveCat(cat.id)}
+              onClick={() => handleCatTap(cat.id)}
             >
               {cat.name}
             </View>
@@ -281,7 +315,14 @@ const MenuPage: React.FC = () => {
         </ScrollView>
 
         {/* 右侧菜品 */}
-        <ScrollView scrollY className={styles.dishList}>
+        <ScrollView
+          scrollY
+          id="dish-scroll"
+          className={styles.dishList}
+          scrollIntoView={scrollIntoCat}
+          scrollWithAnimation
+          onScroll={handleDishScroll}
+        >
           {loading && <View className={styles.stateTip}>菜单加载中…</View>}
           {!loading && loadError && (
             <View className={styles.stateTip}>
@@ -290,7 +331,7 @@ const MenuPage: React.FC = () => {
             </View>
           )}
           {!loading && !loadError && groupedDishes.map((group) => (
-            <View key={group.id} className={styles.dishGroup}>
+            <View key={group.id} id={`cat-anchor-${group.id}`} className={styles.dishGroup}>
               <Text className={styles.groupTitle}>{group.name}</Text>
               {group.list.map((dish) => (
                 <View key={dish.id} className={classnames(styles.dishCard, dish.soldOut && styles.soldOut)}>
