@@ -6,7 +6,8 @@ import {
   listMyStores, createStore, listCategories, listItems,
   upsertItem, deleteItem, setItemStatus, setItemShelf, reorderItems,
   upsertCategory, deleteCategory, reorderCategories,
-  type ItemInput,
+  fetchDailyStats, fetchDailyTrend,
+  type ItemInput, type DailyStatsResult, type DailyTrendItem,
 } from './api';
 
 export function App() {
@@ -53,6 +54,7 @@ function Admin() {
   const [stores, setStores] = useState<Store[] | null>(null);
   const [storeId, setStoreId] = useState('');
   const [loadErr, setLoadErr] = useState('');
+  const [tab, setTab] = useState<'menu' | 'daily'>('menu');
 
   const loadStores = useCallback(async (selectId?: string) => {
     try {
@@ -100,7 +102,7 @@ function Admin() {
     <div className="app">
       <header>
         <div className="brand">
-          <b>菜品管理后台</b>
+          <b>管理后台</b>
           {stores && stores.length > 0 && (
             <select value={storeId} onChange={(e) => setStoreId(e.target.value)} className="store-switch">
               {stores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -110,8 +112,13 @@ function Admin() {
         </div>
         <button onClick={() => supabase.auth.signOut()}>退出</button>
       </header>
+      <nav className="tabs">
+        <button className={tab === 'menu' ? 'tab active' : 'tab'} onClick={() => setTab('menu')}>菜品管理</button>
+        <button className={tab === 'daily' ? 'tab active' : 'tab'} onClick={() => setTab('daily')}>营业统计</button>
+      </nav>
       {loadErr && <div className="banner err">加载失败：{loadErr}</div>}
-      {current && <MenuManager key={current.id} store={current} />}
+      {current && tab === 'menu' && <MenuManager key={current.id} store={current} />}
+      {current && tab === 'daily' && <DailyReport key={current.id + '-daily'} storeId={current.id} />}
     </div>
   );
 }
@@ -316,6 +323,101 @@ function ItemModal({ store, cats, item, onClose, onSave }: {
           <button className="primary" type="submit">保存</button>
         </div>
       </form>
+    </div>
+  );
+}
+
+function DailyReport({ storeId }: { storeId: string }) {
+  const [date, setDate] = useState(() => {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  });
+  const [stats, setStats] = useState<DailyStatsResult | null>(null);
+  const [trend, setTrend] = useState<DailyTrendItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setErr('');
+    try {
+      const [s, t] = await Promise.all([
+        fetchDailyStats(storeId, date),
+        fetchDailyTrend(storeId, 7),
+      ]);
+      setStats(s);
+      setTrend(t);
+    } catch (e) {
+      setErr(errText(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [storeId, date]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const maxRev = Math.max(...trend.map((t) => t.revenue), 1);
+
+  return (
+    <div className="wrap">
+      <section className="panel">
+        <div className="panel-head">
+          <h2>营业统计{loading ? ' · 加载中…' : ''}</h2>
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="date-pick" />
+        </div>
+        {err && <div className="banner err">{err}</div>}
+        {stats && (
+          <div className="stat-cards">
+            <div className="stat-card">
+              <span className="stat-label">营业额</span>
+              <span className="stat-value revenue">¥{Number(stats.revenue).toFixed(2)}</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-label">订单数</span>
+              <span className="stat-value">{stats.order_count}</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-label">客单价</span>
+              <span className="stat-value">¥{Number(stats.avg_price).toFixed(2)}</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-label">退款</span>
+              <span className="stat-value refund">¥{Number(stats.refund).toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {stats && stats.pay_methods.length > 0 && (
+        <section className="panel">
+          <h2>支付方式分布</h2>
+          <div className="pay-list">
+            {stats.pay_methods.map((p) => (
+              <div className="pay-row" key={p.method}>
+                <span className="pay-method">{p.method}</span>
+                <span className="pay-amount">¥{Number(p.amount).toFixed(2)}</span>
+                <span className="pay-count">{p.count} 笔</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {trend.length > 0 && (
+        <section className="panel">
+          <h2>近 7 日营业趋势</h2>
+          <div className="trend-chart">
+            {trend.map((t) => (
+              <div className="trend-bar-wrap" key={t.date}>
+                <div className="trend-bar" style={{ height: `${Math.max((t.revenue / maxRev) * 120, 2)}px` }}>
+                  <span className="trend-val">{t.revenue > 0 ? `¥${Number(t.revenue).toFixed(0)}` : '-'}</span>
+                </div>
+                <span className="trend-date">{t.date.slice(5)}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

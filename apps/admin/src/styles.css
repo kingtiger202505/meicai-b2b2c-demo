@@ -70,3 +70,32 @@ header { display: flex; align-items: center; justify-content: space-between; pad
 
 .foot { color: #a9aeb8; font-size: 12px; padding: 8px 4px 16px; text-align: center; }
 .foot code { background: #f2f3f5; padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- tab 导航 ---------- */
+.tabs { display: flex; gap: 4px; padding: 0 4px 8px; }
+.tab { border: none; background: none; padding: 8px 16px; font-size: 14px; color: #4e5969; border-radius: 8px; font-weight: 500; }
+.tab.active { background: #E43D30; color: #fff; }
+.tab:hover:not(.active) { background: #f2f3f5; }
+
+/* ---------- 营业统计 ---------- */
+.date-pick { padding: 7px 10px; border: 1px solid #dcdfe6; border-radius: 8px; font-size: 14px; }
+
+.stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 600px) { .stat-cards { grid-template-columns: repeat(2, 1fr); } }
+.stat-card { display: flex; flex-direction: column; gap: 4px; padding: 14px; background: #f7f8fa; border-radius: 10px; }
+.stat-label { font-size: 12px; color: #86909c; }
+.stat-value { font-size: 22px; font-weight: 700; color: #1d2129; }
+.stat-value.revenue { color: #E43D30; }
+.stat-value.refund { color: #f53f3f; font-size: 18px; }
+
+.pay-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.pay-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border: 1px solid #eceef0; border-radius: 8px; }
+.pay-method { flex: 1; font-size: 14px; font-weight: 500; }
+.pay-amount { font-size: 14px; font-weight: 600; color: #1d2129; }
+.pay-count { font-size: 12px; color: #86909c; }
+
+.trend-chart { display: flex; align-items: flex-end; gap: 8px; padding: 16px 0 4px; min-height: 160px; }
+.trend-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.trend-bar { width: 100%; max-width: 48px; background: linear-gradient(180deg, #E43D30 0%, #ff7a6b 100%); border-radius: 6px 6px 0 0; position: relative; min-height: 2px; transition: height .3s; }
+.trend-val { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #4e5969; white-space: nowrap; }
+.trend-date { font-size: 11px; color: #86909c; }

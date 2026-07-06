@@ -91,3 +91,37 @@ export const deleteCategory = (id: string) =>
 
 export const reorderCategories = (orders: { category_id: string; sort: number }[]) =>
   supabase.rpc('reorder_categories', { p_orders: orders });
+
+// ---------- 营业统计 ----------
+export interface DailyStatsResult {
+  date: string;
+  revenue: number;
+  order_count: number;
+  avg_price: number;
+  refund: number;
+  pay_methods: { method: string; amount: number; count: number }[];
+}
+
+export interface DailyTrendItem {
+  date: string;
+  revenue: number;
+  count: number;
+}
+
+export async function fetchDailyStats(storeId: string, date?: string): Promise<DailyStatsResult> {
+  const { data, error } = await supabase.rpc('daily_stats', {
+    p_store_id: storeId,
+    p_date: date ?? null,
+  });
+  if (error) throw error;
+  return data as DailyStatsResult;
+}
+
+export async function fetchDailyTrend(storeId: string, days = 7): Promise<DailyTrendItem[]> {
+  const { data, error } = await supabase.rpc('daily_trend', {
+    p_store_id: storeId,
+    p_days: days,
+  });
+  if (error) throw error;
+  return (data ?? []) as DailyTrendItem[];
+}
