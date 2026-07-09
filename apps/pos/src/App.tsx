@@ -9,6 +9,7 @@ import {
   toOrderDetail, type OrderRow,
 } from './api';
 import { getPrintService, receiptStyles, receiptBodyHtml, type ReceiptPair } from './print';
+import PrinterSettings from './PrinterSettings';
 
 // 由订单行构造两联小票（接单副作用打印与预览/重打共用同一逻辑）
 function pairFor(row: OrderRow, store: Store): ReceiptPair {
@@ -69,7 +70,7 @@ function Board() {
   const [items, setItems] = useState<Item[]>([]);
   const [points, setPoints] = useState<ServicePoint[]>([]);
   const [ticket, setTicket] = useState<OrderRow | null>(null);
-  const [tab, setTab] = useState<'board' | 'items'>('board');
+  const [tab, setTab] = useState<'board' | 'items' | 'printer'>('board');
 
   const reload = useCallback(async (sid: string) => {
     const [os, its, pts] = await Promise.all([listActiveOrders(sid), listItems(sid), listOccupiedPoints(sid)]);
@@ -119,6 +120,7 @@ function Board() {
         <nav>
           <button className={tab === 'board' ? 'on' : ''} onClick={() => setTab('board')}>订单看板</button>
           <button className={tab === 'items' ? 'on' : ''} onClick={() => setTab('items')}>沽清管理</button>
+          <button className={tab === 'printer' ? 'on' : ''} onClick={() => setTab('printer')}>打印机</button>
           <button onClick={() => supabase.auth.signOut()}>退出</button>
         </nav>
       </header>
@@ -155,7 +157,7 @@ function Board() {
             {points.length === 0 && <div className="empty">暂无占用</div>}
           </Column>
         </div>
-      ) : (
+      ) : tab === 'items' ? (
         <div className="items">
           {items.map((it) => (
             <div className={'itemrow ' + (it.status === 'sold_out' ? 'soldout' : '')} key={it.id}>
@@ -166,6 +168,8 @@ function Board() {
             </div>
           ))}
         </div>
+      ) : (
+        <div className="printer-tab"><PrinterSettings /></div>
       )}
 
       {ticket && store && (
