@@ -13,3 +13,8 @@ Vite + React + TS + supabase-js。门店员工登录 → 实时订单看板 → 
 - 看板走 Realtime(orders 表变更即刷新);动作调用 security definer RPC(accept/complete/cancel/set_item_status/clear_table)。
 - 小票模型来自 `@meicai/shared` 的 `buildTickets`,58mm 打印样式见 `styles.css` 的 `@media print`。
 - 类型/构建:`pnpm exec tsc --noEmit`(0 error)、`pnpm build`(通过)。
+
+## 打印机接入(WX-25)
+- 顶部「打印机」tab:门店级 `printer_config`,四类可插拔 Provider —— `cloud`(云小票机 飞鹅/易联云)、`usb_serial`(WebUSB/Web Serial)、`network`(网口机,本地代理转 TCP:9100)、`bluetooth`(Web Bluetooth)。
+- 读写走 security definer RPC:`get_printer_config` / `save_printer_config` / `test_print_cloud` / `test_print_network`(见 `supabase/migrations/0014_printer_config.sql`)。敏感凭据(`cloud_key`/`network_agent_token`)只存服务端,读接口只回 `*_set` 与 `****末四位` 掩码,留空保存保留旧值。
+- `usb_serial`/`bluetooth` 需安全上下文(HTTPS/localhost)+ Chromium 桌面端,不支持环境自动置灰;测试环境为 http,故此两类置灰,`cloud`/`network` 可测。
