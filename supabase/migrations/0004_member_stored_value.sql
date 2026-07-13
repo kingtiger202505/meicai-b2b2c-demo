@@ -39,6 +39,7 @@ create table if not exists stored_value_txn (
   created_at timestamptz not null default now()
 );
 create index if not exists svt_member_idx on stored_value_txn(member_id, created_at desc);
+create unique index if not exists svt_wx_transaction_id_uniq_idx on stored_value_txn(wx_transaction_id) where wx_transaction_id is not null;
 
 create table if not exists coupon (
   id uuid primary key default gen_random_uuid(),

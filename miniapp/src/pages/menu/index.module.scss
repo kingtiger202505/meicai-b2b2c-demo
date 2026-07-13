@@ -17,6 +17,32 @@
   color: #fff;
 }
 
+// 轮播营销区
+.bannerSwiper {
+  height: 240rpx;
+  background: #fff;
+}
+
+.bannerImage {
+  width: 100%;
+  height: 100%;
+}
+
+.bannerMask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+  padding: 12rpx $page-padding;
+}
+
+.bannerTitle {
+  color: #fff;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
 .restLogo {
   width: 72rpx;
   height: 72rpx;

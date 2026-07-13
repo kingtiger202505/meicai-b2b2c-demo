@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Input } from '@tarojs/components';
+import { View, Text, Input, Button } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
@@ -7,6 +7,7 @@ import { useMemberStore } from '@/store/member';
 import { useUserStore } from '@/store/user';
 import { calcGift } from '@/services/member';
 import { isBackendConfigured } from '@/services/supabase';
+import { decryptPhone } from '@/services/identity';
 
 // 储值充值：mock 支付先走通闭环（复用 mock_topup_member，等 WX-6/WX-11 切真微信支付）。
 // 赠送规则：每满 100 送 20，累进（PRD Q1）。
@@ -33,6 +34,36 @@ const TopupPage: React.FC = () => {
   }, [user?.phone]);
 
   const gift = calcGift(amount);
+
+  const handleGetPhone = async (e) => {
+    if (e.detail.errMsg !== 'getPhoneNumber:ok') {
+      Taro.showToast({ title: '已取消授权', icon: 'none' });
+      return;
+    }
+    Taro.showLoading({ title: '获取手机号中...' });
+    try {
+      let p = '';
+      if (e.detail.code) {
+        // 真机解密手机号
+        const decrypted = await decryptPhone(e.detail.code);
+        p = decrypted || '';
+      } else {
+        // sandbox / mock 兜底
+        const code = e.detail.code || '1234';
+        p = '138****' + code.slice(-4);
+      }
+      if (p) {
+        setPhone(p);
+        Taro.showToast({ title: '获取成功', icon: 'success' });
+      } else {
+        Taro.showToast({ title: '解密失败，请手动输入', icon: 'none' });
+      }
+    } catch (err) {
+      Taro.showToast({ title: '获取失败', icon: 'none' });
+    } finally {
+      Taro.hideLoading();
+    }
+  };
 
   const handlePay = async () => {
     if (paying || amount <= 0) return;
@@ -113,6 +144,16 @@ const TopupPage: React.FC = () => {
               onInput={(e) => setPhone(e.detail.value)}
               className={styles.phoneInput}
             />
+            {process.env.TARO_ENV === 'weapp' && (
+              <Button
+                className={styles.getPhoneBtn}
+                openType="getPhoneNumber"
+                onGetPhoneNumber={handleGetPhone}
+                size="mini"
+              >
+                快捷获取
+              </Button>
+            )}
           </View>
           <Text className={styles.phoneHint}>
             提示：储值和余额将绑定到此手机号上，换设备登录后仍可继续使用。

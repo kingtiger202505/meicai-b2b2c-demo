@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, Button } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -6,6 +6,7 @@ import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
 import { useMemberStore } from '@/store/member';
 import { isBackendConfigured } from '@/services/supabase';
+import { listMyCoupons } from '@/services/coupon';
 
 const LEVEL_TEXT = {
   normal: '普通会员',
@@ -17,10 +18,18 @@ const LEVEL_TEXT = {
 const MinePage: React.FC = () => {
   const orders = useCartStore((s) => s.orders);
   const { user, loggedIn, login, bindPhone, logout } = useUserStore();
-  const { member, refresh: refreshMember } = useMemberStore();
+  const { member, refresh: refreshMember, ensure: ensureMember } = useMemberStore();
+  const [couponCount, setCouponCount] = useState(0);
 
-  // 每次进入「我的」拉最新会员/余额（后端权威）
-  useDidShow(() => { if (isBackendConfigured()) refreshMember(); });
+  // 每次进入「我的」拉最新会员/余额与真实券数量
+  useDidShow(() => {
+    if (isBackendConfigured()) {
+      refreshMember();
+      listMyCoupons('unused').then((list) => {
+        setCouponCount(list.length);
+      });
+    }
+  });
 
   const balance = member?.balance ?? user?.balance ?? 0;
   const goTopup = () => Taro.navigateTo({ url: '/pages/topup/index' });
@@ -46,12 +55,18 @@ const MinePage: React.FC = () => {
     Taro.showLoading({ title: '绑定中...' });
     const ok = await bindPhone(e.detail.code);
     Taro.hideLoading();
-    if (ok) Taro.showToast({ title: '手机号已绑定', icon: 'success' });
+    if (ok) {
+      Taro.showToast({ title: '手机号已绑定', icon: 'success' });
+      // 绑定手机号后，如果已配置后端，同步创建或更新会员信息
+      if (isBackendConfigured() && user) {
+        ensureMember(user.phone);
+      }
+    }
     else Taro.showToast({ title: '绑定失败', icon: 'none' });
   };
 
   const menuList = [
-    { icon: '🎁', text: '我的优惠券', count: '3张', action: 'coupon' },
+    { icon: '🎁', text: '我的优惠券', count: loggedIn ? `${couponCount}张` : '', action: 'coupon' },
     { icon: '⭐', text: '我的收藏', count: '5个', action: 'fav' },
     { icon: '📍', text: '收货地址', count: '2个', action: 'addr' },
     { icon: '💬', text: '意见反馈', count: '', action: 'feedback' },
@@ -101,13 +116,15 @@ const MinePage: React.FC = () => {
             </>
           )}
         </View>
-        {!loggedIn && (
+        {(!loggedIn || !user?.phone) && (
           <Button
             className={styles.loginBtn}
             size="mini"
-            onClick={handleLogin}
+            openType={loggedIn ? "getPhoneNumber" : undefined}
+            onGetPhoneNumber={loggedIn ? handleGetPhone : undefined}
+            onClick={!loggedIn ? handleLogin : undefined}
           >
-            微信登录
+            {loggedIn ? '绑定手机号' : '微信登录'}
           </Button>
         )}
       </View>
@@ -172,7 +189,7 @@ const MinePage: React.FC = () => {
       </View>
 
       {/* 退出登录 */}
-      {loggedIn && (
+      {loggedIn && user?.phone && (
         <View className={styles.logoutBtn} onClick={() => {
           Taro.showModal({
             title: '退出登录',

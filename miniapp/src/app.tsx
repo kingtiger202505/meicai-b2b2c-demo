@@ -69,6 +69,7 @@ function App(props) {
   useEffect(() => {
     // 恢复本地登录态
     useUserStore.getState().restore();
+
     // 解析扫码进店参数（门店 + 桌号），点位 code 由菜单页解析成 uuid
     applyEntryParams();
   });

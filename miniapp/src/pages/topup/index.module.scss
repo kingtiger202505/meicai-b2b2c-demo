@@ -159,6 +159,22 @@
   height: 100%;
 }
 
+.getPhoneBtn {
+  margin: 0 !important;
+  background: $color-primary;
+  color: #fff;
+  border: none;
+  font-size: $font-size-xs;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 $spacing-sm;
+  border-radius: $radius-sm;
+
+  &::after {
+    border: none;
+  }
+}
+
 .phoneHint {
   margin-top: $spacing-sm;
   font-size: $font-size-xs;

@@ -163,6 +163,11 @@ begin
     end if;
   end if;
 
+  -- 微信退款回调兜底回滚优惠券
+  if v_order.coupon_id is not null then
+    update coupon set status = 'unused', used_order_id = null where id = v_order.coupon_id;
+  end if;
+
   update orders set status='refunded', cancel_reason=coalesce(p_reason, cancel_reason),
                     refunded_at=now(), wx_refund_id=coalesce(p_wx_refund_id, wx_refund_id)
     where id=p_order_id returning id into v_id;
@@ -272,6 +277,11 @@ begin
       where id=v_order.member_id returning balance into v_bal;
     insert into stored_value_txn(store_id, member_id, type, amount, balance_after, order_id)
       values (v_order.store_id, v_order.member_id, 'refund', v_order.total, v_bal, v_order.id);
+  end if;
+
+  -- 退款/取消时，若订单使用了优惠券，回滚优惠券为未使用状态
+  if v_order.coupon_id is not null then
+    update coupon set status = 'unused', used_order_id = null where id = v_order.coupon_id;
   end if;
 
   update orders set status=v_new, cancel_reason=p_reason, refunded_at=now() where id=v_order.id;

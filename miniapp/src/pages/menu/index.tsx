@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Image, ScrollView } from '@tarojs/components';
+import { View, Text, Image, ScrollView, Swiper, SwiperItem } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
@@ -420,6 +420,12 @@ const MenuPage: React.FC = () => {
     }
   };
 
+  // 营销 Banner 列表
+  const banners = [
+    { id: 1, image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=delicious_chinese_sichuan_food_hotpot_banner&image_size=landscape_16_9', action: 'topup', title: '首充礼遇：充100送20' },
+    { id: 2, image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese_spicy_crayfish_dish_banner&image_size=landscape_16_9', action: 'coupon', title: '会员专享：限时领满减券' }
+  ];
+
   return (
     <View className={styles.page}>
       {/* 餐厅信息 */}
@@ -444,6 +450,36 @@ const MenuPage: React.FC = () => {
           </Text>
         </View>
       </View>
+
+      {/* 轮播 Banner 营销区 */}
+      <Swiper
+        className={styles.bannerSwiper}
+        indicatorColor="rgba(255,255,255,0.5)"
+        indicatorActiveColor="#ff4d4f"
+        circular
+        autoplay
+        interval={4000}
+        indicatorDots
+      >
+        {banners.map((b) => (
+          <SwiperItem
+            key={b.id}
+            onClick={() => {
+              if (b.action === 'topup') {
+                Taro.navigateTo({ url: '/pages/topup/index' });
+              } else if (b.action === 'coupon') {
+                refreshCoupons();
+                setMyCouponsOpen(true);
+              }
+            }}
+          >
+            <Image className={styles.bannerImage} src={b.image} mode="aspectFill" />
+            <View className={styles.bannerMask}>
+              <Text className={styles.bannerTitle}>{b.title}</Text>
+            </View>
+          </SwiperItem>
+        ))}
+      </Swiper>
 
       {/* 桌号横幅（堂食显示） */}
       {orderType === 'dineIn' && (

@@ -58,7 +58,7 @@ function Admin() {
   const [stores, setStores] = useState<Store[] | null>(null);
   const [storeId, setStoreId] = useState('');
   const [loadErr, setLoadErr] = useState('');
-  const [tab, setTab] = useState<'menu' | 'marketing' | 'daily' | 'orders' | 'refunds' | 'members' | 'logs'>('menu');
+  const [tab, setTab] = useState<'menu' | 'marketing' | 'daily' | 'orders' | 'refunds' | 'members' | 'logs' | 'staff'>('menu');
 
   const loadStores = useCallback(async (selectId?: string) => {
     try {
@@ -124,6 +124,7 @@ function Admin() {
         <button className={tab === 'refunds' ? 'tab active' : 'tab'} onClick={() => setTab('refunds')}>退款明细</button>
         <button className={tab === 'members' ? 'tab active' : 'tab'} onClick={() => setTab('members')}>会员列表</button>
         <button className={tab === 'logs' ? 'tab active' : 'tab'} onClick={() => setTab('logs')}>操作日志</button>
+        <button className={tab === 'staff' ? 'tab active' : 'tab'} onClick={() => setTab('staff')}>员工管理</button>
       </nav>
       {loadErr && <div className="banner err">加载失败：{loadErr}</div>}
       {current && tab === 'menu' && <MenuManager key={current.id} store={current} />}
@@ -133,6 +134,7 @@ function Admin() {
       {current && tab === 'refunds' && <RefundsTab key={current.id + '-refunds'} storeId={current.id} />}
       {current && tab === 'members' && <MembersTab key={current.id + '-members'} storeId={current.id} />}
       {current && tab === 'logs' && <LogsTab key={current.id + '-logs'} storeId={current.id} />}
+      {current && tab === 'staff' && <StaffTab key={current.id + '-staff'} storeId={current.id} />}
     </div>
   );
 }
@@ -1269,6 +1271,149 @@ function LogsTab({ storeId }: { storeId: string }) {
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+// ---------- 员工管理 Tab ----------
+function StaffTab({ storeId }: { storeId: string }) {
+  const [rows, setRows] = useState<StaffRow[] | null>(null);
+  const [err, setErr] = useState('');
+  const [editing, setEditing] = useState<StaffRow | 'new' | null>(null);
+
+  const reload = useCallback(async () => {
+    setErr('');
+    setRows(null);
+    try {
+      const list = await listStaff(storeId);
+      setRows(list);
+    } catch (e) {
+      setErr(errText(e));
+      setRows([]);
+    }
+  }, [storeId]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  const handleSave = async (userId: string, name: string, roleId: string) => {
+    try {
+      const { error } = await upsertStaff(userId, storeId, name, roleId);
+      if (error) throw error;
+      setEditing(null);
+      reload();
+    } catch (e) {
+      alert('保存员工失败：' + errText(e));
+    }
+  };
+
+  return (
+    <div className="wrap">
+      <section className="panel">
+        <div className="panel-head">
+          <h2>员工管理{rows === null ? ' · 加载中…' : ` · 共 ${rows.length} 位`}</h2>
+          <button className="primary" onClick={() => setEditing('new')}>+ 新增员工</button>
+        </div>
+        {err && <div className="banner err">加载失败：{err}</div>}
+        {!err && rows !== null && (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>用户ID (Auth UUID)</th>
+                  <th>姓名</th>
+                  <th>角色</th>
+                  <th>注册时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.user_id}>
+                    <td className="mono small">{r.user_id}</td>
+                    <td>{r.name}</td>
+                    <td>
+                      <span className="badge on_sale">{r.role_name}</span>
+                    </td>
+                    <td className="muted">{fmtTime(r.created_at)}</td>
+                    <td>
+                      <button className="small-btn" onClick={() => setEditing(r)}>编辑角色</button>
+                    </td>
+                  </tr>
+                ))}
+                {rows.length === 0 && (
+                  <tr><td colSpan={5} className="empty">暂无员工</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {editing && (
+        <StaffModal
+          staff={editing === 'new' ? null : editing}
+          onClose={() => setEditing(null)}
+          onSave={handleSave}
+        />
+      )}
+    </div>
+  );
+}
+
+interface StaffModalProps {
+  staff: StaffRow | null;
+  onClose: () => void;
+  onSave: (userId: string, name: string, roleId: string) => void;
+}
+
+function StaffModal({ staff, onClose, onSave }: StaffModalProps) {
+  const [userId, setUserId] = useState(staff?.user_id ?? '');
+  const [name, setName] = useState(staff?.name ?? '');
+  // 内置角色 ID：manager (店长), cashier (收银员)
+  const [roleId, setRoleId] = useState(staff?.role_id ?? '00000000-0000-0000-0000-000000000004');
+  const [err, setErr] = useState('');
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId.trim()) { setErr('请填写用户ID'); return; }
+    if (!name.trim()) { setErr('请填写姓名'); return; }
+    onSave(userId.trim(), name.trim(), roleId);
+  };
+
+  return (
+    <div className="modal" onClick={onClose}>
+      <form className="modal-body form" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+        <h3>{staff ? '编辑员工' : '新增员工'}</h3>
+        <label>
+          用户 ID (Supabase Auth uuid)
+          <input 
+            value={userId} 
+            onChange={(e) => setUserId(e.target.value)} 
+            placeholder="在 Supabase 注册的 Auth User ID" 
+            disabled={!!staff}
+          />
+        </label>
+        <label>
+          姓名
+          <input 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            placeholder="输入员工姓名" 
+          />
+        </label>
+        <label>
+          选择角色
+          <select value={roleId} onChange={(e) => setRoleId(e.target.value)}>
+            <option value="00000000-0000-0000-0000-000000000004">收银员 (cashier)</option>
+            <option value="00000000-0000-0000-0000-000000000003">店长 (manager)</option>
+          </select>
+        </label>
+        {err && <div className="err">{err}</div>}
+        <div className="modal-acts">
+          <button type="button" onClick={onClose}>取消</button>
+          <button className="primary" type="submit">保存</button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -119,10 +119,10 @@ create or replace function run_marketing_rules(p_store_id uuid, p_member_id uuid
 returns jsonb language plpgsql security definer set search_path=public as $$
 declare r marketing_rule%rowtype; results jsonb[] := '{}'; v_first_order bool;
 begin
-  -- 判断是否首单
-  select count(*) = 0 into v_first_order from orders o
-    join member m on m.id = p_member_id
-    where o.store_id = p_store_id and o.member_id = p_member_id and o.status in ('paid','processing','completed');
+  -- 判断是否首单：统计除去当前被跑规则的当前事件以外，历史已支付或退款订单数。
+  -- 如果数量为 0，说明当前单是首单（由于触发 run_marketing_rules 的这一单可能已经在 orders 里，也可以将当前单排除）
+  select count(*) <= 1 into v_first_order from orders o
+    where o.store_id = p_store_id and o.member_id = p_member_id and o.status in ('paid','processing','completed','refunded');
   for r in select * from marketing_rule where store_id=p_store_id and enabled=true and trigger=p_trigger order by priority loop
     if r.trigger = 'first_order' and not v_first_order then continue; end if;
     if r.action->>'type' = 'issue_coupon' and r.action->>'coupon_template_id' is not null then
