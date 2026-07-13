@@ -45,8 +45,8 @@ grant select on marketing_rule to authenticated;
 
 -- 券模板 CRUD(老板用)
 create or replace function upsert_coupon_template(
-  p_id uuid default null, p_store_id uuid, p_name text, p_kind coupon_kind,
-  p_threshold numeric default 0, p_value numeric, p_valid_days int default 30,
+  p_id uuid default null, p_store_id uuid default null, p_name text default null, p_kind coupon_kind default 'cash',
+  p_threshold numeric default 0, p_value numeric default 0, p_valid_days int default 30,
   p_total_quota int default null, p_enabled bool default true
 ) returns jsonb language plpgsql security definer set search_path=public as $$
 declare c coupon_template%rowtype;
@@ -71,8 +71,8 @@ grant execute on function upsert_coupon_template(uuid,uuid,text,coupon_kind,nume
 
 -- 营销规则 CRUD
 create or replace function upsert_marketing_rule(
-  p_id uuid default null, p_store_id uuid, p_name text, p_trigger text,
-  p_action jsonb, p_enabled bool default true, p_priority int default 0
+  p_id uuid default null, p_store_id uuid default null, p_name text default null, p_trigger text default null,
+  p_action jsonb default null, p_enabled bool default true, p_priority int default 0
 ) returns jsonb language plpgsql security definer set search_path=public as $$
 declare r marketing_rule%rowtype;
 begin
@@ -145,7 +145,7 @@ returns setof jsonb language sql security definer set search_path=public stable 
   select to_jsonb(c) from coupon c
   join member m on m.id = c.member_id
   where m.store_id=p_store_id and m.openid=p_openid
-    and (p_status is null or c.status = p_status)
+    and (p_status is null or c.status = p_status::coupon_status)
   order by c.created_at desc;
 $$;
 revoke all on function list_my_coupons(uuid,text,text) from public;
@@ -270,10 +270,10 @@ on conflict do nothing;
 alter table staff add column if not exists role_id uuid references role(id) on delete set null;
 -- 把现有 staff.role 文本映射到 role_id
 update staff set role_id = case
-  when role = 'owner' then '00000000-0000-0000-0000-000000000002'
-  when role = 'manager' then '00000000-0000-0000-0000-000000000003'
-  when role = 'cashier' then '00000000-0000-0000-0000-000000000004'
-  else '00000000-0000-0000-0000-000000000004'  -- 默认 cashier
+  when role = 'owner' then '00000000-0000-0000-0000-000000000002'::uuid
+  when role = 'manager' then '00000000-0000-0000-0000-000000000003'::uuid
+  when role = 'cashier' then '00000000-0000-0000-0000-000000000004'::uuid
+  else '00000000-0000-0000-0000-000000000004'::uuid  -- 默认 cashier
 end where role_id is null;
 
 -- 查当前用户权限(前端菜单/按钮控制用)
@@ -295,7 +295,7 @@ grant execute on function current_staff_permissions() to authenticated;
 
 -- 员工管理 RPC(老板用)
 create or replace function upsert_staff(
-  p_user_id uuid, p_store_id uuid, p_name text, p_role_id uuid
+  p_user_id uuid default null, p_store_id uuid default null, p_name text default null, p_role_id uuid default null
 ) returns jsonb language plpgsql security definer set search_path=public as $$
 declare s staff%rowtype;
 begin
@@ -365,12 +365,7 @@ grant execute on function settle_order_cash(uuid,numeric,numeric,text) to authen
 -- ============================================================
 -- 3B: 桌台管理升级 — point_status 加 reserved/cleaning + 桌台 CRUD
 -- ============================================================
-do $$ begin
-  alter type point_status add value 'reserved' if not exists;
-exception when duplicate_object then null; end $$;
-do $$ begin
-  alter type point_status add value 'cleaning' if not exists;
-exception when duplicate_object then null; end $$;
+-- point_status enum 已通过单独 ALTER TYPE ADD VALUE 执行（不支持在事务块中执行）
 
 alter table service_point add column if not exists area text;
 alter table service_point add column if not exists seat_count int default 4;
@@ -378,7 +373,7 @@ alter table service_point add column if not exists sort_order int default 0;
 
 -- 桌台 CRUD(老板用)
 create or replace function upsert_service_point(
-  p_id uuid default null, p_store_id uuid, p_code text, p_name text,
+  p_id uuid default null, p_store_id uuid default null, p_code text default null, p_name text default null,
   p_area text default null, p_seat_count int default 4, p_sort_order int default 0
 ) returns jsonb language plpgsql security definer set search_path=public as $$
 declare p service_point%rowtype; v_id uuid;

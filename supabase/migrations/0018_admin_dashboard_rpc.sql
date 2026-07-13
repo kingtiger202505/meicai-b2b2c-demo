@@ -39,7 +39,7 @@ language sql stable security definer set search_path=public as $$
   left join service_point sp on sp.id = o.point_id
   where o.store_id = p_store_id
     and is_store_owner(p_store_id)
-    and (p_status is null or o.status = p_status)
+    and (p_status is null or o.status = p_status::order_status)
   order by o.created_at desc
   limit greatest(1, least(p_limit, 200));
 $$;
