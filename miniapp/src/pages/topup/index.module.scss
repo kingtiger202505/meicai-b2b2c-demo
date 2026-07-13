@@ -126,3 +126,42 @@
   font-size: $font-size-xs;
   color: $color-text-tertiary;
 }
+
+// 绑定手机号区域样式
+.phoneSection {
+  margin: $spacing-xl $page-padding 0;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-md;
+  height: 88rpx;
+  padding: 0 $spacing-md;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
+}
+
+.inputIcon {
+  font-size: 36rpx;
+}
+
+.phoneInput {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  height: 100%;
+}
+
+.phoneHint {
+  margin-top: $spacing-sm;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+}
