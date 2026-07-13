@@ -46,3 +46,18 @@ services:
     ports:
       - "8082:8082"
     restart: unless-stopped
+
+  # 平台管理端 platform（Vite+React SPA）→ nginx :8083；构建期注入 Supabase 前端配置
+  # 平台运营人员使用，管理商户进件/审核等
+  platform:
+    build:
+      context: .
+      dockerfile: Dockerfile.platform
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+    image: meicai-platform:001
+    container_name: meicai-platform
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
