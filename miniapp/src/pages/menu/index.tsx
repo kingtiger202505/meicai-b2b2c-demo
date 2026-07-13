@@ -49,6 +49,26 @@ const MenuPage: React.FC = () => {
   // 暂存下单结果，选完券后继续支付
   const pendingOrderRef = useRef<{ placed: PlaceOrderResult; openid: string } | null>(null);
 
+  // 我的券包弹层状态
+  const [myCouponsOpen, setMyCouponsOpen] = useState(false);
+  const [myCoupons, setMyCoupons] = useState<Coupon[]>([]);
+  const [myCouponsLoading, setMyCouponsLoading] = useState(false);
+  const [myCouponTab, setMyCouponTab] = useState<'unused' | 'history'>('unused');
+
+  // 拉取我的优惠券列表
+  const refreshCoupons = useCallback(async () => {
+    if (!isBackendConfigured()) return;
+    setMyCouponsLoading(true);
+    try {
+      const all = await listMyCoupons();
+      setMyCoupons(all);
+    } catch (e) {
+      console.warn('获取我的券包失败', e);
+    } finally {
+      setMyCouponsLoading(false);
+    }
+  }, []);
+
   const {
     items, add, minus, getCount, getTotalCount, getTotalPrice, clear,
     orderType, setOrderType, tableNo, setTableNo,
@@ -59,10 +79,13 @@ const MenuPage: React.FC = () => {
   const { user } = useUserStore();
   const { member, refresh: refreshMember, ensure: ensureMember } = useMemberStore();
 
-  // 进入点餐页拉一次会员/余额（供结算时展示可用余额）
+  // 进入点餐页拉一次会员/余额与优惠券
   useEffect(() => {
-    if (isBackendConfigured()) refreshMember();
-  }, [refreshMember]);
+    if (isBackendConfigured()) {
+      refreshMember();
+      refreshCoupons();
+    }
+  }, [refreshMember, refreshCoupons]);
 
   // 拉后端真实分类 + 菜品
   const loadCatalog = useCallback(async () => {
@@ -373,6 +396,7 @@ const MenuPage: React.FC = () => {
       const orderId = recordLocalOrder(label);
       updateOrderStatus(orderId, 'pending');
       refreshMember();
+      refreshCoupons();
       // 下单成功后清空共享购物车（任何人结账后同桌购物车归零）
       clearSessionCart();
       Taro.navigateTo({
@@ -440,6 +464,32 @@ const MenuPage: React.FC = () => {
               <Text className={styles.tableAction}>去扫码 ›</Text>
             </>
           )}
+        </View>
+      )}
+
+      {/* 会员资产栏（储值 + 优惠券） */}
+      {isBackendConfigured() && (
+        <View className={styles.memberBar}>
+          <View className={styles.memberBarLeft}>
+            <Text className={styles.memberAvatar}>👤</Text>
+            <Text className={styles.memberWelcome}>
+              {member ? `会员 (尾号${member.phone?.slice(-4) || '---'})` : '普通顾客'}
+            </Text>
+          </View>
+          <View className={styles.memberBarRight}>
+            <View className={styles.assetItem} onClick={() => Taro.navigateTo({ url: '/pages/topup/index' })}>
+              <Text className={styles.assetLabel}>余额</Text>
+              <Text className={styles.assetValue}>¥{(member?.balance ?? 0).toFixed(2)}</Text>
+            </View>
+            <View className={styles.assetDivider} />
+            <View className={styles.assetItem} onClick={() => { refreshCoupons(); setMyCouponsOpen(true); }}>
+              <Text className={styles.assetLabel}>券包</Text>
+              <Text className={styles.assetValue}>
+                {myCoupons.filter(isCouponUsable).length}张可用
+              </Text>
+              <Text className={styles.assetArrow}>›</Text>
+            </View>
+          </View>
         </View>
       )}
 
@@ -516,6 +566,89 @@ const MenuPage: React.FC = () => {
           <View style={{ height: '180rpx' }} />
         </ScrollView>
       </View>
+
+      {/* 我的券包弹层 */}
+      {myCouponsOpen && (
+        <>
+          <View className={styles.couponMask} onClick={() => setMyCouponsOpen(false)} />
+          <View className={styles.couponPanel}>
+            <View className={styles.couponPanelHd}>
+              <Text className={styles.couponPanelTitle}>我的优惠券</Text>
+              <Text className={styles.couponPanelClose} onClick={() => setMyCouponsOpen(false)}>关闭</Text>
+            </View>
+            <View className={styles.tabHeader}>
+              <Text
+                className={classnames(styles.tabItem, myCouponTab === 'unused' && styles.tabItemActive)}
+                onClick={() => setMyCouponTab('unused')}
+              >
+                可用券 ({myCoupons.filter(isCouponUsable).length})
+              </Text>
+              <Text
+                className={classnames(styles.tabItem, myCouponTab === 'history' && styles.tabItemActive)}
+                onClick={() => setMyCouponTab('history')}
+              >
+                历史券 ({myCoupons.filter(c => !isCouponUsable(c)).length})
+              </Text>
+            </View>
+            <ScrollView scrollY className={styles.couponPanelBd}>
+              {myCouponsLoading && <View className={styles.stateTip}>加载中...</View>}
+              {!myCouponsLoading && (
+                <>
+                  {myCouponTab === 'unused' ? (
+                    <>
+                      {myCoupons.filter(isCouponUsable).length === 0 ? (
+                        <View className={styles.stateTip}>暂无可用优惠券</View>
+                      ) : (
+                        myCoupons.filter(isCouponUsable).map((c) => (
+                          <View key={c.id} className={styles.couponItem}>
+                            <View className={styles.couponItemLeft}>
+                              <Text className={styles.couponItemValue}>¥{c.value}</Text>
+                              <Text className={styles.couponItemThreshold}>
+                                {c.kind === 'cash' ? '代金券' : `满 ${c.threshold} 可用`}
+                              </Text>
+                            </View>
+                            <View className={styles.couponItemRight}>
+                              <Text className={styles.couponItemLabel}>{couponLabel(c)}</Text>
+                              <Text className={styles.couponItemExpire}>
+                                {c.expire_at
+                                  ? `有效期至 ${new Date(c.expire_at).toLocaleDateString('zh-CN')}`
+                                  : '永久有效'}
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {myCoupons.filter(c => !isCouponUsable(c)).length === 0 ? (
+                        <View className={styles.stateTip}>暂无历史优惠券</View>
+                      ) : (
+                        myCoupons.filter(c => !isCouponUsable(c)).map((c) => (
+                          <View key={c.id} className={classnames(styles.couponItem, styles.couponItemDisabled)}>
+                            <View className={styles.couponItemLeft}>
+                              <Text className={styles.couponItemValue}>¥{c.value}</Text>
+                              <Text className={styles.couponItemThreshold}>
+                                {c.kind === 'cash' ? '代金券' : `满 ${c.threshold} 可用`}
+                              </Text>
+                            </View>
+                            <View className={styles.couponItemRight}>
+                              <Text className={styles.couponItemLabel}>{couponLabel(c)}</Text>
+                              <Text className={styles.couponItemExpire}>
+                                {c.status === 'used' ? '已使用' : '已过期'}
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </ScrollView>
+          </View>
+        </>
+      )}
 
       {/* 选券面板弹层 */}
       {couponPanelOpen && (
