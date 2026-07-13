@@ -6,7 +6,8 @@ export default defineAppConfig({
     'pages/detail/index',
     'pages/orderDetail/index',
     'pages/paySuccess/index',
-    'pages/topup/index'
+    'pages/topup/index',
+    'pages/coupon/index'
   ],
   window: {
     backgroundTextStyle: 'light',

@@ -363,7 +363,18 @@
   font-weight: $font-weight-semibold;
 }
 
+/* 同桌共选标识（堂食共享购物车） */
+.sharedTag {
+  margin-left: 12rpx;
+  padding: 2rpx 12rpx;
+  font-size: $font-size-xs;
+  color: #fff;
+  background: $color-primary;
+  border-radius: 20rpx;
+}
+
 .clearBtn {
+  margin-left: auto;
   font-size: $font-size-sm;
   color: $color-text-tertiary;
 }
@@ -431,4 +442,159 @@
 .retryBtn {
   color: $color-primary;
   font-weight: $font-weight-medium;
+}
+
+// ========== 选券面板弹层 ==========
+.couponMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+
+.couponPanel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: $radius-lg $radius-lg 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 210;
+  box-shadow: $shadow-popup;
+}
+
+.couponPanelHd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg $spacing-lg $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.couponPanelTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.couponPanelClose {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  padding: 4rpx 8rpx;
+}
+
+.couponPanelBd {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm $spacing-lg;
+  max-height: 60vh;
+}
+
+.couponItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-sm;
+  border: 2rpx solid $color-divider;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  gap: $spacing-md;
+  transition: all $transition-base;
+
+  &.couponItemActive {
+    border-color: $color-primary;
+    background: rgba($color-primary, 0.04);
+  }
+}
+
+.couponItemLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 140rpx;
+  padding: 0 $spacing-sm;
+  border-right: 2rpx dashed $color-divider;
+  flex-shrink: 0;
+}
+
+.couponItemValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-price;
+}
+
+.couponItemThreshold {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.couponItemRight {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.couponItemLabel {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.couponItemExpire {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.couponItemRadio {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-divider;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.radioDot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+}
+
+.couponPanelFt {
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(env(safe-area-inset-bottom) + #{$spacing-md});
+  border-top: 1rpx solid $color-divider;
+}
+
+.couponConfirmBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  border-radius: $radius-round;
+  background: $color-primary;
+  color: #fff;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+
+  &:active {
+    opacity: 0.9;
+  }
+
+  &.couponConfirmBtnDisabled {
+    background: $color-text-disabled;
+  }
 }

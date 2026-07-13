@@ -11,7 +11,10 @@ import { placeOrder as placeOrderApi, mockPay, PlaceOrderResult } from '@/servic
 import { payWithBalance } from '@/services/member';
 import { ensureDevOpenId } from '@/services/identity';
 import { isBackendConfigured } from '@/services/supabase';
+import { createWxPayOrder, requestWxPayment } from '@/services/pay';
 import { useMemberStore } from '@/store/member';
+import { listMyCoupons, redeemCoupon, isCouponUsable, couponLabel, type Coupon } from '@/services/coupon';
+import { STORE_ID } from '@/services/supabase';
 import Stepper from '@/components/Stepper';
 
 // 后端错误 → 用户可读文案
@@ -38,11 +41,19 @@ const MenuPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  // 选券面板状态
+  const [couponPanelOpen, setCouponPanelOpen] = useState(false);
+  const [couponList, setCouponList] = useState<Coupon[]>([]);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [selectedCouponId, setSelectedCouponId] = useState<string>('');
+  // 暂存下单结果，选完券后继续支付
+  const pendingOrderRef = useRef<{ placed: PlaceOrderResult; openid: string } | null>(null);
 
   const {
     items, add, minus, getCount, getTotalCount, getTotalPrice, clear,
     orderType, setOrderType, tableNo, setTableNo,
     storeId, pointId, pointRef, setPoint,
+    sessionId, setSessionId, mergeSessionCart, clearSessionCart,
     placeOrder: recordLocalOrder, updateOrderStatus,
   } = useCartStore();
   const { user } = useUserStore();
@@ -62,18 +73,26 @@ const MenuPage: React.FC = () => {
       setCategories(cats);
       setDishes(ds);
       if (cats.length) setActiveCat((prev) => prev || cats[0].id);
+
+      // 堂食有会话：拉共享购物车合并到本地（同桌已选的菜显示出来）
+      const sid = useCartStore.getState().sessionId;
+      if (sid && isBackendConfigured()) {
+        const dishMap: Record<string, Dish> = {};
+        ds.forEach((d) => { dishMap[d.id] = d; });
+        await mergeSessionCart(dishMap);
+      }
     } catch (e: any) {
       setLoadError(mapOrderError(e?.message || '菜单加载失败'));
     } finally {
       setLoading(false);
     }
-  }, [storeId]);
+  }, [storeId, mergeSessionCart]);
 
   useEffect(() => {
     loadCatalog();
   }, [loadCatalog]);
 
-  // 扫码点位 code → 解析为 uuid + 桌号显示
+  // 扫码点位 code → 解析为 uuid + 桌号显示 + 会话 id
   useEffect(() => {
     if (!pointRef || pointId || !isBackendConfigured()) return;
     resolvePoint(pointRef, storeId)
@@ -81,10 +100,12 @@ const MenuPage: React.FC = () => {
         if (p) {
           setPoint(p.id);
           setTableNo(p.name);
+          // 堂食绑桌：记录当前会话（协同购物车用）
+          if (p.current_session_id) setSessionId(p.current_session_id);
         }
       })
       .catch(() => {});
-  }, [pointRef, pointId, storeId, setPoint, setTableNo]);
+  }, [pointRef, pointId, storeId, setPoint, setTableNo, setSessionId]);
 
   const groupedDishes = useMemo(() => {
     return categories.map((cat) => ({
@@ -211,7 +232,76 @@ const MenuPage: React.FC = () => {
       return;
     }
 
-    // 选择支付方式：微信支付(mock) / 余额支付
+    // 下单成功后，查可用券；有则弹选券面板，无则直接选支付方式
+    pendingOrderRef.current = { placed, openid };
+    let usableCoupons: Coupon[] = [];
+    try {
+      const all = await listMyCoupons('unused');
+      usableCoupons = all.filter(isCouponUsable);
+    } catch (e) {
+      // 查券失败不阻塞下单，按无券处理
+      console.warn('查券失败，跳过选券', e);
+    }
+
+    if (usableCoupons.length > 0) {
+      setCouponList(usableCoupons);
+      setSelectedCouponId('');
+      setCouponPanelOpen(true);
+      setSubmitting(false);
+      return;
+    }
+
+    // 无可用券：直接进入支付方式选择
+    proceedToPay(placed, openid);
+  };
+
+  // 选券面板：确认选择后核销券，再进入支付
+  const handleConfirmCoupon = async () => {
+    const pending = pendingOrderRef.current;
+    if (!pending) return;
+    const { placed, openid } = pending;
+
+    // 未选券：直接按原金额支付
+    if (!selectedCouponId) {
+      setCouponPanelOpen(false);
+      proceedToPay(placed, openid);
+      return;
+    }
+
+    setSubmitting(true);
+    Taro.showLoading({ title: '核销券中...', mask: true });
+    try {
+      const res = await redeemCoupon(selectedCouponId, placed.order_id, storeId || STORE_ID, openid);
+      Taro.hideLoading();
+      // 核销成功：用 new_total 覆盖原金额继续支付
+      const newPlaced: PlaceOrderResult = { ...placed, total: res.new_total };
+      setCouponPanelOpen(false);
+      Taro.showToast({ title: `已优惠 ¥${res.discount.toFixed(2)}`, icon: 'none' });
+      proceedToPay(newPlaced, openid);
+    } catch (e: any) {
+      Taro.hideLoading();
+      const raw = String(e?.message || '');
+      let content = '券核销失败，请重新选择';
+      if (raw.indexOf('below_threshold') >= 0) content = '该券不满足使用门槛，请重新选择';
+      else if (raw.indexOf('already_used') >= 0) content = '该券已被使用，请重新选择';
+      else if (raw.indexOf('expired') >= 0) content = '该券已过期，请重新选择';
+      else if (raw.indexOf('not_found') >= 0) content = '券不存在，请重新选择';
+      Taro.showModal({ title: '无法使用该券', content, showCancel: false });
+      // 允许重新选或不选券
+      setSubmitting(false);
+    }
+  };
+
+  // 选券面板：直接跳过不使用券
+  const handleSkipCoupon = () => {
+    const pending = pendingOrderRef.current;
+    if (!pending) return;
+    setCouponPanelOpen(false);
+    proceedToPay(pending.placed, pending.openid);
+  };
+
+  // 选择支付方式：微信支付(mock) / 余额支付
+  const proceedToPay = (placed: PlaceOrderResult, openid: string) => {
     const bal = member?.balance ?? 0;
     Taro.showActionSheet({
       itemList: ['微信支付', `余额支付（¥${bal.toFixed(2)}）`],
@@ -233,14 +323,58 @@ const MenuPage: React.FC = () => {
         if (!m?.id) throw new Error('会员开通失败，请重试');
         await payWithBalance(placed.order_token, m.id);
       } else {
-        // mock 支付：支付成功 + 无感建会员（openid 主键、附手机号）
-        await mockPay(placed.order_token, openid, user?.phone || null);
+        // 微信支付: 调 wxpay-create Edge Function(服务商模式)
+        // sandbox 模式返回占位 paySign,wx.requestPayment 会失败,走 mockPay 兜底
+        // live 模式返回真 paySign,wx.requestPayment 唤起真支付
+        let paid = false;
+        try {
+          const { payParams, mode } = await createWxPayOrder({
+            orderToken: placed.order_token,
+            orderId: placed.order_id,
+            amount: placed.total,
+            openId: openid,
+          });
+          if (mode === 'live') {
+            // live: 唤起真微信支付
+            paid = await requestWxPayment(payParams);
+            if (!paid) {
+              Taro.hideLoading();
+              Taro.showToast({ title: '已取消支付', icon: 'none' });
+              setSubmitting(false);
+              return;
+            }
+            // live 模式支付成功由微信异步回调(wxpay-notify)驱动,此处不调 mockPay
+          } else {
+            // sandbox / local-mock: paySign 是假的,直接走 mockPay 跑通下游
+            await mockPay(placed.order_token, openid, user?.phone || null);
+            paid = true;
+          }
+        } catch (payErr) {
+          // wx.requestPayment 失败(sandbox 下假 paySign): 兜底走 mockPay
+          const errMsg = String((payErr as any)?.errMsg || (payErr as any)?.message || '');
+          if (errMsg.indexOf('cancel') > -1) {
+            Taro.hideLoading();
+            Taro.showToast({ title: '已取消支付', icon: 'none' });
+            setSubmitting(false);
+            return;
+          }
+          // 其他失败: 兜底 mock(保证 demo 闭环)
+          await mockPay(placed.order_token, openid, user?.phone || null);
+          paid = true;
+        }
+        if (!paid) {
+          Taro.hideLoading();
+          setSubmitting(false);
+          return;
+        }
       }
       Taro.hideLoading();
       const label = method === 'balance' ? '余额支付' : '微信支付';
       const orderId = recordLocalOrder(label);
       updateOrderStatus(orderId, 'pending');
       refreshMember();
+      // 下单成功后清空共享购物车（任何人结账后同桌购物车归零）
+      clearSessionCart();
       Taro.navigateTo({
         url: `/pages/paySuccess/index?amount=${placed.total}&method=${encodeURIComponent(label)}&orderId=${placed.order_id}`,
       });
@@ -383,6 +517,76 @@ const MenuPage: React.FC = () => {
         </ScrollView>
       </View>
 
+      {/* 选券面板弹层 */}
+      {couponPanelOpen && (
+        <>
+          <View className={styles.couponMask} onClick={handleSkipCoupon} />
+          <View className={styles.couponPanel}>
+            <View className={styles.couponPanelHd}>
+              <Text className={styles.couponPanelTitle}>选择优惠券</Text>
+              <Text className={styles.couponPanelClose} onClick={handleSkipCoupon}>不使用</Text>
+            </View>
+            <ScrollView scrollY className={styles.couponPanelBd}>
+              {/* 不使用券选项 */}
+              <View
+                className={classnames(
+                  styles.couponItem,
+                  selectedCouponId === '' && styles.couponItemActive
+                )}
+                onClick={() => setSelectedCouponId('')}
+              >
+                <View className={styles.couponItemLeft}>
+                  <Text className={styles.couponItemValue}>不使用</Text>
+                  <Text className={styles.couponItemThreshold}>按原金额支付</Text>
+                </View>
+                <View className={styles.couponItemRadio}>
+                  {selectedCouponId === '' && <Text className={styles.radioDot} />}
+                </View>
+              </View>
+              {couponList.map((c) => {
+                const selected = selectedCouponId === c.id;
+                return (
+                  <View
+                    key={c.id}
+                    className={classnames(styles.couponItem, selected && styles.couponItemActive)}
+                    onClick={() => setSelectedCouponId(c.id)}
+                  >
+                    <View className={styles.couponItemLeft}>
+                      <Text className={styles.couponItemValue}>¥{c.value}</Text>
+                      <Text className={styles.couponItemThreshold}>
+                        {c.kind === 'cash' ? '代金券' : `满 ${c.threshold} 可用`}
+                      </Text>
+                    </View>
+                    <View className={styles.couponItemRight}>
+                      <Text className={styles.couponItemLabel}>{couponLabel(c)}</Text>
+                      <Text className={styles.couponItemExpire}>
+                        {c.expire_at
+                          ? `有效期至 ${new Date(c.expire_at).toLocaleDateString('zh-CN')}`
+                          : '永久有效'}
+                      </Text>
+                    </View>
+                    <View className={styles.couponItemRadio}>
+                      {selected && <Text className={styles.radioDot} />}
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
+            <View className={styles.couponPanelFt}>
+              <Text
+                className={classnames(
+                  styles.couponConfirmBtn,
+                  (submitting || couponLoading) && styles.couponConfirmBtnDisabled
+                )}
+                onClick={handleConfirmCoupon}
+              >
+                {submitting ? '处理中...' : '确认使用'}
+              </Text>
+            </View>
+          </View>
+        </>
+      )}
+
       {/* 购物车详情弹层 */}
       {showCart && totalCount > 0 && (
         <>
@@ -390,6 +594,10 @@ const MenuPage: React.FC = () => {
           <View className={styles.cartPanel}>
             <View className={styles.cartPanelHd}>
               <Text className={styles.cartPanelTitle}>已选商品 ({totalCount})</Text>
+              {/* 堂食有会话：同桌共享购物车标识 */}
+              {orderType === 'dineIn' && sessionId && totalCount > 0 && (
+                <Text className={styles.sharedTag}>同桌共选</Text>
+              )}
               <Text className={styles.clearBtn} onClick={() => clear()}>清空</Text>
             </View>
             <ScrollView scrollY className={styles.cartPanelBd}>

@@ -59,6 +59,73 @@ export const setItemStatus = (id: string, status: ItemStatus) =>
   supabase.rpc('set_item_status', { p_item_id: id, p_status: status });
 export const clearTable    = (pointId: string) => supabase.rpc('clear_table', { p_point_id: pointId });
 
+// ===== v4 阶段3: 桌台管理 =====
+export interface ServicePointFull extends ServicePoint {
+  area?: string | null;
+  seat_count?: number | null;
+  sort_order?: number | null;
+}
+
+// 查全部桌台(含空闲,用于桌台图)
+export async function listAllPoints(storeId: string): Promise<ServicePointFull[]> {
+  const { data, error } = await supabase.from('service_point')
+    .select('*').eq('store_id', storeId).order('sort_order').order('code');
+  if (error) throw error;
+  return (data ?? []) as ServicePointFull[];
+}
+
+export const setPointStatus = (pointId: string, status: 'idle' | 'occupied' | 'reserved' | 'cleaning') =>
+  supabase.rpc('set_point_status', { p_point_id: pointId, p_status: status });
+
+// ===== v4 阶段3: 收银台(现金收款) =====
+export function settleOrderCash(
+  orderId: string, cashReceived: number, roundOff: number = 0, payMethod: string = 'cash'
+) {
+  return supabase.rpc('settle_order_cash', {
+    p_order_id: orderId, p_cash_received: cashReceived,
+    p_round_off: roundOff, p_pay_method: payMethod,
+  });
+}
+
+// 查未支付订单(收银台用,POS 代顾客结账)
+export async function listUnpaidOrders(storeId: string): Promise<OrderRow[]> {
+  const { data, error } = await supabase.from('orders')
+    .select('*, order_item(*), service_point(name), member(balance)')
+    .eq('store_id', storeId)
+    .eq('status', 'created')
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as OrderRow[];
+}
+
+// ===== v4 阶段3: 交接班 =====
+export interface Shift {
+  id: string;
+  store_id: string;
+  staff_id: string;
+  staff_name: string | null;
+  started_at: string;
+  ended_at: string | null;
+  opening_float: number;
+  expected_cash: number | null;
+  counted_cash: number | null;
+  difference: number | null;
+  status: 'open' | 'closed';
+  note: string | null;
+}
+
+export const openShift = (storeId: string, openingFloat: number = 0) =>
+  supabase.rpc('open_shift', { p_store_id: storeId, p_opening_float: openingFloat });
+
+export const closeShift = (shiftId: string, countedCash: number, note?: string) =>
+  supabase.rpc('close_shift', { p_shift_id: shiftId, p_counted_cash: countedCash, p_note: note ?? null });
+
+export const currentShift = (storeId: string) =>
+  supabase.rpc('current_shift', { p_store_id: storeId });
+
+export const shiftSummary = (shiftId: string) =>
+  supabase.rpc('shift_summary', { p_shift_id: shiftId });
+
 export function toOrderDetail(row: OrderRow): OrderDetail {
   const { order_item, service_point, member, ...order } = row;
   void service_point; void member;

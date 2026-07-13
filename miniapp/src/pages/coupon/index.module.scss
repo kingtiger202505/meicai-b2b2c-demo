@@ -1,0 +1,148 @@
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+.tabs {
+  display: flex;
+  background: #fff;
+  padding: 0 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  color: #86909c;
+  position: relative;
+}
+
+.tabActive {
+  color: #ff6b00;
+  font-weight: 600;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48rpx;
+  height: 4rpx;
+  background: #ff6b00;
+  border-radius: 2rpx;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 40rpx;
+  color: #86909c;
+}
+
+.emptyIcon {
+  font-size: 96rpx;
+  margin-bottom: 24rpx;
+}
+
+.emptyText {
+  font-size: 30rpx;
+  color: #4e5969;
+  margin-bottom: 8rpx;
+}
+
+.emptyHint {
+  font-size: 24rpx;
+  color: #c9cdd4;
+}
+
+.list {
+  padding: 24rpx;
+}
+
+.card {
+  display: flex;
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.cardDisabled {
+  opacity: 0.55;
+}
+
+.cardLeft {
+  width: 180rpx;
+  background: linear-gradient(135deg, #ff6b00, #ff9244);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 0;
+}
+
+.cardDisabled .cardLeft {
+  background: linear-gradient(135deg, #c9cdd4, #d9dce2);
+}
+
+.value {
+  font-size: 52rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.threshold {
+  font-size: 22rpx;
+  margin-top: 12rpx;
+  opacity: 0.9;
+}
+
+.cardRight {
+  flex: 1;
+  padding: 24rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1d2129;
+  margin-bottom: 12rpx;
+}
+
+.expire {
+  font-size: 22rpx;
+  color: #86909c;
+  margin-bottom: 8rpx;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #86909c;
+  border: 1rpx solid #d9dce2;
+  border-radius: 4rpx;
+  padding: 2rpx 12rpx;
+  align-self: flex-start;
+}
+
+.badgeOk {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #ff6b00;
+  border: 1rpx solid #ff6b00;
+  border-radius: 4rpx;
+  padding: 2rpx 12rpx;
+  align-self: flex-start;
+}

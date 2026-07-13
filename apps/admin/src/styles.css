@@ -99,3 +99,37 @@ header { display: flex; align-items: center; justify-content: space-between; pad
 .trend-bar { width: 100%; max-width: 48px; background: linear-gradient(180deg, #E43D30 0%, #ff7a6b 100%); border-radius: 6px 6px 0 0; position: relative; min-height: 2px; transition: height .3s; }
 .trend-val { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #4e5969; white-space: nowrap; }
 .trend-date { font-size: 11px; color: #86909c; }
+
+/* ---------- 阶段4 数据看板表格 ---------- */
+.filter-bar { display: flex; gap: 8px; align-items: center; }
+.filter-select { padding: 7px 10px; border: 1px solid #dcdfe6; border-radius: 8px; font-size: 14px; background: #fff; }
+
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #eceef0; white-space: nowrap; }
+.data-table thead th { color: #86909c; font-weight: 600; background: #f7f8fa; font-size: 12px; }
+.data-table tbody tr:hover { background: #f7f8fa; }
+.data-table td.mono, .data-table th.mono { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; }
+.data-table td.small, .data-table th.small { font-size: 12px; }
+.muted { color: #86909c; }
+
+/* 订单状态徽标 */
+.badge.order-created { background: #f2f3f5; color: #86909c; }
+.badge.order-paid { background: #e8f3ff; color: #1d5fd8; }
+.badge.order-processing { background: #fff7e8; color: #d25f00; }
+.badge.order-completed { background: #e8ffea; color: #009a29; }
+.badge.order-cancelled { background: #f2f3f5; color: #86909c; }
+.badge.order-refunded { background: #ffece8; color: #cb2634; }
+
+/* 小按钮 */
+.small-btn { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+
+/* 订单明细展开行 */
+.detail-row td { background: #f7f8fa !important; }
+.order-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0; }
+.order-item-chip { background: #fff; border: 1px solid #eceef0; border-radius: 6px; padding: 3px 8px; font-size: 12px; }
+
+/* 退款金额红色 */
+.refund-amount { color: #cb2634; font-weight: 600; }
+/* 余额绿色 */
+.balance-amount { color: #009a29; font-weight: 600; }

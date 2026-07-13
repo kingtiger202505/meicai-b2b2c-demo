@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import type { Category, Item, ItemStatus, Store } from '@meicai/shared';
 import { supabase } from './supabase';
@@ -7,7 +7,9 @@ import {
   upsertItem, deleteItem, setItemStatus, setItemShelf, reorderItems,
   upsertCategory, deleteCategory, reorderCategories,
   fetchDailyStats, fetchDailyTrend,
+  fetchStoreOrders, fetchStoreRefunds, fetchStoreMembers, fetchStaffLogs,
   type ItemInput, type DailyStatsResult, type DailyTrendItem,
+  type StoreOrderRow, type StoreRefundRow, type StoreMemberRow, type StaffLogRow,
 } from './api';
 
 export function App() {
@@ -54,7 +56,7 @@ function Admin() {
   const [stores, setStores] = useState<Store[] | null>(null);
   const [storeId, setStoreId] = useState('');
   const [loadErr, setLoadErr] = useState('');
-  const [tab, setTab] = useState<'menu' | 'daily'>('menu');
+  const [tab, setTab] = useState<'menu' | 'daily' | 'orders' | 'refunds' | 'members' | 'logs'>('menu');
 
   const loadStores = useCallback(async (selectId?: string) => {
     try {
@@ -115,10 +117,18 @@ function Admin() {
       <nav className="tabs">
         <button className={tab === 'menu' ? 'tab active' : 'tab'} onClick={() => setTab('menu')}>菜品管理</button>
         <button className={tab === 'daily' ? 'tab active' : 'tab'} onClick={() => setTab('daily')}>营业统计</button>
+        <button className={tab === 'orders' ? 'tab active' : 'tab'} onClick={() => setTab('orders')}>订单查询</button>
+        <button className={tab === 'refunds' ? 'tab active' : 'tab'} onClick={() => setTab('refunds')}>退款明细</button>
+        <button className={tab === 'members' ? 'tab active' : 'tab'} onClick={() => setTab('members')}>会员列表</button>
+        <button className={tab === 'logs' ? 'tab active' : 'tab'} onClick={() => setTab('logs')}>操作日志</button>
       </nav>
       {loadErr && <div className="banner err">加载失败：{loadErr}</div>}
       {current && tab === 'menu' && <MenuManager key={current.id} store={current} />}
       {current && tab === 'daily' && <DailyReport key={current.id + '-daily'} storeId={current.id} />}
+      {current && tab === 'orders' && <OrdersTab key={current.id + '-orders'} storeId={current.id} />}
+      {current && tab === 'refunds' && <RefundsTab key={current.id + '-refunds'} storeId={current.id} />}
+      {current && tab === 'members' && <MembersTab key={current.id + '-members'} storeId={current.id} />}
+      {current && tab === 'logs' && <LogsTab key={current.id + '-logs'} storeId={current.id} />}
     </div>
   );
 }
@@ -418,6 +428,319 @@ function DailyReport({ storeId }: { storeId: string }) {
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+// ---------- 时间格式化(数据看板用) ----------
+function fmtTime(iso: string | null): string {
+  if (!iso) return '-';
+  try {
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  } catch {
+    return iso;
+  }
+}
+
+// 订单状态中文映射
+const ORDER_STATUS_LABEL: Record<string, string> = {
+  created: '待支付',
+  paid: '已支付',
+  processing: '制作中',
+  completed: '已完成',
+  cancelled: '已取消',
+  refunded: '已退款',
+};
+
+// ---------- 订单查询 Tab ----------
+function OrdersTab({ storeId }: { storeId: string }) {
+  const [rows, setRows] = useState<StoreOrderRow[] | null>(null);
+  const [err, setErr] = useState('');
+  const [filter, setFilter] = useState<string>('');
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const reload = useCallback(async () => {
+    setErr('');
+    setRows(null);
+    try {
+      const list = await fetchStoreOrders(storeId, filter || undefined);
+      setRows(list);
+    } catch (e) {
+      setErr(errText(e));
+      setRows([]);
+    }
+  }, [storeId, filter]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  return (
+    <div className="wrap">
+      <section className="panel">
+        <div className="panel-head">
+          <h2>订单查询{rows === null ? ' · 加载中…' : ` · 共 ${rows.length} 单`}</h2>
+          <div className="filter-bar">
+            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-select">
+              <option value="">全部状态</option>
+              <option value="created">待支付</option>
+              <option value="paid">已支付</option>
+              <option value="processing">制作中</option>
+              <option value="completed">已完成</option>
+              <option value="cancelled">已取消</option>
+              <option value="refunded">已退款</option>
+            </select>
+            <button onClick={reload}>刷新</button>
+          </div>
+        </div>
+        {err && <div className="banner err">加载失败：{err}</div>}
+        {!err && rows !== null && (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>桌台</th>
+                  <th>金额</th>
+                  <th>状态</th>
+                  <th>支付方式</th>
+                  <th>下单时间</th>
+                  <th>明细</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <Fragment key={r.id}>
+                    <tr>
+                      <td className="mono">{r.order_no}{r.is_addon && r.addon_seq ? `+${r.addon_seq}` : ''}</td>
+                      <td>{r.point_name ?? <span className="muted">-</span>}</td>
+                      <td>¥{Number(r.total).toFixed(2)}</td>
+                      <td><span className={'badge order-' + r.status}>{ORDER_STATUS_LABEL[r.status] ?? r.status}</span></td>
+                      <td className="muted">{r.pay_method ?? '-'}</td>
+                      <td className="muted">{fmtTime(r.created_at)}</td>
+                      <td>
+                        <button className="small-btn" onClick={() => setExpanded(expanded === r.id ? null : r.id)}>
+                          {expanded === r.id ? '收起' : '展开'}
+                        </button>
+                      </td>
+                    </tr>
+                    {expanded === r.id && r.items.length > 0 && (
+                      <tr className="detail-row">
+                        <td colSpan={7}>
+                          <div className="order-items">
+                            {r.items.map((it, i) => (
+                              <span key={i} className="order-item-chip">
+                                {it.name} ×{it.qty} <span className="muted">¥{Number(it.price).toFixed(2)}</span>
+                                {it.note && <span className="muted">({it.note})</span>}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                ))}
+                {rows.length === 0 && (
+                  <tr><td colSpan={7} className="empty">暂无订单</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// ---------- 退款明细 Tab ----------
+function RefundsTab({ storeId }: { storeId: string }) {
+  const [rows, setRows] = useState<StoreRefundRow[] | null>(null);
+  const [err, setErr] = useState('');
+
+  const reload = useCallback(async () => {
+    setErr('');
+    setRows(null);
+    try {
+      const list = await fetchStoreRefunds(storeId);
+      setRows(list);
+    } catch (e) {
+      setErr(errText(e));
+      setRows([]);
+    }
+  }, [storeId]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  return (
+    <div className="wrap">
+      <section className="panel">
+        <div className="panel-head">
+          <h2>退款明细{rows === null ? ' · 加载中…' : ` · 共 ${rows.length} 笔`}</h2>
+          <button onClick={reload}>刷新</button>
+        </div>
+        {err && <div className="banner err">加载失败：{err}</div>}
+        {!err && rows !== null && (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>金额</th>
+                  <th>支付方式</th>
+                  <th>退款原因</th>
+                  <th>桌台</th>
+                  <th>下单时间</th>
+                  <th>支付时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id}>
+                    <td className="mono">{r.order_no}</td>
+                    <td className="refund-amount">¥{Number(r.total).toFixed(2)}</td>
+                    <td className="muted">{r.pay_method ?? '-'}</td>
+                    <td>{r.cancel_reason ?? <span className="muted">-</span>}</td>
+                    <td>{r.point_name ?? <span className="muted">-</span>}</td>
+                    <td className="muted">{fmtTime(r.created_at)}</td>
+                    <td className="muted">{fmtTime(r.paid_at)}</td>
+                  </tr>
+                ))}
+                {rows.length === 0 && (
+                  <tr><td colSpan={7} className="empty">暂无退款记录</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// ---------- 会员列表 Tab ----------
+function MembersTab({ storeId }: { storeId: string }) {
+  const [rows, setRows] = useState<StoreMemberRow[] | null>(null);
+  const [err, setErr] = useState('');
+
+  const reload = useCallback(async () => {
+    setErr('');
+    setRows(null);
+    try {
+      const list = await fetchStoreMembers(storeId);
+      setRows(list);
+    } catch (e) {
+      setErr(errText(e));
+      setRows([]);
+    }
+  }, [storeId]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  return (
+    <div className="wrap">
+      <section className="panel">
+        <div className="panel-head">
+          <h2>会员列表{rows === null ? ' · 加载中…' : ` · 共 ${rows.length} 位`}</h2>
+          <button onClick={reload}>刷新</button>
+        </div>
+        {err && <div className="banner err">加载失败：{err}</div>}
+        {!err && rows !== null && (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>openid 尾号</th>
+                  <th>手机号</th>
+                  <th>余额</th>
+                  <th>累计充值</th>
+                  <th>消费累计</th>
+                  <th>到店次数</th>
+                  <th>注册时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id}>
+                    <td className="mono">…{r.openid_tail}</td>
+                    <td>{r.phone ?? <span className="muted">-</span>}</td>
+                    <td className="balance-amount">¥{Number(r.balance).toFixed(2)}</td>
+                    <td className="muted">¥{Number(r.topup_total).toFixed(2)}</td>
+                    <td>¥{Number(r.total_spent).toFixed(2)}</td>
+                    <td>{r.visit_count}</td>
+                    <td className="muted">{fmtTime(r.created_at)}</td>
+                  </tr>
+                ))}
+                {rows.length === 0 && (
+                  <tr><td colSpan={7} className="empty">暂无会员</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+// ---------- 操作日志 Tab ----------
+function LogsTab({ storeId }: { storeId: string }) {
+  const [rows, setRows] = useState<StaffLogRow[] | null>(null);
+  const [err, setErr] = useState('');
+
+  const reload = useCallback(async () => {
+    setErr('');
+    setRows(null);
+    try {
+      const list = await fetchStaffLogs(storeId);
+      setRows(list);
+    } catch (e) {
+      setErr(errText(e));
+      setRows([]);
+    }
+  }, [storeId]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  return (
+    <div className="wrap">
+      <section className="panel">
+        <div className="panel-head">
+          <h2>操作日志{rows === null ? ' · 加载中…' : ` · 共 ${rows.length} 条`}</h2>
+          <button onClick={reload}>刷新</button>
+        </div>
+        {err && <div className="banner err">加载失败：{err}</div>}
+        {!err && rows !== null && (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>操作</th>
+                  <th>状态</th>
+                  <th>金额</th>
+                  <th>桌台</th>
+                  <th>操作时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i}>
+                    <td className="mono">{r.order_no}</td>
+                    <td>{r.action}</td>
+                    <td><span className={'badge order-' + r.status}>{ORDER_STATUS_LABEL[r.status] ?? r.status}</span></td>
+                    <td>¥{Number(r.total).toFixed(2)}</td>
+                    <td>{r.point_name ?? <span className="muted">-</span>}</td>
+                    <td className="muted">{fmtTime(r.acted_at)}</td>
+                  </tr>
+                ))}
+                {rows.length === 0 && (
+                  <tr><td colSpan={6} className="empty">暂无操作记录</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

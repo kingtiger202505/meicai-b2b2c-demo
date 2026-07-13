@@ -69,6 +69,10 @@ const MinePage: React.FC = () => {
       });
       return;
     }
+    if (action === 'coupon') {
+      Taro.navigateTo({ url: '/pages/coupon/index' });
+      return;
+    }
     Taro.showToast({ title: '功能开发中', icon: 'none' });
   };
 

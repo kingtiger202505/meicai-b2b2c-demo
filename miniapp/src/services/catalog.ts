@@ -22,6 +22,7 @@ export interface BackendPoint {
   id: string;
   code: string;
   name: string;
+  current_session_id: string | null;   // 当前会话（协同购物车用）
 }
 
 /** 拉后端真实分类 */
@@ -56,7 +57,7 @@ export async function resolvePoint(pointRef: string, storeId = STORE_ID): Promis
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pointRef);
   const filter = isUuid ? `id=eq.${pointRef}` : `code=eq.${encodeURIComponent(pointRef)}`;
   const rows = await restGet<BackendPoint[]>(
-    `service_point?store_id=eq.${storeId}&${filter}&select=id,code,name&limit=1`
+    `service_point?store_id=eq.${storeId}&${filter}&select=id,code,name,current_session_id&limit=1`
   );
   return rows[0] || null;
 }

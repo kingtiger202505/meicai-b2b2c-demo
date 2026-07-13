@@ -24,11 +24,11 @@
 | 目录 | 说明 | 技术栈 |
 | --- | --- | --- |
 | `miniapp/` | 消费者点餐小程序 | Taro + React + TypeScript + Zustand |
-| `pos/` | 餐厅 POS 收银 + KDS 后厨 | HTML + CSS + 原生 JS |
-| `admin/` | 美菜平台管理后台 | HTML + CSS + 原生 JS |
-| `supplier/` | 供应商端 | HTML + CSS + 原生 JS |
-| `user/` | 老版用户端 H5 | HTML + CSS + 原生 JS |
-| `assets/` | 公共样式 | CSS |
+| `static-html/pos/` | 餐厅 POS 收银 + KDS 后厨（静态原型） | HTML + CSS + 原生 JS |
+| `static-html/admin/` | 美菜平台管理后台（静态原型） | HTML + CSS + 原生 JS |
+| `static-html/supplier/` | 供应商端（静态原型） | HTML + CSS + 原生 JS |
+| `static-html/user/` | 老版用户端 H5（静态原型） | HTML + CSS + 原生 JS |
+| `static-html/assets/` | 公共样式 | CSS |
 
 ## 核心功能
 

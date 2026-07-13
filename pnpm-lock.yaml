@@ -36,6 +36,37 @@ importers:
         specifier: ^5.4.2
         version: 5.4.21(@types/node@18.19.130)(less@4.5.1)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(terser@5.48.0)
 
+  apps/platform:
+    dependencies:
+      '@meicai/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@supabase/supabase-js':
+        specifier: ^2.45.0
+        version: 2.110.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.3
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.7(@types/react@18.3.31)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.1
+        version: 4.7.0(vite@5.4.21(@types/node@18.19.130)(less@4.5.1)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(terser@5.48.0))
+      typescript:
+        specifier: ^5.5.4
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.2
+        version: 5.4.21(@types/node@18.19.130)(less@4.5.1)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.64.0)(terser@5.48.0)
+
   apps/pos:
     dependencies:
       '@supabase/supabase-js':
@@ -16101,7 +16132,7 @@ snapshots:
 
   gulp-match@1.1.0:
     dependencies:
-      minimatch: 3.0.4
+      minimatch: 3.1.5
 
   gulp-plumber@1.1.0:
     dependencies:
@@ -18619,7 +18650,7 @@ snapshots:
 
   read-package-json@2.1.2:
     dependencies:
-      glob: 7.1.2
+      glob: 7.2.3
       json-parse-even-better-errors: 2.3.1
       normalize-package-data: 2.5.0
       npm-normalize-package-bin: 1.0.1

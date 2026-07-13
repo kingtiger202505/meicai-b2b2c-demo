@@ -1,6 +1,6 @@
-# Supabase 后端（P0）
+# Supabase 后端（v4）
 
-即时下单业态 MVP 的数据层。对应设计见 [`../docs/mvp-architecture.md`](../docs/mvp-architecture.md)。
+餐饮私域 SaaS 的数据层。对应设计见 [`../docs/mvp-architecture.md`](../docs/mvp-architecture.md) 与 [`../docs/roadmap-v4.md`](../docs/roadmap-v4.md)。
 
 ## 迁移文件（按序执行）
 
@@ -12,16 +12,41 @@
 | `migrations/0004_member_stored_value.sql` | 会员/储值/券三表 + RLS（锁全表，仅经 RPC 读写）；`orders` 加 `member_id` |
 | `migrations/0005_member_rpc.sql` | 会员/储值 RPC：`get_or_create_member`/`get_member`/`topup_member`(幂等)/`pay_with_balance`(原子扣减)/`issue_coupon` |
 | `migrations/0006_pay_by_id.sql` | `pay_order_by_id`（微信支付回调按订单ID置 paid，幂等，仅 service_role） |
+| `migrations/0007_mock_pay.sql` | `mock_pay_order`（一步支付+建会员，sandbox 联调用） |
+| `migrations/0008_staff_auth.sql` | staff 表 + `current_staff_store()` + 门店 RLS |
+| `migrations/0009_menu_admin.sql` | 老板菜品/分类管理 RPC + 第二家店 seed + owner demo 账号 |
+| `migrations/0010_ticket_reprint.sql` | `accept_order` 返回 `first_print` + `reprint_order` 审计 |
+| `migrations/0011_store_provisioning.sql` | `provision_store`(运营开店) + `create_store`(老板加分店) |
+| `migrations/0012_mock_topup.sql` | `mock_topup_member`(sandbox 充值,每满 100 送 20) |
+| `migrations/0013_daily_stats_rpc.sql` | `daily_stats` + `daily_trend`(营业统计) |
+| `migrations/0014_printer_config.sql` | `printer_config` 表 + 四类 Provider 配置/测试 RPC |
+| `migrations/0015_wxpay_merchant_and_fixes.sql` | **v4** `wxpay_merchant` 表(服务商进件) + 修复 D1(退款回滚余额) + D2(`list_order_status` 顾客轮询) + D3(POS 跨店校验) + `refund_order_by_id` |
 
-## Edge Functions（微信支付，第一步：普通商户直连）
+## Edge Functions（微信支付服务商模式）
 
-| 目录 | 作用 |
-|---|---|
-| `functions/wxpay-create` | JSAPI 统一下单（金额以库为准）；`WXPAY_MODE=sandbox` 可未接商户先空跑联调 |
-| `functions/wxpay-notify` | 支付结果回调：验签解密 → `pay_order_by_id` 置 paid + 无感沉淀会员；储值单改调 `topup_member` |
+| 目录 | 作用 | 模式 |
+|---|---|---|
+| `functions/wxpay-create` | JSAPI 统一下单(服务商模式,sp_mchid+sub_mchid) | sandbox: 返回占位 paySign;live: v3 签名 |
+| `functions/wxpay-notify` | 支付结果回调 | sandbox: mock 支付直走下游;live: 验签+解密 |
+| `functions/wxpay-refund` | **v4 新增** 退款 | sandbox: 库内回滚;live: 调微信退款 API |
+| `functions/wx-login` | **v4 新增** code 换 openid + 手机号解密 | sandbox: dev 伪 openid;live: 真 openid+手机号 |
 
-> 部署：`supabase functions deploy wxpay-create` / `... wxpay-notify --no-verify-jwt`。
-> 机密（`WXPAY_MCHID`/`WXPAY_APIV3_KEY`/商户证书/`WX_APPID`/`NOTIFY_URL`）放 **Supabase Function Secrets**，绝不进前端/入库。拿到普通商户号后把 `WXPAY_MODE` 切 `live` 并补齐签名实现（源码内 TODO 已标注）。
+> 部署：
+> ```
+> supabase functions deploy wxpay-create
+> supabase functions deploy wxpay-notify --no-verify-jwt
+> supabase functions deploy wxpay-refund --no-verify-jwt
+> supabase functions deploy wx-login --no-verify-jwt
+> ```
+> 机密放 **Supabase Function Secrets**(绝不进前端/入库)：
+> - `WXPAY_MODE=sandbox|live` — 资质到位前 sandbox,到位后切 live
+> - `WXPAY_SP_MCHID` / `WXPAY_APIV3_KEY` / `WXPAY_SP_CERT_SERIAL` / `WXPAY_SP_PRIVATE_KEY` — 服务商商户号 + 证书
+> - `WX_APPID` — 小程序 AppID
+> - `WX_APPSECRET` — 小程序 AppSecret(wx-login 用)
+> - `WX_LOGIN_MODE=sandbox|live` — openid/手机号解密模式
+> - `NOTIFY_URL=https://<icp域名>/wxpay-notify` — 微信回调地址(需 ICP 备案)
+>
+> **资质到位后只需**: 填 secrets + 实现 v3 签名 + 平台证书验签 + 切 `WXPAY_MODE=live`
 
 ## 应用方式（任选）
 
