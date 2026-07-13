@@ -77,6 +77,12 @@ header { display: flex; align-items: center; justify-content: space-between; pad
 .tab.active { background: #E43D30; color: #fff; }
 .tab:hover:not(.active) { background: #f2f3f5; }
 
+/* ---------- 子 tab 导航 ---------- */
+.sub-tabs { display: flex; gap: 8px; border-bottom: 2px solid #eceef0; padding: 4px 4px 0; margin-bottom: 8px; }
+.sub-tab { border: none; background: none; padding: 8px 16px; font-size: 14px; color: #4e5969; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; border-radius: 8px 8px 0 0; }
+.sub-tab.active { color: #E43D30; border-bottom: 2px solid #E43D30; }
+.sub-tab:hover:not(.active) { background: #f2f3f5; }
+
 /* ---------- 营业统计 ---------- */
 .date-pick { padding: 7px 10px; border: 1px solid #dcdfe6; border-radius: 8px; font-size: 14px; }
 

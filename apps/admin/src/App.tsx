@@ -8,8 +8,10 @@ import {
   upsertCategory, deleteCategory, reorderCategories,
   fetchDailyStats, fetchDailyTrend,
   fetchStoreOrders, fetchStoreRefunds, fetchStoreMembers, fetchStaffLogs,
+  listCouponTemplates, upsertCouponTemplate, listMarketingRules, upsertMarketingRule,
   type ItemInput, type DailyStatsResult, type DailyTrendItem,
   type StoreOrderRow, type StoreRefundRow, type StoreMemberRow, type StaffLogRow,
+  type CouponTemplate, type MarketingRule,
 } from './api';
 
 export function App() {
@@ -56,7 +58,7 @@ function Admin() {
   const [stores, setStores] = useState<Store[] | null>(null);
   const [storeId, setStoreId] = useState('');
   const [loadErr, setLoadErr] = useState('');
-  const [tab, setTab] = useState<'menu' | 'daily' | 'orders' | 'refunds' | 'members' | 'logs'>('menu');
+  const [tab, setTab] = useState<'menu' | 'marketing' | 'daily' | 'orders' | 'refunds' | 'members' | 'logs'>('menu');
 
   const loadStores = useCallback(async (selectId?: string) => {
     try {
@@ -116,6 +118,7 @@ function Admin() {
       </header>
       <nav className="tabs">
         <button className={tab === 'menu' ? 'tab active' : 'tab'} onClick={() => setTab('menu')}>菜品管理</button>
+        <button className={tab === 'marketing' ? 'tab active' : 'tab'} onClick={() => setTab('marketing')}>营销管理</button>
         <button className={tab === 'daily' ? 'tab active' : 'tab'} onClick={() => setTab('daily')}>营业统计</button>
         <button className={tab === 'orders' ? 'tab active' : 'tab'} onClick={() => setTab('orders')}>订单查询</button>
         <button className={tab === 'refunds' ? 'tab active' : 'tab'} onClick={() => setTab('refunds')}>退款明细</button>
@@ -124,6 +127,7 @@ function Admin() {
       </nav>
       {loadErr && <div className="banner err">加载失败：{loadErr}</div>}
       {current && tab === 'menu' && <MenuManager key={current.id} store={current} />}
+      {current && tab === 'marketing' && <MarketingTab key={current.id + '-marketing'} storeId={current.id} />}
       {current && tab === 'daily' && <DailyReport key={current.id + '-daily'} storeId={current.id} />}
       {current && tab === 'orders' && <OrdersTab key={current.id + '-orders'} storeId={current.id} />}
       {current && tab === 'refunds' && <RefundsTab key={current.id + '-refunds'} storeId={current.id} />}
@@ -428,6 +432,530 @@ function DailyReport({ storeId }: { storeId: string }) {
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+// ---------- 营销管理 Tab ----------
+function MarketingTab({ storeId }: { storeId: string }) {
+  const [subTab, setSubTab] = useState<'coupon' | 'rule'>('coupon');
+  const [coupons, setCoupons] = useState<CouponTemplate[]>([]);
+  const [rules, setRules] = useState<MarketingRule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
+  const [editingCoupon, setEditingCoupon] = useState<CouponTemplate | 'new' | null>(null);
+  const [editingRule, setEditingRule] = useState<MarketingRule | 'new' | null>(null);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setErr('');
+    try {
+      const [c, r] = await Promise.all([
+        listCouponTemplates(storeId),
+        listMarketingRules(storeId),
+      ]);
+      setCoupons(c);
+      setRules(r);
+    } catch (e) {
+      setErr(errText(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [storeId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleSaveCoupon = async (input: Parameters<typeof upsertCouponTemplate>[0]) => {
+    const { error } = await upsertCouponTemplate(input);
+    if (error) {
+      alert('保存优惠券模板失败：' + errText(error));
+      return;
+    }
+    setEditingCoupon(null);
+    loadData();
+  };
+
+  const handleSaveRule = async (input: Parameters<typeof upsertMarketingRule>[0]) => {
+    const { error } = await upsertMarketingRule(input);
+    if (error) {
+      alert('保存营销规则失败：' + errText(error));
+      return;
+    }
+    setEditingRule(null);
+    loadData();
+  };
+
+  const toggleCouponStatus = async (coupon: CouponTemplate) => {
+    const { error } = await upsertCouponTemplate({
+      id: coupon.id,
+      store_id: coupon.store_id,
+      name: coupon.name,
+      kind: coupon.kind,
+      threshold: coupon.threshold,
+      value: coupon.value,
+      valid_days: coupon.valid_days,
+      total_quota: coupon.total_quota,
+      enabled: !coupon.enabled,
+    });
+    if (error) {
+      alert('修改状态失败：' + errText(error));
+    } else {
+      loadData();
+    }
+  };
+
+  const toggleRuleStatus = async (rule: MarketingRule) => {
+    const { error } = await upsertMarketingRule({
+      id: rule.id,
+      store_id: rule.store_id,
+      name: rule.name,
+      trigger: rule.trigger,
+      action: rule.action,
+      enabled: !rule.enabled,
+      priority: rule.priority,
+    });
+    if (error) {
+      alert('修改状态失败：' + errText(error));
+    } else {
+      loadData();
+    }
+  };
+
+  return (
+    <div className="wrap">
+      <div className="sub-tabs">
+        <button
+          className={subTab === 'coupon' ? 'sub-tab active' : 'sub-tab'}
+          onClick={() => setSubTab('coupon')}
+        >
+          优惠券模板
+        </button>
+        <button
+          className={subTab === 'rule' ? 'sub-tab active' : 'sub-tab'}
+          onClick={() => setSubTab('rule')}
+        >
+          自动发券规则
+        </button>
+      </div>
+
+      {err && <div className="banner err">{err}</div>}
+
+      {subTab === 'coupon' && (
+        <section className="panel">
+          <div className="panel-head">
+            <h2>优惠券模板{loading ? ' · 加载中…' : ` · 共 ${coupons.length} 个`}</h2>
+            <button className="primary" onClick={() => setEditingCoupon('new')}>
+              + 新增模板
+            </button>
+          </div>
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>名称</th>
+                  <th>类型</th>
+                  <th>门槛 (￥)</th>
+                  <th>优惠额度 (￥)</th>
+                  <th>有效天数</th>
+                  <th>发行限量</th>
+                  <th>已发数量</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {coupons.map((c) => (
+                  <tr key={c.id}>
+                    <td className="mono small">{c.id.slice(0, 8)}...</td>
+                    <td>{c.name}</td>
+                    <td>
+                      {c.kind === 'full_reduce'
+                        ? '满减券'
+                        : c.kind === 'cash'
+                        ? '无门槛现金券'
+                        : c.kind === 'new_user'
+                        ? '新人券'
+                        : c.kind}
+                    </td>
+                    <td>{Number(c.threshold).toFixed(2)}</td>
+                    <td>{Number(c.value).toFixed(2)}</td>
+                    <td>{c.valid_days} 天</td>
+                    <td>{c.total_quota === null ? '无限制' : c.total_quota}</td>
+                    <td>{c.issued_count}</td>
+                    <td>
+                      <span className={`badge ${c.enabled ? 'on_sale' : 'off_shelf'}`}>
+                        {c.enabled ? '已启用' : '已禁用'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="row-acts">
+                        <button className="small-btn" onClick={() => setEditingCoupon(c)}>
+                          编辑
+                        </button>
+                        <button
+                          className={`small-btn ${c.enabled ? 'danger' : 'primary'}`}
+                          onClick={() => toggleCouponStatus(c)}
+                        >
+                          {c.enabled ? '禁用' : '启用'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {coupons.length === 0 && !loading && (
+                  <tr>
+                    <td colSpan={10} className="empty">
+                      暂无优惠券模板
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {subTab === 'rule' && (
+        <section className="panel">
+          <div className="panel-head">
+            <h2>自动发券规则{loading ? ' · 加载中…' : ` · 共 ${rules.length} 条`}</h2>
+            <button className="primary" onClick={() => setEditingRule('new')}>
+              + 新增规则
+            </button>
+          </div>
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>规则名称</th>
+                  <th>触发事件</th>
+                  <th>赠送券模板名称</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rules.map((r) => {
+                  const targetCoupon = coupons.find(
+                    (c) => c.id === r.action?.coupon_template_id
+                  );
+                  return (
+                    <tr key={r.id}>
+                      <td>{r.name}</td>
+                      <td>
+                        {r.trigger === 'first_order'
+                          ? '用户首单成功'
+                          : r.trigger}
+                      </td>
+                      <td>
+                        {targetCoupon ? (
+                          targetCoupon.name
+                        ) : (
+                          <span className="muted">
+                            未知模板 (ID: {r.action?.coupon_template_id || '-'})
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`badge ${r.enabled ? 'on_sale' : 'off_shelf'}`}>
+                          {r.enabled ? '已启用' : '已禁用'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="row-acts">
+                          <button className="small-btn" onClick={() => setEditingRule(r)}>
+                            编辑
+                          </button>
+                          <button
+                            className={`small-btn ${r.enabled ? 'danger' : 'primary'}`}
+                            onClick={() => toggleRuleStatus(r)}
+                          >
+                            {r.enabled ? '禁用' : '启用'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {rules.length === 0 && !loading && (
+                  <tr>
+                    <td colSpan={5} className="empty">
+                      暂无自动发券规则
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {editingCoupon && (
+        <CouponModal
+          storeId={storeId}
+          coupon={editingCoupon === 'new' ? null : editingCoupon}
+          onClose={() => setEditingCoupon(null)}
+          onSave={handleSaveCoupon}
+        />
+      )}
+
+      {editingRule && (
+        <RuleModal
+          storeId={storeId}
+          rule={editingRule === 'new' ? null : editingRule}
+          coupons={coupons.filter((c) => c.enabled)}
+          onClose={() => setEditingRule(null)}
+          onSave={handleSaveRule}
+        />
+      )}
+    </div>
+  );
+}
+
+function CouponModal({
+  storeId,
+  coupon,
+  onClose,
+  onSave,
+}: {
+  storeId: string;
+  coupon: CouponTemplate | null;
+  onClose: () => void;
+  onSave: (t: Parameters<typeof upsertCouponTemplate>[0]) => void;
+}) {
+  const [name, setName] = useState(coupon?.name ?? '');
+  const [kind, setKind] = useState<'full_reduce' | 'cash' | 'new_user'>(
+    coupon?.kind ?? 'full_reduce'
+  );
+  const [threshold, setThreshold] = useState(String(coupon?.threshold ?? ''));
+  const [value, setValue] = useState(String(coupon?.value ?? ''));
+  const [validDays, setValidDays] = useState(String(coupon?.valid_days ?? '30'));
+  const [totalQuota, setTotalQuota] = useState(
+    coupon?.total_quota !== undefined && coupon?.total_quota !== null
+      ? String(coupon.total_quota)
+      : ''
+  );
+  const [err, setErr] = useState('');
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setErr('请填写模板名称');
+      return;
+    }
+    const th = Number(threshold);
+    if (Number.isNaN(th) || th < 0) {
+      setErr('使用门槛需为 ≥0 的数字');
+      return;
+    }
+    const val = Number(value);
+    if (Number.isNaN(val) || val <= 0) {
+      setErr('优惠额度需为 >0 的数字');
+      return;
+    }
+    const days = Number(validDays);
+    if (Number.isNaN(days) || days <= 0 || !Number.isInteger(days)) {
+      setErr('有效天数需为正整数');
+      return;
+    }
+    let quota: number | null = null;
+    if (totalQuota.trim() !== '') {
+      quota = Number(totalQuota);
+      if (Number.isNaN(quota) || quota < 0 || !Number.isInteger(quota)) {
+        setErr('发行限量需为负数以外的整数，或留空表示不限制');
+        return;
+      }
+    }
+
+    onSave({
+      id: coupon?.id ?? null,
+      store_id: storeId,
+      name: name.trim(),
+      kind,
+      threshold: th,
+      value: val,
+      valid_days: days,
+      total_quota: quota,
+      enabled: coupon?.enabled ?? true,
+    });
+  };
+
+  return (
+    <div className="modal" onClick={onClose}>
+      <form className="modal-body form" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+        <h3>{coupon ? '编辑优惠券模板' : '新增优惠券模板'}</h3>
+        <label>
+          模板名称
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="如 满30减5优惠券"
+          />
+        </label>
+        <label>
+          优惠券类型
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value as 'full_reduce' | 'cash' | 'new_user')}
+          >
+            <option value="full_reduce">满减券(full_reduce)</option>
+            <option value="cash">无门槛现金券(cash)</option>
+          </select>
+        </label>
+        <div className="two">
+          <label>
+            使用门槛(¥)
+            <input
+              value={threshold}
+              onChange={(e) => setThreshold(e.target.value)}
+              placeholder="0"
+              inputMode="decimal"
+              disabled={kind === 'cash'}
+            />
+          </label>
+          <label>
+            优惠额度(¥)
+            <input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="5"
+              inputMode="decimal"
+            />
+          </label>
+        </div>
+        <div className="two">
+          <label>
+            有效天数
+            <input
+              value={validDays}
+              onChange={(e) => setValidDays(e.target.value)}
+              placeholder="30"
+              inputMode="numeric"
+            />
+          </label>
+          <label>
+            发行限量 (留空不限)
+            <input
+              value={totalQuota}
+              onChange={(e) => setTotalQuota(e.target.value)}
+              placeholder="无限制"
+              inputMode="numeric"
+            />
+          </label>
+        </div>
+        {err && <div className="err">{err}</div>}
+        <div className="modal-acts">
+          <button type="button" onClick={onClose}>
+            取消
+          </button>
+          <button className="primary" type="submit">
+            保存
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function RuleModal({
+  storeId,
+  rule,
+  coupons,
+  onClose,
+  onSave,
+}: {
+  storeId: string;
+  rule: MarketingRule | null;
+  coupons: CouponTemplate[];
+  onClose: () => void;
+  onSave: (r: Parameters<typeof upsertMarketingRule>[0]) => void;
+}) {
+  const [name, setName] = useState(rule?.name ?? '');
+  const [trigger, setTrigger] = useState(rule?.trigger ?? 'first_order');
+  const [couponTemplateId, setCouponTemplateId] = useState(
+    rule?.action?.coupon_template_id ?? ''
+  );
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    if (!couponTemplateId && coupons.length > 0) {
+      setCouponTemplateId(coupons[0].id);
+    }
+  }, [coupons, couponTemplateId]);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setErr('请填写规则名称');
+      return;
+    }
+    if (!couponTemplateId) {
+      setErr('请选择赠送券模板');
+      return;
+    }
+
+    onSave({
+      id: rule?.id ?? null,
+      store_id: storeId,
+      name: name.trim(),
+      trigger,
+      action: {
+        type: 'issue_coupon',
+        coupon_template_id: couponTemplateId,
+      },
+      enabled: rule?.enabled ?? true,
+      priority: rule?.priority ?? 0,
+    });
+  };
+
+  return (
+    <div className="modal" onClick={onClose}>
+      <form className="modal-body form" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+        <h3>{rule ? '编辑自动发券规则' : '新增自动发券规则'}</h3>
+        <label>
+          规则名称
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="如 新人首单送券"
+          />
+        </label>
+        <label>
+          触发事件
+          <select value={trigger} onChange={(e) => setTrigger(e.target.value)}>
+            <option value="first_order">用户首单成功(first_order)</option>
+          </select>
+        </label>
+        <label>
+          赠送券模板
+          <select
+            value={couponTemplateId}
+            onChange={(e) => setCouponTemplateId(e.target.value)}
+          >
+            {coupons.length === 0 ? (
+              <option value="">-- 无已启用模板，请先去创建或启用优惠券模板 --</option>
+            ) : (
+              coupons.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} (门槛: ￥{c.threshold}, 额度: ￥{c.value})
+                </option>
+              ))
+            )}
+          </select>
+        </label>
+        {err && <div className="err">{err}</div>}
+        <div className="modal-acts">
+          <button type="button" onClick={onClose}>
+            取消
+          </button>
+          <button className="primary" type="submit" disabled={coupons.length === 0}>
+            保存
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
