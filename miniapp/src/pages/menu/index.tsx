@@ -422,8 +422,8 @@ const MenuPage: React.FC = () => {
 
   // 营销 Banner 列表
   const banners = [
-    { id: 1, image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=delicious_chinese_sichuan_food_hotpot_banner&image_size=landscape_16_9', action: 'topup', title: '首充礼遇：充100送20' },
-    { id: 2, image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese_spicy_crayfish_dish_banner&image_size=landscape_16_9', action: 'coupon', title: '会员专享：限时领满减券' }
+    { id: 1, image: 'https://picsum.photos/id/488/800/400', action: 'topup', title: '首充礼遇：充100送20' },
+    { id: 2, image: 'https://picsum.photos/id/1060/800/400', action: 'coupon', title: '会员专享：限时领满减券' }
   ];
 
   return (
