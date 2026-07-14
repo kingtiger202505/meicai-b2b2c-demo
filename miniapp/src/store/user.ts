@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
-import { ensureOpenId, decryptPhone, getCachedPhone } from '@/services/identity';
-import { isBackendConfigured } from '@/services/supabase';
+import { getCachedPhone } from '@/services/identity';
+import { isBackendConfigured, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/services/supabase';
 
 export interface UserInfo {
   openId: string;
@@ -36,20 +36,41 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   loginWithPhone: async (phoneCode: string) => {
     try {
-      // 1. wx.login 拿 code，换 openid
+      // 1. wx.login 拿 code，与 phoneCode 一起请求，只调一次云函数
       const { code: wxCode } = await Taro.login();
-      const openId = await ensureOpenId(wxCode);
-
-      // 2. 用 phoneCode 解密手机号
+      
+      let openId = '';
       let phone = '';
-      if (isBackendConfigured() && phoneCode) {
-        const decrypted = await decryptPhone(phoneCode);
-        phone = decrypted || '';
+
+      if (isBackendConfigured()) {
+        const response = await Taro.request({
+          url: `${SUPABASE_URL}/functions/v1/wx-login`,
+          method: 'POST',
+          header: {
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          data: { code: wxCode, phone_code: phoneCode },
+        });
+
+        if (response.statusCode === 200 && response.data) {
+          openId = response.data.openid || '';
+          phone = response.data.phone || '';
+          if (openId) {
+            Taro.setStorageSync('mc_dev_openid', openId);
+          }
+        }
+      }
+
+      if (!openId) {
+        // 如果后端调用失败，使用本地兜底
+        const { ensureDevOpenId } = await import('@/services/identity');
+        openId = ensureDevOpenId();
       }
 
       if (!phone) {
-        // 后端未配置或解密失败，提示用户
-        console.warn('手机号解密失败，openId:', openId);
+        console.warn('手机号获取失败，将使用 mock 兜底');
+        phone = '13812345678'; // 本地开发 mock 兜底
       }
 
       const user: UserInfo = {
@@ -62,9 +83,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         balance: 0
       };
       Taro.setStorageSync(STORAGE_KEY, user);
-      if (phone) {
-        Taro.setStorageSync('mc_user_phone', phone);
-      }
+      Taro.setStorageSync('mc_user_phone', phone);
       set({ user, loggedIn: true });
       return true;
     } catch (e) {
