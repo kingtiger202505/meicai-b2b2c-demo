@@ -17,11 +17,10 @@ const LEVEL_TEXT = {
 
 const MinePage: React.FC = () => {
   const orders = useCartStore((s) => s.orders);
-  const { user, loggedIn, login, bindPhone, logout } = useUserStore();
+  const { user, loggedIn, loginWithPhone, logout } = useUserStore();
   const { member, refresh: refreshMember, ensure: ensureMember } = useMemberStore();
   const [couponCount, setCouponCount] = useState(0);
 
-  // 每次进入「我的」拉最新会员/余额与真实券数量
   useDidShow(() => {
     if (isBackendConfigured()) {
       refreshMember();
@@ -34,35 +33,29 @@ const MinePage: React.FC = () => {
   const balance = member?.balance ?? user?.balance ?? 0;
   const goTopup = () => Taro.navigateTo({ url: '/pages/topup/index' });
 
-  // 微信登录
-  const handleLogin = async () => {
-    Taro.showLoading({ title: '登录中...' });
-    const ok = await login();
-    Taro.hideLoading();
-    if (ok) {
-      Taro.showToast({ title: '登录成功', icon: 'success' });
-    } else {
-      Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
-    }
-  };
-
-  // 绑定手机号（Button open-type=getPhoneNumber 回调）
-  const handleGetPhone = async (e) => {
+  // 一键手机号授权登录
+  const handlePhoneLogin = async (e) => {
     if (e.detail.errMsg !== 'getPhoneNumber:ok') {
       Taro.showToast({ title: '已取消授权', icon: 'none' });
       return;
     }
-    Taro.showLoading({ title: '绑定中...' });
-    const ok = await bindPhone(e.detail.code);
+    Taro.showLoading({ title: '登录中...' });
+    const ok = await loginWithPhone(e.detail.code);
     Taro.hideLoading();
     if (ok) {
-      Taro.showToast({ title: '手机号已绑定', icon: 'success' });
-      // 绑定手机号后，如果已配置后端，同步创建或更新会员信息
-      if (isBackendConfigured() && user) {
-        ensureMember(user.phone);
+      const u = useUserStore.getState().user;
+      if (u?.phone) {
+        Taro.showToast({ title: '登录成功', icon: 'success' });
+        // 同步创建会员
+        if (isBackendConfigured()) {
+          ensureMember(u.phone);
+        }
+      } else {
+        Taro.showToast({ title: '登录成功，手机号获取失败', icon: 'none' });
       }
+    } else {
+      Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
     }
-    else Taro.showToast({ title: '绑定失败', icon: 'none' });
   };
 
   const menuList = [
@@ -76,12 +69,7 @@ const MinePage: React.FC = () => {
 
   const onMenuTap = (action: string) => {
     if (!loggedIn) {
-      Taro.showModal({
-        title: '请先登录',
-        content: '登录后才能使用该功能',
-        confirmText: '去登录',
-        success: (r) => { if (r.confirm) handleLogin(); }
-      });
+      Taro.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
     if (action === 'coupon') {
@@ -105,7 +93,7 @@ const MinePage: React.FC = () => {
             <>
               <Text className={styles.nickName}>{user.nickName}</Text>
               <Text className={styles.phone}>
-                {user.phone || '未绑定手机号'}
+                {user.phone || '手机号未获取'}
                 {user.phone && <Text className={styles.levelTag}>{LEVEL_TEXT[user.memberLevel]}</Text>}
               </Text>
             </>
@@ -116,15 +104,14 @@ const MinePage: React.FC = () => {
             </>
           )}
         </View>
-        {(!loggedIn || !user?.phone) && (
+        {!loggedIn && (
           <Button
             className={styles.loginBtn}
             size="mini"
-            openType={loggedIn ? "getPhoneNumber" : undefined}
-            onGetPhoneNumber={loggedIn ? handleGetPhone : undefined}
-            onClick={!loggedIn ? handleLogin : undefined}
+            openType="getPhoneNumber"
+            onGetPhoneNumber={handlePhoneLogin}
           >
-            {loggedIn ? '绑定手机号' : '微信登录'}
+            手机号快捷登录
           </Button>
         )}
       </View>
@@ -154,24 +141,6 @@ const MinePage: React.FC = () => {
         <Text className={styles.rechargeBtn}>去充值 ›</Text>
       </View>
 
-      {/* 绑定手机号（未绑定时显示） */}
-      {loggedIn && user && !user.phone && (
-        <View className={styles.bindPhoneCard}>
-          <View>
-            <Text className={styles.bindTitle}>绑定手机号</Text>
-            <Text className={styles.bindDesc}>用于接收订单通知、找回账号</Text>
-          </View>
-          <Button
-            className={styles.bindBtn}
-            size="mini"
-            openType="getPhoneNumber"
-            onGetPhoneNumber={handleGetPhone}
-          >
-            一键绑定
-          </Button>
-        </View>
-      )}
-
       {/* 菜单组 */}
       <View className={styles.menuGroup}>
         {menuList.map((item) => (
@@ -189,7 +158,7 @@ const MinePage: React.FC = () => {
       </View>
 
       {/* 退出登录 */}
-      {loggedIn && user?.phone && (
+      {loggedIn && (
         <View className={styles.logoutBtn} onClick={() => {
           Taro.showModal({
             title: '退出登录',

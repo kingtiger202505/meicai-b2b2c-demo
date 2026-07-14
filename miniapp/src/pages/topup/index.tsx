@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Input, Button } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
@@ -7,77 +7,23 @@ import { useMemberStore } from '@/store/member';
 import { useUserStore } from '@/store/user';
 import { calcGift } from '@/services/member';
 import { isBackendConfigured } from '@/services/supabase';
-import { decryptPhone, getCachedPhone } from '@/services/identity';
 
-// 储值充值：mock 支付先走通闭环（复用 mock_topup_member，等 WX-6/WX-11 切真微信支付）。
-// 赠送规则：每满 100 送 20，累进（PRD Q1）。
 const PRESETS = [50, 100, 200, 300, 500, 1000];
 
 const TopupPage: React.FC = () => {
   const { member, refresh, topup } = useMemberStore();
-  const { user } = useUserStore();
+  const { user, loggedIn } = useUserStore();
   const [amount, setAmount] = useState(100);
   const [paying, setPaying] = useState(false);
-  const [phone, setPhone] = useState('');
+
+  // 手机号直接从 user store 获取，无需手动输入
+  const phone = user?.phone || member?.phone || '';
 
   useDidShow(() => {
-    refresh().then((m) => {
-      if (m?.phone) setPhone(m.phone);
-    });
-    // 也从 user store 和 identity 缓存补手机号
-    if (!phone) {
-      const u = useUserStore.getState().user;
-      if (u?.phone) {
-        setPhone(u.phone);
-      } else {
-        const cp = getCachedPhone();
-        if (cp) setPhone(cp);
-      }
-    }
+    refresh();
   });
 
-  // 如果 store 中的 user 信息有手机号且当前没有，也可以回填
-  useEffect(() => {
-    if (user?.phone && !phone) {
-      setPhone(user.phone);
-    }
-  }, [user?.phone]);
-
   const gift = calcGift(amount);
-
-  const handleGetPhone = async (e) => {
-    if (e.detail.errMsg !== 'getPhoneNumber:ok') {
-      Taro.showToast({ title: '已取消授权', icon: 'none' });
-      return;
-    }
-    Taro.showLoading({ title: '获取手机号中...' });
-    try {
-      let p = '';
-      if (e.detail.code) {
-        // 真机：用 code 调 Edge Function 解密手机号
-        const decrypted = await decryptPhone(e.detail.code);
-        p = decrypted || '';
-      }
-      if (p) {
-        setPhone(p);
-        // 同步到 user store 和本地缓存
-        const { user } = useUserStore.getState();
-        if (user) {
-          const updated = { ...user, phone: p };
-          Taro.setStorageSync('mc_user_info', updated);
-          useUserStore.setState({ user: updated });
-        }
-        Taro.setStorageSync('mc_user_phone', p);
-        Taro.showToast({ title: '获取成功', icon: 'success' });
-      } else {
-        Taro.showToast({ title: '解密失败，请手动输入', icon: 'none' });
-      }
-    } catch (err) {
-      Taro.showToast({ title: '获取失败', icon: 'none' });
-    } finally {
-      Taro.hideLoading();
-    }
-  };
 
   const handlePay = async () => {
     if (paying || amount <= 0) return;
@@ -86,13 +32,16 @@ const TopupPage: React.FC = () => {
       return;
     }
 
-    // 手机号必填校验（私域锁客核心）
-    if (!phone) {
-      Taro.showToast({ title: '请输入手机号', icon: 'none' });
-      return;
-    }
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
-      Taro.showToast({ title: '请输入正确的手机号', icon: 'none' });
+    // 未登录，引导去登录
+    if (!loggedIn || !phone) {
+      Taro.showModal({
+        title: '请先登录',
+        content: '充值需要绑定手机号，请先在"我的"页面登录。',
+        confirmText: '去登录',
+        success: (r) => {
+          if (r.confirm) Taro.switchTab({ url: '/pages/mine/index' });
+        }
+      });
       return;
     }
 
@@ -144,34 +93,20 @@ const TopupPage: React.FC = () => {
         </Text>
       </View>
 
-      {/* 绑定手机号（仅在会员未绑定手机号时强显示） */}
-      {!member?.phone && (
+      {/* 手机号显示（只读，来自登录授权） */}
+      {phone ? (
         <View className={styles.phoneSection}>
-          <Text className={styles.sectionTitle}>绑定手机号</Text>
-          <View className={styles.inputWrapper}>
-            <Text className={styles.inputIcon}>📱</Text>
-            <Input
-              type="number"
-              placeholder="请输入11位手机号以关联储值"
-              maxLength={11}
-              value={phone}
-              onInput={(e) => setPhone(e.detail.value)}
-              className={styles.phoneInput}
-            />
-            {process.env.TARO_ENV === 'weapp' && (
-              <Button
-                className={styles.getPhoneBtn}
-                openType="getPhoneNumber"
-                onGetPhoneNumber={handleGetPhone}
-                size="mini"
-              >
-                快捷获取
-              </Button>
-            )}
+          <Text className={styles.sectionTitle}>充值手机号</Text>
+          <View className={styles.phoneDisplay}>
+            <Text className={styles.phoneNum}>{phone}</Text>
           </View>
-          <Text className={styles.phoneHint}>
-            提示：储值和余额将绑定到此手机号上，换设备登录后仍可继续使用。
-          </Text>
+        </View>
+      ) : (
+        <View className={styles.phoneSection}>
+          <Text className={styles.sectionTitle}>充值手机号</Text>
+          <View className={styles.phoneDisplay}>
+            <Text className={styles.phoneHint}>请先在"我的"页面登录获取手机号</Text>
+          </View>
         </View>
       )}
 

@@ -127,57 +127,30 @@
   color: $color-text-tertiary;
 }
 
-// 绑定手机号区域样式
+// 手机号区域样式
 .phoneSection {
   margin: $spacing-xl $page-padding 0;
 }
 
-.inputWrapper {
-  display: flex;
-  align-items: center;
+.phoneDisplay {
   background: #fff;
   border: 2rpx solid $color-border;
   border-radius: $radius-md;
   height: 88rpx;
   padding: 0 $spacing-md;
-  gap: $spacing-sm;
   margin-top: $spacing-sm;
-
-  &:focus-within {
-    border-color: $color-primary;
-  }
+  display: flex;
+  align-items: center;
 }
 
-.inputIcon {
-  font-size: 36rpx;
-}
-
-.phoneInput {
-  flex: 1;
-  font-size: $font-size-md;
+.phoneNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
   color: $color-text-primary;
-  height: 100%;
-}
-
-.getPhoneBtn {
-  margin: 0 !important;
-  background: $color-primary;
-  color: #fff;
-  border: none;
-  font-size: $font-size-xs;
-  height: 56rpx;
-  line-height: 56rpx;
-  padding: 0 $spacing-sm;
-  border-radius: $radius-sm;
-
-  &::after {
-    border: none;
-  }
+  letter-spacing: 2rpx;
 }
 
 .phoneHint {
-  margin-top: $spacing-sm;
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-tertiary;
-  line-height: $line-height-normal;
 }
