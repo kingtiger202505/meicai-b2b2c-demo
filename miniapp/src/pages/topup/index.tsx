@@ -7,7 +7,7 @@ import { useMemberStore } from '@/store/member';
 import { useUserStore } from '@/store/user';
 import { calcGift } from '@/services/member';
 import { isBackendConfigured } from '@/services/supabase';
-import { decryptPhone } from '@/services/identity';
+import { decryptPhone, getCachedPhone } from '@/services/identity';
 
 // 储值充值：mock 支付先走通闭环（复用 mock_topup_member，等 WX-6/WX-11 切真微信支付）。
 // 赠送规则：每满 100 送 20，累进（PRD Q1）。
@@ -24,6 +24,16 @@ const TopupPage: React.FC = () => {
     refresh().then((m) => {
       if (m?.phone) setPhone(m.phone);
     });
+    // 也从 user store 和 identity 缓存补手机号
+    if (!phone) {
+      const u = useUserStore.getState().user;
+      if (u?.phone) {
+        setPhone(u.phone);
+      } else {
+        const cp = getCachedPhone();
+        if (cp) setPhone(cp);
+      }
+    }
   });
 
   // 如果 store 中的 user 信息有手机号且当前没有，也可以回填
@@ -44,16 +54,20 @@ const TopupPage: React.FC = () => {
     try {
       let p = '';
       if (e.detail.code) {
-        // 真机解密手机号
+        // 真机：用 code 调 Edge Function 解密手机号
         const decrypted = await decryptPhone(e.detail.code);
         p = decrypted || '';
-      } else {
-        // sandbox / mock 兜底
-        const code = e.detail.code || '1234';
-        p = '138****' + code.slice(-4);
       }
       if (p) {
         setPhone(p);
+        // 同步到 user store 和本地缓存
+        const { user } = useUserStore.getState();
+        if (user) {
+          const updated = { ...user, phone: p };
+          Taro.setStorageSync('mc_user_info', updated);
+          useUserStore.setState({ user: updated });
+        }
+        Taro.setStorageSync('mc_user_phone', p);
         Taro.showToast({ title: '获取成功', icon: 'success' });
       } else {
         Taro.showToast({ title: '解密失败，请手动输入', icon: 'none' });

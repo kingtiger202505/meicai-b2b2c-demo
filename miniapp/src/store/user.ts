@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
+import { decryptPhone, getCachedPhone } from '@/services/identity';
 
 export interface UserInfo {
   openId: string;
@@ -91,7 +92,17 @@ export const useUserStore = create<UserState>((set, get) => ({
   bindPhone: async (code: string) => {
     const user = get().user;
     if (!user) return false;
-    const phone = await mockBindPhone(code);
+    // 真机：调 Edge Function 解密手机号；失败回退 mock
+    let phone: string | null = null;
+    try {
+      phone = await decryptPhone(code);
+    } catch (e) {
+      console.warn('decryptPhone 失败，回退 mock', e);
+    }
+    if (!phone) {
+      // 后端未配置或解密失败，mock 兜底
+      phone = '138****' + code.slice(-4);
+    }
     const updated = { ...user, phone };
     Taro.setStorageSync(STORAGE_KEY, updated);
     set({ user: updated });
@@ -106,7 +117,14 @@ export const useUserStore = create<UserState>((set, get) => ({
   restore: () => {
     try {
       const cached = Taro.getStorageSync(STORAGE_KEY);
-      if (cached) set({ user: cached, loggedIn: true });
+      if (cached) {
+        // 如果缓存里没手机号，尝试从 identity 缓存补充
+        if (!cached.phone) {
+          const cp = getCachedPhone();
+          if (cp) cached.phone = cp;
+        }
+        set({ user: cached, loggedIn: true });
+      }
     } catch (e) {
       // ignore
     }
