@@ -10,7 +10,6 @@
 //   WX_LOGIN_MODE=sandbox|live
 //   WX_APPID=<小程序AppID>
 //   WX_APPSECRET=<小程序AppSecret>
-//   WX_ACCESS_TOKEN=<平台 access_token>  # 手机号解密需要(或用 getPhoneNumber 的 code 直接换)
 //
 // 入参(POST JSON): { code, phone_code? }
 //   code: wx.login 返回的 code
@@ -46,17 +45,30 @@ Deno.serve(async (req: Request) => {
     const openid = loginData.openid;
 
     // 2) 手机号解密(若传了 phone_code)
-    //    微信新规: 用 phone_code 调 phonenumber.getPhoneNumber 接口换取手机号
-    //    需要 access_token(平台级),或用组件 button open-type="getPhoneNumber" 的 code 直接换
+    //    微信新规: 用 phone_code 调 getPhoneNumber 接口，需要 access_token
     let phone: string | null = null;
     if (phone_code) {
-      // TODO(资质到位后实现):
-      //   先获取 access_token(client_credential),再调:
-      //   POST https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=XXX
-      //   body: { code: phone_code }
-      //   返回: { phone_info: { phoneNumber, purePhoneNumber, countryCode } }
-      //   存 phone = phone_info.phoneNumber
-      phone = null;
+      // 先获取 access_token(client_credential 模式)
+      const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${WX_APPID}&secret=${WX_APPSECRET}`;
+      const tokenRes = await fetch(tokenUrl);
+      const tokenData = await tokenRes.json();
+      if (tokenData.access_token) {
+        // 用 access_token + phone_code 换取真实手机号
+        const phoneUrl = `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${tokenData.access_token}`;
+        const phoneRes = await fetch(phoneUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: phone_code }),
+        });
+        const phoneData = await phoneRes.json();
+        if (phoneData.errcode === 0 && phoneData.phone_info) {
+          phone = phoneData.phone_info.purePhoneNumber || phoneData.phone_info.phoneNumber || null;
+        } else {
+          console.warn('getPhoneNumber failed:', phoneData);
+        }
+      } else {
+        console.warn('get access_token failed:', tokenData);
+      }
     }
 
     return json({ mode: 'live', openid, phone });
