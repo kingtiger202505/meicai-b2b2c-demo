@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Image, ScrollView, Swiper, SwiperItem } from '@tarojs/components';
+import { View, Text, Image, ScrollView, Swiper, SwiperItem, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
@@ -76,8 +76,37 @@ const MenuPage: React.FC = () => {
     sessionId, setSessionId, mergeSessionCart, clearSessionCart,
     placeOrder: recordLocalOrder, updateOrderStatus,
   } = useCartStore();
-  const { user } = useUserStore();
+  const { user, loggedIn, loginWithPhone } = useUserStore();
   const { member, refresh: refreshMember, ensure: ensureMember } = useMemberStore();
+
+  // 进入首页时，未登录则显示登录弹窗
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  useEffect(() => {
+    if (!loggedIn) {
+      setShowLoginModal(true);
+    }
+  }, [loggedIn]);
+
+  // 手机号授权登录
+  const handlePhoneLogin = useCallback(async (e: any) => {
+    if (e.detail.errMsg !== 'getPhoneNumber:ok') {
+      Taro.showToast({ title: '需要授权手机号才能使用', icon: 'none' });
+      return;
+    }
+    Taro.showLoading({ title: '登录中...' });
+    const ok = await loginWithPhone(e.detail.code);
+    Taro.hideLoading();
+    if (ok) {
+      setShowLoginModal(false);
+      const u = useUserStore.getState().user;
+      if (u?.phone && isBackendConfigured()) {
+        ensureMember(u.phone);
+      }
+      Taro.showToast({ title: '登录成功', icon: 'success' });
+    } else {
+      Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
+    }
+  }, [loginWithPhone, ensureMember]);
 
   // 进入点餐页拉一次会员/余额与优惠券
   useEffect(() => {
@@ -428,6 +457,29 @@ const MenuPage: React.FC = () => {
 
   return (
     <View className={styles.page}>
+      {/* 登录弹窗 - 未登录时全屏遮罩 */}
+      {showLoginModal && (
+        <View className={styles.loginOverlay}>
+          <View className={styles.loginModal}>
+            <View className={styles.loginLogo}>🍜</View>
+            <Text className={styles.loginTitle}>欢迎来到川小灶</Text>
+            <Text className={styles.loginDesc}>授权手机号，一键登录享会员权益</Text>
+            <Button
+              className={styles.loginPhoneBtn}
+              openType="getPhoneNumber"
+              onGetPhoneNumber={handlePhoneLogin}
+            >
+              微信手机号快捷登录
+            </Button>
+            <Text
+              className={styles.loginSkip}
+              onClick={() => setShowLoginModal(false)}
+            >
+              先看看菜单
+            </Text>
+          </View>
+        </View>
+      )}
       {/* 餐厅信息 */}
       <View className={styles.restBar}>
         <View className={styles.restLogo}>川</View>
