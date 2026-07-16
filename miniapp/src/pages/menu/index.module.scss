@@ -7,61 +7,150 @@
   background: $color-bg-page;
 }
 
-// 登录弹窗
-.loginOverlay {
+// 全屏沉浸式登录页
+.loginPage {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
   z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+// 顶部品牌视觉区（占屏幕上半部分）
+.loginHero {
+  position: relative;
+  width: 100%;
+  height: 55vh;
+  overflow: hidden;
+}
+.loginHeroBg {
+  width: 100%;
+  height: 100%;
+}
+.loginHeroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.4) 60%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+.loginBrand {
+  position: absolute;
+  bottom: 60rpx;
+  left: 48rpx;
+  display: flex;
+  flex-direction: column;
+}
+.loginBrandIcon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 20rpx;
+  background: $color-primary;
+  color: #fff;
+  font-size: 44rpx;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20rpx;
 }
-.loginModal {
-  width: 600px;
-  background: #fff;
-  border-radius: 24px;
-  padding: 60px 40px 40px;
+.loginBrandName {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
+}
+.loginBrandSlogan {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+// 底部登录操作区
+.loginAction {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 48rpx 56rpx 40rpx;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  margin-top: -32rpx;
+  position: relative;
 }
-.loginLogo {
-  font-size: 80px;
-  margin-bottom: 20px;
+.loginWelcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48rpx;
 }
-.loginTitle {
-  font-size: 36px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 12px;
+.loginWelcomeTitle {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin-bottom: 12rpx;
 }
-.loginDesc {
-  font-size: 26px;
-  color: #999;
-  margin-bottom: 40px;
+.loginWelcomeSub {
+  font-size: 26rpx;
+  color: $color-text-tertiary;
 }
 .loginPhoneBtn {
+  @include button-reset;
   width: 100% !important;
-  height: 88px;
-  line-height: 88px;
-  background: #07c160 !important;
+  height: $button-height-lg;
+  background: $color-primary !important;
   color: #fff !important;
-  font-size: 32px;
-  border-radius: 44px;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  border-radius: $radius-button;
   border: none !important;
-  margin-bottom: 24px;
-  &::after {
-    border: none;
-  }
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+.loginPhoneIcon {
+  font-size: 36rpx;
+}
+.loginDivider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 32rpx 0;
+}
+.loginDividerLine {
+  flex: 1;
+  height: 1rpx;
+  background: $color-divider;
+}
+.loginDividerText {
+  padding: 0 24rpx;
+  font-size: $font-size-sm;
+  color: $color-text-disabled;
 }
 .loginSkip {
-  font-size: 26px;
-  color: #999;
-  padding: 16px 0;
+  font-size: $font-size-md;
+  color: $color-primary;
+  padding: 16rpx 0;
+  font-weight: $font-weight-medium;
+}
+.loginAgreement {
+  font-size: 22rpx;
+  color: $color-text-disabled;
+  margin-top: auto;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 // 餐厅信息头

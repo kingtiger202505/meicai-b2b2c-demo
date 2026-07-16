@@ -457,25 +457,51 @@ const MenuPage: React.FC = () => {
 
   return (
     <View className={styles.page}>
-      {/* 登录弹窗 - 未登录时全屏遮罩 */}
+      {/* 登录页 - 未登录时全屏沉浸式 */}
       {showLoginModal && (
-        <View className={styles.loginOverlay}>
-          <View className={styles.loginModal}>
-            <View className={styles.loginLogo}>🍜</View>
-            <Text className={styles.loginTitle}>欢迎来到川小灶</Text>
-            <Text className={styles.loginDesc}>授权手机号，一键登录享会员权益</Text>
+        <View className={styles.loginPage}>
+          {/* 顶部品牌视觉区 */}
+          <View className={styles.loginHero}>
+            <Image
+              className={styles.loginHeroBg}
+              src="https://picsum.photos/id/292/750/600"
+              mode="aspectFill"
+            />
+            <View className={styles.loginHeroOverlay} />
+            <View className={styles.loginBrand}>
+              <View className={styles.loginBrandIcon}>川</View>
+              <Text className={styles.loginBrandName}>川小灶·望京店</Text>
+              <Text className={styles.loginBrandSlogan}>地道川味 · 匠心家常</Text>
+            </View>
+          </View>
+
+          {/* 底部登录操作区 */}
+          <View className={styles.loginAction}>
+            <View className={styles.loginWelcome}>
+              <Text className={styles.loginWelcomeTitle}>欢迎光临</Text>
+              <Text className={styles.loginWelcomeSub}>登录后享受会员专属优惠与积分</Text>
+            </View>
             <Button
               className={styles.loginPhoneBtn}
               openType="getPhoneNumber"
               onGetPhoneNumber={handlePhoneLogin}
             >
-              微信手机号快捷登录
+              <Text className={styles.loginPhoneIcon}>📱</Text>
+              <Text>微信手机号一键登录</Text>
             </Button>
+            <View className={styles.loginDivider}>
+              <View className={styles.loginDividerLine} />
+              <Text className={styles.loginDividerText}>或</Text>
+              <View className={styles.loginDividerLine} />
+            </View>
             <Text
               className={styles.loginSkip}
               onClick={() => setShowLoginModal(false)}
             >
-              先看看菜单
+              暂不登录，先看看菜单 →
+            </Text>
+            <Text className={styles.loginAgreement}>
+              登录即表示同意《用户协议》和《隐私政策》
             </Text>
           </View>
         </View>
