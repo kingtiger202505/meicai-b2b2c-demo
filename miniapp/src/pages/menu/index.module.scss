@@ -20,11 +20,11 @@
   background: #fff;
 }
 
-// 顶部品牌视觉区（占屏幕上半部分）
+// 顶部品牌视觉区
 .loginHero {
   position: relative;
   width: 100%;
-  height: 55vh;
+  height: 800rpx;
   overflow: hidden;
 }
 .loginHeroBg {
@@ -69,12 +69,10 @@
   font-weight: 700;
   color: #fff;
   margin-bottom: 8rpx;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
 }
 .loginBrandSlogan {
   font-size: 26rpx;
   color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.3);
 }
 
 // 底部登录操作区
@@ -115,7 +113,7 @@
   font-weight: $font-weight-semibold;
   border-radius: $radius-button;
   border: none !important;
-  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.35);
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +148,7 @@
   font-size: 22rpx;
   color: $color-text-disabled;
   margin-top: auto;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: 20rpx;
 }
 
 // 餐厅信息头
