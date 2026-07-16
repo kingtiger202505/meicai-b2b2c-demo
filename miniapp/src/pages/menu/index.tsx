@@ -143,18 +143,6 @@ const MenuPage: React.FC = () => {
     }
   }, [storeId, mergeSessionCart]);
 
-  // 调试辅助打印
-  console.log('MenuPage State:', { loggedIn, showLoginModal, loading, loadError, storeId });
-
-  if (loadError && !loading) {
-    return (
-      <View style={{ padding: '50px', textAlign: 'center', color: 'red' }}>
-        <Text>菜单加载失败: {loadError}</Text>
-        <Button onClick={() => loadCatalog()} style={{ marginTop: '20px' }}>重新加载</Button>
-      </View>
-    );
-  }
-
   useEffect(() => {
     loadCatalog();
   }, [loadCatalog]);
