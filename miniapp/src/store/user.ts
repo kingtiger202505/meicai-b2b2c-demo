@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
-import { getCachedPhone } from '@/services/identity';
+import { getCachedPhone, ensureDevOpenId } from '@/services/identity';
 import { isBackendConfigured, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/services/supabase';
 
 export interface UserInfo {
@@ -64,7 +64,6 @@ export const useUserStore = create<UserState>((set, get) => ({
 
       if (!openId) {
         // 如果后端调用失败，使用本地兜底
-        const { ensureDevOpenId } = await import('@/services/identity');
         openId = ensureDevOpenId();
       }
 

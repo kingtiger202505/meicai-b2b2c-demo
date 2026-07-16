@@ -1,9 +1,10 @@
-import './polyfill';   // 必须第一位：为 H5 兜底 process 全局，早于任何读 process.env 的模块
+import './polyfill';   // 必须第一位：为 H5 兜底 process 全局，早于 any 模块
 import React, { useEffect } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
 import Taro from '@tarojs/taro';
 import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
+import ErrorBoundary from '@/components/ErrorBoundary';
 // 全局样式
 import './app.scss';
 
@@ -67,17 +68,28 @@ function applyEntryParams() {
 
 function App(props) {
   useEffect(() => {
+    // 监听小程序全局未捕获异常
+    if (process.env.TARO_ENV === 'weapp') {
+      Taro.onError((err) => {
+        console.error('Taro Global onError:', err);
+      });
+    }
+
     // 恢复本地登录态
     useUserStore.getState().restore();
 
     // 解析扫码进店参数（门店 + 桌号），点位 code 由菜单页解析成 uuid
     applyEntryParams();
-  });
+  }, []); // 加上依赖数组，防止无限循环重绘导致白屏
 
   useDidShow(() => {});
   useDidHide(() => {});
 
-  return props.children;
+  return (
+    <ErrorBoundary>
+      {props.children}
+    </ErrorBoundary>
+  );
 }
 
 export default App;
