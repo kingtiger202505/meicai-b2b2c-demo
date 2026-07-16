@@ -122,23 +122,38 @@ const MenuPage: React.FC = () => {
     setLoadError('');
     try {
       const [cats, ds] = await Promise.all([fetchCategories(storeId), fetchDishes(storeId)]);
-      setCategories(cats);
-      setDishes(ds);
-      if (cats.length) setActiveCat((prev) => prev || cats[0].id);
+      setCategories(cats || []);
+      setDishes(ds || []);
+      if (cats && cats.length) setActiveCat((prev) => prev || cats[0].id);
 
       // 堂食有会话：拉共享购物车合并到本地（同桌已选的菜显示出来）
       const sid = useCartStore.getState().sessionId;
       if (sid && isBackendConfigured()) {
         const dishMap: Record<string, Dish> = {};
-        ds.forEach((d) => { dishMap[d.id] = d; });
+        if (ds) {
+          ds.forEach((d) => { dishMap[d.id] = d; });
+        }
         await mergeSessionCart(dishMap);
       }
     } catch (e: any) {
+      console.error('loadCatalog error:', e);
       setLoadError(mapOrderError(e?.message || '菜单加载失败'));
     } finally {
       setLoading(false);
     }
   }, [storeId, mergeSessionCart]);
+
+  // 调试辅助打印
+  console.log('MenuPage State:', { loggedIn, showLoginModal, loading, loadError, storeId });
+
+  if (loadError && !loading) {
+    return (
+      <View style={{ padding: '50px', textAlign: 'center', color: 'red' }}>
+        <Text>菜单加载失败: {loadError}</Text>
+        <Button onClick={() => loadCatalog()} style={{ marginTop: '20px' }}>重新加载</Button>
+      </View>
+    );
+  }
 
   useEffect(() => {
     loadCatalog();
