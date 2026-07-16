@@ -890,8 +890,9 @@ const MenuPage: React.FC = () => {
           {totalCount === 0 ? '未选购' : submitting ? '提交中...' : '去结算'}
         </View>
       </View>
-    </ErrorBoundary>
-  );
+    </View>
+  </ErrorBoundary>
+);
 };
 
 export default MenuPage;
