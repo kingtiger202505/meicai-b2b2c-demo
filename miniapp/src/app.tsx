@@ -4,7 +4,6 @@ import { useDidShow, useDidHide } from '@tarojs/taro';
 import Taro from '@tarojs/taro';
 import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
-import ErrorBoundary from '@/components/ErrorBoundary';
 // 全局样式
 import './app.scss';
 
@@ -99,11 +98,7 @@ function App(props) {
   useDidHide(() => {});
 
   console.log('[APP] App render return');
-  return (
-    <ErrorBoundary>
-      {props.children}
-    </ErrorBoundary>
-  );
+  return props.children;
 }
 
 export default App;

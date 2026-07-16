@@ -17,6 +17,8 @@ import { listMyCoupons, redeemCoupon, isCouponUsable, couponLabel, type Coupon }
 import { STORE_ID } from '@/services/supabase';
 import Stepper from '@/components/Stepper';
 
+import ErrorBoundary from '@/components/ErrorBoundary';
+
 // 后端错误 → 用户可读文案
 function mapOrderError(raw: string): string {
   if (!raw) return '下单失败，请重试';
@@ -462,7 +464,8 @@ const MenuPage: React.FC = () => {
   console.log('[MENU] MenuPage render return, showLoginModal:', showLoginModal, 'loading:', loading, 'cats:', categories.length, 'dishes:', dishes.length);
 
   return (
-    <View className={styles.page}>
+    <ErrorBoundary>
+      <View className={styles.page}>
       {/* 登录页 - 未登录时全屏沉浸式 */}
       {showLoginModal && (
         <View className={styles.loginPage}>
@@ -887,7 +890,7 @@ const MenuPage: React.FC = () => {
           {totalCount === 0 ? '未选购' : submitting ? '提交中...' : '去结算'}
         </View>
       </View>
-    </View>
+    </ErrorBoundary>
   );
 };
 
