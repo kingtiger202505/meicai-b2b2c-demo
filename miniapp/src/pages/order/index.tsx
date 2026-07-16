@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+console.log('[ORDER] file loaded');
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow, useDidHide } from '@tarojs/taro';
 import classnames from 'classnames';

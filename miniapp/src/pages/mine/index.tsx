@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+console.log('[MINE] file loaded');
 import { View, Text, Image, Button } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';

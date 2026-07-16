@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+console.log('[MENU] file loaded');
 import { View, Text, Image, ScrollView, Swiper, SwiperItem, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
