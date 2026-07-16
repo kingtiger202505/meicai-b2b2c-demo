@@ -31,6 +31,7 @@ function mapOrderError(raw: string): string {
 }
 
 const MenuPage: React.FC = () => {
+  console.log('[MENU] MenuPage render start');
   const [activeCat, setActiveCat] = useState('');
   // 点分类时把该分类锚点写进 scrollIntoView（非受控 scrollTop —— 受控值会在手动滚动的重渲染里被 Taro
   // 重新贴回、把列表拽回旧位置，导致标准②回归）。配合 scrollIntoViewAlignment="start" 让锚点组头贴顶。
@@ -457,6 +458,8 @@ const MenuPage: React.FC = () => {
     { id: 1, image: 'https://picsum.photos/id/488/800/400', action: 'topup', title: '首充礼遇：充100送20' },
     { id: 2, image: 'https://picsum.photos/id/1060/800/400', action: 'coupon', title: '会员专享：限时领满减券' }
   ];
+
+  console.log('[MENU] MenuPage render return, showLoginModal:', showLoginModal, 'loading:', loading, 'cats:', categories.length, 'dishes:', dishes.length);
 
   return (
     <View className={styles.page}>

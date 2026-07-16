@@ -4,6 +4,7 @@
 // 避免整站因 `ReferenceError: process is not defined` 在挂载前崩溃(白屏)。
 // 必须作为 app 入口的第一个 import，早于任何读取 process.env 的模块。
 declare const globalThis: any;
+console.log('[POLYFILL] polyfill loaded');
 if (typeof globalThis !== 'undefined' && typeof globalThis.process === 'undefined') {
   globalThis.process = { env: {} };
 }

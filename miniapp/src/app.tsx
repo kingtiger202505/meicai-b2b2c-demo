@@ -67,24 +67,38 @@ function applyEntryParams() {
 }
 
 function App(props) {
+  console.log('[APP] App render start, children:', !!props.children);
+
   useEffect(() => {
+    console.log('[APP] useEffect triggered');
     // 监听小程序全局未捕获异常
     if (process.env.TARO_ENV === 'weapp') {
       Taro.onError((err) => {
-        console.error('Taro Global onError:', err);
+        console.error('[APP] Taro Global onError:', err);
       });
     }
 
     // 恢复本地登录态
-    useUserStore.getState().restore();
+    try {
+      useUserStore.getState().restore();
+      console.log('[APP] restore done');
+    } catch (e) {
+      console.error('[APP] restore error:', e);
+    }
 
     // 解析扫码进店参数（门店 + 桌号），点位 code 由菜单页解析成 uuid
-    applyEntryParams();
-  }, []); // 加上依赖数组，防止无限循环重绘导致白屏
+    try {
+      applyEntryParams();
+      console.log('[APP] applyEntryParams done');
+    } catch (e) {
+      console.error('[APP] applyEntryParams error:', e);
+    }
+  }, []);
 
-  useDidShow(() => {});
+  useDidShow(() => { console.log('[APP] didShow'); });
   useDidHide(() => {});
 
+  console.log('[APP] App render return');
   return (
     <ErrorBoundary>
       {props.children}
