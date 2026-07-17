@@ -47,6 +47,7 @@ Deno.serve(async (req: Request) => {
     // 2) 手机号解密(若传了 phone_code)
     //    微信新规: 用 phone_code 调 getPhoneNumber 接口，需要 access_token
     let phone: string | null = null;
+    let phone_error: unknown = null;   // 把真实失败原因透传回前端/日志，便于定位(IP白名单/能力未开通等)
     if (phone_code) {
       // 先获取 access_token(client_credential 模式)
       const tokenUrl = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${WX_APPID}&secret=${WX_APPSECRET}`;
@@ -64,14 +65,18 @@ Deno.serve(async (req: Request) => {
         if (phoneData.errcode === 0 && phoneData.phone_info) {
           phone = phoneData.phone_info.purePhoneNumber || phoneData.phone_info.phoneNumber || null;
         } else {
+          // 常见: 40097 参数错误/能力未开通; 需要企业主体 + 已开通「手机号快速验证」
           console.warn('getPhoneNumber failed:', phoneData);
+          phone_error = { step: 'getuserphonenumber', ...phoneData };
         }
       } else {
+        // 常见: 40164 invalid ip(启用了 IP 白名单，而 Edge Function 出口 IP 不固定)
         console.warn('get access_token failed:', tokenData);
+        phone_error = { step: 'access_token', ...tokenData };
       }
     }
 
-    return json({ mode: 'live', openid, phone });
+    return json({ mode: 'live', openid, phone, phone_error });
   } catch (e: any) {
     return json({ error: String(e?.message ?? e) }, 500);
   }

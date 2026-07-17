@@ -67,9 +67,11 @@ export const useUserStore = create<UserState>((set, get) => ({
         openId = ensureDevOpenId();
       }
 
-      if (!phone) {
-        console.warn('手机号获取失败，将使用 mock 兜底');
-        phone = '13812345678'; // 本地开发 mock 兜底
+      if (!phone && !isBackendConfigured()) {
+        // 仅「本地无后端」联调时用 mock 兜底；一旦配了后端(live)就不再伪造手机号，
+        // 否则真机授权失败会被 13812345678 掩盖、且用假号建会员污染数据。
+        console.warn('本地无后端，手机号用 mock 兜底');
+        phone = '13812345678';
       }
 
       const user: UserInfo = {
