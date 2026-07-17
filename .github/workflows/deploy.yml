@@ -16,6 +16,7 @@ on:
       - 'Dockerfile.platform'
       - 'docker-compose.yml'
       - 'deploy/**'
+      - 'supabase/migrations/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -24,8 +25,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 先按顺序把「尚未应用」的 DB 迁移跑上去（用 schema_migrations 账本，每个文件只跑一次）。
+  # 凭据放 GitHub Secret SUPABASE_DB_URL（pooler 直连串，IPv4 友好）。未配置则跳过（warning）。
+  # 账本已回填至当前全部迁移(0001-0019)，故本 job 上线后对现有迁移是 no-op，只跑将来新增的。
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply pending Supabase migrations (ordered, once each)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::warning::SUPABASE_DB_URL 未配置，跳过 DB 迁移（新迁移需手动应用或补上该 Secret）"
+            exit 0
+          fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          # 账本表：记录已应用的迁移文件名，保证每个文件只跑一次（避免重跑非幂等/seed 迁移）
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
+            "create table if not exists schema_migrations(filename text primary key, applied_at timestamptz not null default now());"
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            base=$(basename "$f")
+            applied=$(psql "$SUPABASE_DB_URL" -tAc "select 1 from schema_migrations where filename='$base'")
+            if [ "$applied" = "1" ]; then echo "skip $base (已应用)"; continue; fi
+            echo "=== applying $base ==="
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$f"
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -c \
+              "insert into schema_migrations(filename) values ('$base') on conflict do nothing;"
+          done
+          echo "DB migrations up to date ✓"
+
   deploy:
     runs-on: ubuntu-latest
+    needs: migrate
     steps:
       - uses: actions/checkout@v4
 
