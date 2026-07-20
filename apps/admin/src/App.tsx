@@ -9,9 +9,12 @@ import {
   fetchDailyStats, fetchDailyTrend,
   fetchStoreOrders, fetchStoreRefunds, fetchStoreMembers, fetchStaffLogs,
   listCouponTemplates, upsertCouponTemplate, listMarketingRules, upsertMarketingRule,
+  listStaff, upsertStaff, deleteStaff, createStaffAccount,
+  listRoles, listPermissions, listRolePermissions,
   type ItemInput, type DailyStatsResult, type DailyTrendItem,
   type StoreOrderRow, type StoreRefundRow, type StoreMemberRow, type StaffLogRow,
   type CouponTemplate, type MarketingRule,
+  type StaffRow, type CreatedStaffCred, type Role, type Permission,
 } from './api';
 
 export function App() {
@@ -1276,10 +1279,25 @@ function LogsTab({ storeId }: { storeId: string }) {
 }
 
 // ---------- 员工管理 Tab ----------
+// 内置角色 ID(与 supabase/migrations/0016 seed 一致)
+const ROLE_OWNER = '00000000-0000-0000-0000-000000000002';
+const ROLE_MANAGER = '00000000-0000-0000-0000-000000000003';
+const ROLE_CASHIER = '00000000-0000-0000-0000-000000000004';
+// 可分配角色(收银员 / 店长)——与角色·权限矩阵一致
+const ASSIGNABLE_ROLES: { id: string; label: string }[] = [
+  { id: ROLE_CASHIER, label: '收银员 (cashier)' },
+  { id: ROLE_MANAGER, label: '店长 (manager)' },
+];
+const ROLE_CN: Record<string, string> = {
+  owner: '老板', manager: '店长', cashier: '收银员', boss: '平台超管',
+};
+
 function StaffTab({ storeId }: { storeId: string }) {
   const [rows, setRows] = useState<StaffRow[] | null>(null);
   const [err, setErr] = useState('');
   const [editing, setEditing] = useState<StaffRow | 'new' | null>(null);
+  const [busyId, setBusyId] = useState('');       // 正在移除的 user_id
+  const [cred, setCred] = useState<CreatedStaffCred | null>(null); // 一次性密码回显
 
   const reload = useCallback(async () => {
     setErr('');
@@ -1295,14 +1313,33 @@ function StaffTab({ storeId }: { storeId: string }) {
 
   useEffect(() => { reload(); }, [reload]);
 
-  const handleSave = async (userId: string, name: string, roleId: string) => {
+  // 新增员工:后端创建 Auth 账号 + 绑定门店/角色,回显一次性初始密码
+  const handleCreate = async (email: string, name: string, roleId: string) => {
+    const created = await createStaffAccount(storeId, email, name, roleId);
+    setEditing(null);
+    setCred(created);   // 弹出一次性明文密码
+    reload();
+  };
+
+  // 编辑已有员工:改姓名/角色(upsert_staff)
+  const handleEdit = async (userId: string, name: string, roleId: string) => {
+    const { error } = await upsertStaff(userId, storeId, name, roleId);
+    if (error) throw error;
+    setEditing(null);
+    reload();
+  };
+
+  const handleRemove = async (r: StaffRow) => {
+    if (!confirm(`确认移除员工「${r.name || r.user_id}」？\n该员工将解除与本门店的绑定，不再能访问本店数据。`)) return;
+    setBusyId(r.user_id);
     try {
-      const { error } = await upsertStaff(userId, storeId, name, roleId);
+      const { error } = await deleteStaff(r.user_id, storeId);
       if (error) throw error;
-      setEditing(null);
       reload();
     } catch (e) {
-      alert('保存员工失败：' + errText(e));
+      alert('移除员工失败：' + errText(e));
+    } finally {
+      setBusyId('');
     }
   };
 
@@ -1319,29 +1356,41 @@ function StaffTab({ storeId }: { storeId: string }) {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>用户ID (Auth UUID)</th>
                   <th>姓名</th>
                   <th>角色</th>
-                  <th>注册时间</th>
+                  <th>加入时间</th>
                   <th>操作</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r) => (
-                  <tr key={r.user_id}>
-                    <td className="mono small">{r.user_id}</td>
-                    <td>{r.name}</td>
-                    <td>
-                      <span className="badge on_sale">{r.role_name}</span>
-                    </td>
-                    <td className="muted">{fmtTime(r.created_at)}</td>
-                    <td>
-                      <button className="small-btn" onClick={() => setEditing(r)}>编辑角色</button>
-                    </td>
-                  </tr>
-                ))}
+                {rows.map((r) => {
+                  const isOwner = r.role_id === ROLE_OWNER;
+                  return (
+                    <tr key={r.user_id}>
+                      <td>{r.name || <span className="muted">（未命名）</span>}</td>
+                      <td>
+                        <span className="badge on_sale">{ROLE_CN[r.role_name] ?? r.role_name}</span>
+                      </td>
+                      <td className="muted">{fmtTime(r.created_at)}</td>
+                      <td>
+                        {isOwner ? (
+                          <span className="muted small">门店老板</span>
+                        ) : (
+                          <>
+                            <button className="small-btn" onClick={() => setEditing(r)}>编辑角色</button>
+                            <button
+                              className="small-btn danger"
+                              disabled={busyId === r.user_id}
+                              onClick={() => handleRemove(r)}
+                            >{busyId === r.user_id ? '移除中…' : '移除'}</button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
                 {rows.length === 0 && (
-                  <tr><td colSpan={5} className="empty">暂无员工</td></tr>
+                  <tr><td colSpan={4} className="empty">暂无员工</td></tr>
                 )}
               </tbody>
             </table>
@@ -1349,72 +1398,209 @@ function StaffTab({ storeId }: { storeId: string }) {
         )}
       </section>
 
+      <RoleMatrix />
+
       {editing && (
         <StaffModal
           staff={editing === 'new' ? null : editing}
+          onCreate={handleCreate}
+          onEdit={handleEdit}
           onClose={() => setEditing(null)}
-          onSave={handleSave}
         />
       )}
+
+      {cred && <CreatedCredModal cred={cred} onClose={() => setCred(null)} />}
     </div>
   );
 }
 
 interface StaffModalProps {
-  staff: StaffRow | null;
+  staff: StaffRow | null;               // null = 新增
+  onCreate: (email: string, name: string, roleId: string) => Promise<void>;
+  onEdit: (userId: string, name: string, roleId: string) => Promise<void>;
   onClose: () => void;
-  onSave: (userId: string, name: string, roleId: string) => void;
 }
 
-function StaffModal({ staff, onClose, onSave }: StaffModalProps) {
-  const [userId, setUserId] = useState(staff?.user_id ?? '');
+function StaffModal({ staff, onCreate, onEdit, onClose }: StaffModalProps) {
+  const isNew = !staff;
+  const [email, setEmail] = useState('');
   const [name, setName] = useState(staff?.name ?? '');
-  // 内置角色 ID：manager (店长), cashier (收银员)
-  const [roleId, setRoleId] = useState(staff?.role_id ?? '00000000-0000-0000-0000-000000000004');
+  const [roleId, setRoleId] = useState(staff?.role_id ?? ROLE_CASHIER);
   const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId.trim()) { setErr('请填写用户ID'); return; }
+    setErr('');
+    if (isNew && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setErr('请填写有效邮箱'); return; }
     if (!name.trim()) { setErr('请填写姓名'); return; }
-    onSave(userId.trim(), name.trim(), roleId);
+    setBusy(true);
+    try {
+      if (isNew) await onCreate(email.trim(), name.trim(), roleId);
+      else await onEdit(staff!.user_id, name.trim(), roleId);
+    } catch (e) {
+      setErr(errText(e));
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="modal" onClick={onClose}>
       <form className="modal-body form" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
-        <h3>{staff ? '编辑员工' : '新增员工'}</h3>
-        <label>
-          用户 ID (Supabase Auth uuid)
-          <input 
-            value={userId} 
-            onChange={(e) => setUserId(e.target.value)} 
-            placeholder="在 Supabase 注册的 Auth User ID" 
-            disabled={!!staff}
-          />
-        </label>
+        <h3>{isNew ? '新增员工' : '编辑员工'}</h3>
+        {isNew ? (
+          <label>
+            邮箱（登录账号）
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="staff@example.com"
+              autoFocus
+            />
+          </label>
+        ) : (
+          <p className="hint">系统将自动创建登录账号（无需填写 Supabase UUID）。当前员工角色可在下方调整。</p>
+        )}
         <label>
           姓名
-          <input 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            placeholder="输入员工姓名" 
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="输入员工姓名"
           />
         </label>
         <label>
           选择角色
           <select value={roleId} onChange={(e) => setRoleId(e.target.value)}>
-            <option value="00000000-0000-0000-0000-000000000004">收银员 (cashier)</option>
-            <option value="00000000-0000-0000-0000-000000000003">店长 (manager)</option>
+            {ASSIGNABLE_ROLES.map((r) => (
+              <option key={r.id} value={r.id}>{r.label}</option>
+            ))}
           </select>
         </label>
+        {isNew && (
+          <p className="hint">保存后系统会生成初始密码并一次性展示，请及时转告员工（明文不入库）。</p>
+        )}
         {err && <div className="err">{err}</div>}
         <div className="modal-acts">
-          <button type="button" onClick={onClose}>取消</button>
-          <button className="primary" type="submit">保存</button>
+          <button type="button" onClick={onClose} disabled={busy}>取消</button>
+          <button className="primary" type="submit" disabled={busy}>
+            {busy ? (isNew ? '创建中…' : '保存中…') : '保存'}
+          </button>
         </div>
       </form>
     </div>
+  );
+}
+
+// 一次性明文初始密码回显(老板转告员工;明文不入库)
+function CreatedCredModal({ cred, onClose }: { cred: CreatedStaffCred; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(`邮箱：${cred.email}\n初始密码：${cred.password}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* 剪贴板不可用则忽略 */ }
+  };
+  return (
+    <div className="modal" onClick={onClose}>
+      <div className="modal-body form" onClick={(e) => e.stopPropagation()}>
+        <h3>员工账号已创建 ✓</h3>
+        <p className="hint">请立即记录并转告员工，初始密码<strong>仅显示这一次</strong>，关闭后无法再次查看。</p>
+        <label>
+          登录邮箱
+          <input readOnly value={cred.email} onFocus={(e) => e.target.select()} />
+        </label>
+        <label>
+          初始密码
+          <input readOnly value={cred.password} className="mono" onFocus={(e) => e.target.select()} />
+        </label>
+        <div className="modal-acts">
+          <button type="button" onClick={copy}>{copied ? '已复制 ✓' : '复制账号密码'}</button>
+          <button className="primary" type="button" onClick={onClose}>我已记录，关闭</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 角色 · 权限矩阵(只读):行=权限,列=角色(老板/店长/收银员),✓ 表示拥有
+function RoleMatrix() {
+  const DISPLAY_ROLE_ORDER = ['owner', 'manager', 'cashier'];
+  const CAT_CN: Record<string, string> = {
+    menu: '菜品', order: '订单', member: '会员', stats: '统计',
+    system: '系统', table: '桌台', cashier: '收银', platform: '平台',
+  };
+  const [data, setData] = useState<{ roles: Role[]; perms: Permission[]; map: Record<string, Set<string>> } | null>(null);
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [roles, perms] = await Promise.all([listRoles(), listPermissions()]);
+        const shown = roles
+          .filter((r) => DISPLAY_ROLE_ORDER.includes(r.name))
+          .sort((a, b) => DISPLAY_ROLE_ORDER.indexOf(a.name) - DISPLAY_ROLE_ORDER.indexOf(b.name));
+        const entries = await Promise.all(
+          shown.map(async (r) => [r.id, new Set(await listRolePermissions(r.id))] as const),
+        );
+        if (!alive) return;
+        const map: Record<string, Set<string>> = {};
+        for (const [id, set] of entries) map[id] = set;
+        // 老板端只展示门店级权限(排除平台级 platform 分类)
+        const storePerms = perms.filter((p) => p.category !== 'platform');
+        setData({ roles: shown, perms: storePerms, map });
+      } catch (e) {
+        if (alive) setErr(errText(e));
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  return (
+    <section className="panel">
+      <div className="panel-head">
+        <h2>角色 · 权限矩阵<span className="muted small">（只读）</span></h2>
+      </div>
+      {err && <div className="banner err">加载失败：{err}</div>}
+      {!err && !data && <div className="empty">加载中…</div>}
+      {!err && data && (
+        <div className="table-wrap">
+          <table className="data-table matrix">
+            <thead>
+              <tr>
+                <th>权限</th>
+                <th>分类</th>
+                {data.roles.map((r) => (
+                  <th key={r.id} style={{ textAlign: 'center' }}>{ROLE_CN[r.name] ?? r.name}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.perms.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.name}</td>
+                  <td className="muted small">{CAT_CN[p.category] ?? p.category}</td>
+                  {data.roles.map((r) => (
+                    <td key={r.id} style={{ textAlign: 'center' }}>
+                      {data.map[r.id]?.has(p.id)
+                        ? <span className="tick">✓</span>
+                        : <span className="muted">—</span>}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              {data.perms.length === 0 && (
+                <tr><td colSpan={2 + data.roles.length} className="empty">暂无权限数据</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
   );
 }
 
