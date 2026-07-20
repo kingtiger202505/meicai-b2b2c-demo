@@ -147,6 +147,41 @@ export const upsertStaff = (userId: string, storeId: string, name: string, roleI
     p_user_id: userId, p_store_id: storeId, p_name: name, p_role_id: roleId,
   });
 
+// 解绑/移除员工(老板用):删除本店 staff 绑定,Auth 账号保留但失去本店访问
+export const deleteStaff = (userId: string, storeId: string) =>
+  supabase.rpc('delete_staff', { p_user_id: userId, p_store_id: storeId });
+
+// 账号创建闭环(去 UUID):调 create-staff Edge Function,用 service_role 建 Auth 账号 +
+// 绑定门店/角色,返回一次性明文初始密码。前端只填 邮箱+姓名+角色。
+export interface CreatedStaffCred {
+  user_id: string;
+  email: string;
+  password: string;
+  role_name: string;
+}
+
+export async function createStaffAccount(
+  storeId: string, email: string, name: string, roleId: string,
+): Promise<CreatedStaffCred> {
+  const { data, error } = await supabase.functions.invoke('create-staff', {
+    body: { store_id: storeId, email, name, role_id: roleId },
+  });
+  if (error) {
+    // FunctionsHttpError: 响应体在 error.context(原始 Response),尽量取出可读消息
+    let msg = error.message || '创建员工账号失败';
+    const ctx = (error as { context?: Response }).context;
+    if (ctx && typeof ctx.json === 'function') {
+      try {
+        const b = await ctx.json();
+        if (b?.message) msg = b.message;
+      } catch { /* ignore parse error */ }
+    }
+    throw new Error(msg);
+  }
+  if (!data?.ok) throw new Error(data?.message || '创建员工账号失败');
+  return data as CreatedStaffCred;
+}
+
 // ---------- v4 角色权限 ----------
 export interface Role {
   id: string;

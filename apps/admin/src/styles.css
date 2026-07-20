@@ -139,3 +139,11 @@ header { display: flex; align-items: center; justify-content: space-between; pad
 .refund-amount { color: #cb2634; font-weight: 600; }
 /* 余额绿色 */
 .balance-amount { color: #009a29; font-weight: 600; }
+
+/* WX-46 员工管理 RBAC */
+.hint { color: #86909c; font-size: 12px; line-height: 1.5; margin: 2px 0 6px; }
+.hint strong { color: #d25f00; }
+span.small { font-size: 12px; }
+.tick { color: #009a29; font-weight: 700; }
+.data-table.matrix td, .data-table.matrix th { padding-top: 6px; padding-bottom: 6px; }
+.small-btn.danger { margin-left: 6px; }
