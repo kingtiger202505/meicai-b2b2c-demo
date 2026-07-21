@@ -17,6 +17,7 @@ on:
       - 'docker-compose.yml'
       - 'deploy/**'
       - 'supabase/migrations/**'
+      - 'supabase/functions/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -54,6 +55,44 @@ jobs:
               "insert into schema_migrations(filename) values ('$base') on conflict do nothing;"
           done
           echo "DB migrations up to date ✓"
+
+  # 部署 Supabase Edge Functions（独立 job：其失败不影响 migrate / 静态站部署的成败）。
+  # 遍历 supabase/functions/ 下每个函数目录并部署，新增函数无需改 CI 即自动带上。
+  # 授权用「仓库级」Actions secret SUPABASE_ACCESS_TOKEN；缺 token 则显式失败并打清晰日志（不静默跳过）。
+  functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Deploy Supabase Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: rebqwoibtkoxrqmfbaro
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "::error::缺少「仓库级」Actions secret SUPABASE_ACCESS_TOKEN —— 无法部署 Edge Functions。"
+            echo "::error::请在 Settings → Secrets and variables → Actions → Repository secrets 添加 SUPABASE_ACCESS_TOKEN（环境级 secret 此处读不到）。"
+            exit 1
+          fi
+          supabase --version
+          shopt -s nullglob
+          count=0
+          for dir in supabase/functions/*/; do
+            fn=$(basename "$dir")
+            # 约定：以 _ 开头的目录为共享代码（如 _shared），不是可部署函数
+            case "$fn" in _*) echo "skip shared dir: $fn"; continue;; esac
+            echo "=== deploy function: $fn ==="
+            # 要求登录的门店老板才能调用 → 不加 --no-verify-jwt
+            supabase functions deploy "$fn" --project-ref "$SUPABASE_PROJECT_REF"
+            count=$((count + 1))
+          done
+          if [ "$count" -gt 0 ]; then
+            echo "Edge Functions deployed: $count ✓"
+          else
+            echo "::warning::supabase/functions/ 下未发现可部署函数"
+          fi
 
   deploy:
     runs-on: ubuntu-latest
