@@ -5,6 +5,7 @@ import styles from './index.module.scss';
 import { useMemberStore } from '@/store/member';
 import { useUserStore } from '@/store/user';
 import { calcGift } from '@/services/member';
+import { isBackendConfigured } from '@/services/supabase';
 
 // 支付成功页：私域转化钩子
 //  1) 成为会员（无感建/补手机号）
@@ -52,7 +53,13 @@ const PaySuccessPage: React.FC = () => {
       Taro.showToast({ title: '已取消授权', icon: 'none' });
       return;
     }
-    // demo：真机需后端用 code 解密手机号，这里用尾号占位
+    // 真机授权成功：live（配了后端）模式下手机号应由后端用 code 解密下发，
+    // 此处不再用授权 code 尾号伪造占位号，避免把假号展示给用户/污染会员数据；
+    // 仅本地无后端联调时保留占位值，跑通 demo 会员闭环。
+    if (isBackendConfigured()) {
+      handleJoin(null);
+      return;
+    }
     const code: string = e.detail.code || '';
     handleJoin('138****' + code.slice(-4));
   };

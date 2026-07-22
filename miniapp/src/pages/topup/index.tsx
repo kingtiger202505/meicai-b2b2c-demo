@@ -121,7 +121,6 @@ const TopupPage: React.FC = () => {
           onClick={handlePay}
         >
           {paying ? '充值中...' : '立即充值'}
-          <Text className={styles.mockTag}>mock</Text>
         </View>
       </View>
     </View>
