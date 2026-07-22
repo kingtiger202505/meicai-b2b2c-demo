@@ -62,8 +62,7 @@ const MinePage: React.FC = () => {
   const menuList = [
     { icon: '🎁', text: '我的优惠券', count: loggedIn ? `${couponCount}张` : '', action: 'coupon' },
     { icon: '💬', text: '意见反馈', count: '', action: 'feedback' },
-    { icon: '📞', text: '联系商家', count: '', action: 'contact' },
-    { icon: '⚙️', text: '设置', count: '', action: 'settings' }
+    { icon: '📞', text: '联系商家', count: '', action: 'contact' }
   ];
 
   const onMenuTap = (action: string) => {
@@ -120,10 +119,6 @@ const MinePage: React.FC = () => {
         <View className={styles.dataItem}>
           <Text className={styles.num}>{orders.length}</Text>
           <Text className={styles.label}>订单</Text>
-        </View>
-        <View className={styles.dataItem}>
-          <Text className={styles.num}>{user?.points ?? 0}</Text>
-          <Text className={styles.label}>积分</Text>
         </View>
         <View className={styles.dataItem} onClick={goTopup}>
           <Text className={styles.num}>¥{balance.toFixed(2)}</Text>
