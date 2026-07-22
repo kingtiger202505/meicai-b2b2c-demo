@@ -61,8 +61,6 @@ const MinePage: React.FC = () => {
 
   const menuList = [
     { icon: '🎁', text: '我的优惠券', count: loggedIn ? `${couponCount}张` : '', action: 'coupon' },
-    { icon: '⭐', text: '我的收藏', count: '5个', action: 'fav' },
-    { icon: '📍', text: '收货地址', count: '2个', action: 'addr' },
     { icon: '💬', text: '意见反馈', count: '', action: 'feedback' },
     { icon: '📞', text: '联系商家', count: '', action: 'contact' },
     { icon: '⚙️', text: '设置', count: '', action: 'settings' }
